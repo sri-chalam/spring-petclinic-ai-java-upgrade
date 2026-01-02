@@ -209,21 +209,13 @@ To check your current Gradle version:
 
 ### 4.3 Upgrade Gradle Wrapper (If Necessary)
 
-If the current Gradle version is below 8.5, upgrade to a Java 21-compatible version:
+If the current Gradle version is below 8.5, upgrade to Gradle 8.11 (recommended for Java 21):
 
 ```bash
-# Upgrade to Gradle 8.5 or later (recommended for Java 21)
-./gradlew wrapper --gradle-version=8.5
-
-# Or upgrade to the latest stable version
-# Check https://gradle.org/releases/ for the latest version
 ./gradlew wrapper --gradle-version=8.11
 ```
 
-This command will update:
-- `gradle/wrapper/gradle-wrapper.properties` (sets the new Gradle distribution URL)
-- `gradle/wrapper/gradle-wrapper.jar` (updates the wrapper JAR)
-- `gradlew` and `gradlew.bat` (updates the wrapper scripts if needed)
+This command will update the Gradle wrapper files to use version 8.11.
 
 ### 4.4 Verify Gradle Wrapper Upgrade
 
@@ -233,18 +225,18 @@ After upgrading, verify the new Gradle version:
 ./gradlew --version
 ```
 
-Expected output should show Gradle 8.5 or higher and Java 21:
+Expected output should show Gradle 8.11 and Java 21:
 ```
 ------------------------------------------------------------
-Gradle 8.5
+Gradle 8.11
 ------------------------------------------------------------
 
-Build time:   2023-11-29 14:08:57 UTC
-Revision:     28aca86a7180baa17117e0e5ba01d8ea9feca598
+Build time:   2024-xx-xx xx:xx:xx UTC
+Revision:     <revision-hash>
 
-Kotlin:       1.9.20
-Groovy:       3.0.17
-Ant:          Apache Ant(TM) version 1.10.13 compiled on January 4 2023
+Kotlin:       1.9.x
+Groovy:       3.0.x
+Ant:          Apache Ant(TM) version 1.10.x compiled on <date>
 JVM:          21.0.x (Amazon.com Inc. 21.0.x+xx-LTS)
 OS:           Mac OS X 14.x.x aarch64
 ```

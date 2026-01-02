@@ -116,3 +116,21 @@ Under the section "Important: Build Tool Scope",
 Add an important note as
 DO NOT upgrade Spring Boot version during the Java upgrade. Spring Boot will be upgraded in a separate task and using a separate instruction file.
 
+### Iterative prompt - Working with LLM to remove confusing instructions
+
+LLM generated the following instruction:
+
+```bash
+# Upgrade to Gradle 8.5 or later (recommended for Java 21)
+./gradlew wrapper --gradle-version=8.5
+
+# Or upgrade to the latest stable version
+# Check https://gradle.org/releases/ for the latest version
+./gradlew wrapper --gradle-version=8.11
+```
+
+The highligted statements are a bit confusing.
+
+We need to use only version either 8.5 ot 8.11.
+
+It seems to me that 8.11 version is better. Please fix the instructions. Keep only 8.11 version.
