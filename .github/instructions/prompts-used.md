@@ -44,7 +44,6 @@ Add instructions so far.
 
 
 
-
 **Important Note**: The above instructions do not have a statement to say, use zsh. It is ambiguous to LLM. So it assumed to use bash. 
 
 Then chat with Claude on whether zsh can be used.
@@ -90,10 +89,30 @@ Also, we are not interested in the available JDK versions. We want only the vers
 
 if sdk list java | grep -v "local only" | grep "21\..*amzn"; then
 
-### iterative prompt - Print clear feedback on actions taken
+### Iterative prompt - Print clear feedback on actions taken
 
 While generating the instructions, I want to provide general guidelines to Claude for 
 Providing clear feedback about what action was taken in each step.
 
 Add a few instructions to LLM to give clear feedback on actions being taken.
+
+### Iterative prompt - Upgrade only Gradle not Maven
+Add an instruction to indicate that upgrade only Gradle, which includes Gradle wrapper, build.gradle, gradle.properties. The goals of the instruction file is to upgrade Java.
+Do not upgrade maven, which includes, maven wrapper, pom.xml.
+
+### Iterative prompt - gradle wrapper upgrade if required
+Add instruction to upgrade Gradle Wapper if needed.
+
+Check If the Gradle version present in gradle/wrapper/gradle-wrapper.properties, is compatible with Java version 21.
+
+If the current Gradle Wrapper version  is not compatible with Java 21, upgrade it to a compatible version.
+
+### Iterative prompt - Remove incorectly generated instructions for Gradle configuraiton
+Remove the section "3.1 Upgrade Gradle Configuration"
+Because the Gradle configuration will be performed by open-rewrite step that will be added in susequent steps.
+
+### Iterative prompt - Do not upgrade Spring Boot version during the Java upgrade
+Under the section "Important: Build Tool Scope",
+Add an important note as
+DO NOT upgrade Spring Boot version during the Java upgrade. Spring Boot will be upgraded in a separate task and using a separate instruction file.
 

@@ -9,6 +9,23 @@ These instructions guide an AI coding agent to upgrade a Java application from J
 - curl is already installed
 - JDK Provider: Amazon Corretto
 
+## Important: Build Tool Scope
+
+**ONLY upgrade Gradle-based projects.** This upgrade applies exclusively to:
+- Gradle wrapper files (`gradlew`, `gradlew.bat`, `gradle/wrapper/gradle-wrapper.properties`, `gradle/wrapper/gradle-wrapper.jar`)
+- `build.gradle` or `build.gradle.kts`
+- `gradle.properties`
+- `settings.gradle` or `settings.gradle.kts`
+
+**DO NOT modify Maven-based projects.** Specifically, do not modify:
+- Maven wrapper files (`mvnw`, `mvnw.cmd`, `.mvn/`)
+- `pom.xml`
+- Maven-specific configuration files
+
+If the project uses Maven instead of Gradle, skip the project configuration updates in Step 3.
+
+**IMPORTANT: DO NOT upgrade Spring Boot version during the Java upgrade.** Spring Boot will be upgraded in a separate task using a separate instruction file. This instruction file is focused solely on upgrading Java from version 17 to version 21.
+
 ## Guidelines for AI Agent Execution
 
 When executing these instructions, the AI agent should:
@@ -154,34 +171,82 @@ OpenJDK 64-Bit Server VM Corretto-21.0.x.x.x
 
 ## Step 3: Update Project Configuration
 
-### 3.1 Update Maven/Gradle Configuration
-
-**For Maven projects**, update `pom.xml`:
-
-```xml
-<properties>
-    <java.version>21</java.version>
-    <maven.compiler.source>21</maven.compiler.source>
-    <maven.compiler.target>21</maven.compiler.target>
-</properties>
-```
-
-**For Gradle projects**, update `build.gradle`:
-
-```gradle
-java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
-}
-```
-
-### 3.2 Set JAVA_HOME Environment Variable
+### 3.1 Set JAVA_HOME Environment Variable
 
 Ensure JAVA_HOME points to the correct Java 21 installation:
 
 ```zsh
 export JAVA_HOME=$(sdk home java 21.0.9-amzn)
 echo $JAVA_HOME
+```
+
+---
+
+## Step 4: Upgrade Gradle Wrapper (If Needed)
+
+### 4.1 Check Current Gradle Wrapper Version
+
+Check the Gradle version specified in `gradle/wrapper/gradle-wrapper.properties`:
+
+```bash
+grep "distributionUrl" gradle/wrapper/gradle-wrapper.properties
+```
+
+This will display the current Gradle version being used by the wrapper.
+
+### 4.2 Verify Java 21 Compatibility
+
+Gradle versions have specific Java compatibility requirements:
+- **Gradle 8.5+**: Full support for Java 21
+- **Gradle 7.6+**: Basic Java 21 compatibility
+- **Gradle < 7.6**: Not compatible with Java 21
+
+To check your current Gradle version:
+
+```bash
+./gradlew --version
+```
+
+### 4.3 Upgrade Gradle Wrapper (If Necessary)
+
+If the current Gradle version is below 8.5, upgrade to a Java 21-compatible version:
+
+```bash
+# Upgrade to Gradle 8.5 or later (recommended for Java 21)
+./gradlew wrapper --gradle-version=8.5
+
+# Or upgrade to the latest stable version
+# Check https://gradle.org/releases/ for the latest version
+./gradlew wrapper --gradle-version=8.11
+```
+
+This command will update:
+- `gradle/wrapper/gradle-wrapper.properties` (sets the new Gradle distribution URL)
+- `gradle/wrapper/gradle-wrapper.jar` (updates the wrapper JAR)
+- `gradlew` and `gradlew.bat` (updates the wrapper scripts if needed)
+
+### 4.4 Verify Gradle Wrapper Upgrade
+
+After upgrading, verify the new Gradle version:
+
+```bash
+./gradlew --version
+```
+
+Expected output should show Gradle 8.5 or higher and Java 21:
+```
+------------------------------------------------------------
+Gradle 8.5
+------------------------------------------------------------
+
+Build time:   2023-11-29 14:08:57 UTC
+Revision:     28aca86a7180baa17117e0e5ba01d8ea9feca598
+
+Kotlin:       1.9.20
+Groovy:       3.0.17
+Ant:          Apache Ant(TM) version 1.10.13 compiled on January 4 2023
+JVM:          21.0.x (Amazon.com Inc. 21.0.x+xx-LTS)
+OS:           Mac OS X 14.x.x aarch64
 ```
 
 ---
