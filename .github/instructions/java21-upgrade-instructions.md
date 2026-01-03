@@ -639,10 +639,82 @@ Monitor the build logs to verify that Java 21 is being used during the build pro
 
 ---
 
+## Step 9: Execute Gradle Build with Test Cases
+
+After completing all the configuration updates and migrations, it's essential to verify that the application builds successfully and all tests pass with Java 21.
+
+### 9.1 Clean Build with Tests
+
+Execute a clean build with all test cases to ensure the Java 21 upgrade is successful:
+
+```bash
+./gradlew clean build
+```
+
+This command will:
+- Clean the build directory to remove any cached artifacts from previous builds
+- Compile the source code with Java 21
+- Compile the test code
+- Run all unit tests
+- Run all integration tests (if configured)
+- Generate build artifacts
+
+### 9.2 Verify Build Success
+
+After the build completes, verify that:
+1. The build completed successfully without errors
+2. All tests passed
+3. No deprecation warnings related to Java version compatibility
+
+### 9.3 Run Tests Separately (Optional)
+
+If you want to run tests separately without building artifacts:
+
+```bash
+./gradlew test
+```
+
+For integration tests (if configured separately):
+
+```bash
+./gradlew integrationTest
+```
+
+### 9.4 Review Test Results
+
+Check the test results in the console output. For detailed test reports, review:
+
+```bash
+# Open test report in browser (macOS)
+open build/reports/tests/test/index.html
+```
+
+### 9.5 Troubleshoot Test Failures
+
+If any tests fail:
+1. Review the test output for specific error messages
+2. Check if failures are related to Java 21 compatibility
+3. Update deprecated APIs or incompatible code patterns
+4. Re-run the tests after fixes
+
+### 9.6 Verify JAR/WAR Artifacts
+
+Ensure that the build artifacts are created with Java 21:
+
+```bash
+# Check the build output directory
+ls -lh build/libs/
+
+# Verify the Java version in the JAR manifest
+unzip -p build/libs/*.jar META-INF/MANIFEST.MF | grep -i "build-jdk"
+```
+
+---
+
 ## Next Steps
 
 After completing the above steps, proceed with:
-1. Running tests to identify compatibility issues
+1. Running end-to-end tests and any other tests (e.g., performance tests, smoke tests, manual tests) that are not executed as part of the Gradle build to identify compatibility issues
 2. Manually updating any remaining deprecated APIs not handled by OpenRewrite
 3. Building and deploying the application
 

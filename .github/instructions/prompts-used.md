@@ -175,3 +175,9 @@ The buildspec.yml file may contain Java version.
 If any of these files set Java version as 17, change it to 21.
 
 Add instrunction to the above.
+
+### Iterative prompt - Execute Gradle build with test cases at the end
+Add instructions at the end, Gradle build with test cases have to be executed.
+
+### Iterative prompt - Next steps - end to end tests
+Under the section ## Next steps, update the point 1, in line number 717, to execute end to end tests and any other tests that are not executed as part of the Gradle Build.
