@@ -175,3 +175,40 @@ The buildspec.yml file may contain Java version.
 If any of these files set Java version as 17, change it to 21.
 
 Add instrunction to the above.
+
+### Iterative prompt - Execute Gradle build with test cases at the end
+Add instructions at the end, Gradle build with test cases have to be executed.
+
+### Iterative prompt - Next steps - end to end tests
+Under the section ## Next steps, update the point 1, in line number 717, to execute end to end tests and any other tests that are not executed as part of the Gradle Build.
+
+### Iterative prompt - Import Trusted Certs
+
+Currently, the section "2.2 Find and Install Latest Amazon Corretto Java 21 (if not present)" starting in line 112, installs the latest version of Amazon corretto Java.
+
+Update the instructions to do the following:
+1. Ask the developer to copy any trusted certs of the orgnization to be ito be copied into the directory ~/trusted-certs/. 
+2. Immediately, after installing Java, if there are any certs in this directory, write instructions to import them into the JDK installed.
+3. If there are no certs present in the directory, there is no need to import.
+4. If the Java version is not installed, then also there is no need to import certs.
+5. The certs must have extensions .pem, .cer or .crt
+6. The certs with any other extension, even though present under ~/trusted-certs, they should not be imported.
+7. use the following command to import the certs:
+
+```$JAVA_HOME/bin/keytool -import -alias <take the cert name without extenstion>-<append-current-date> -cacerts -trustedcerts -file <each-trusted-cert-file-name> -storepass changeit -noprompt
+```
+8. Execute a command to list the trusted certs that are imported into trusted store. This is to verify whether the certs are imported correctly.
+
+All these are very lengthy, it is better to split section 2.2 into two steps, one to install Java and the other to import certs, do it.
+
+#### Iterative prompt - add interactive prompt
+
+Add an interative prompt in section 2.2. that asks y/n.
+Irrespective of the answer, check the concents of the directory has certs, import those certs.
+
+#### Iterative prompt - correction in logic of script - import certs only if JDK is installed
+
+Section 2.4 starting in line number 180, imports the certs, even if the JDK is already is installed.
+
+Change the scripts such that import the certs only if the JDK is installed as part of executing these instructions.
+
