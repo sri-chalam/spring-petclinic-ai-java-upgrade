@@ -8,6 +8,8 @@ These instructions guide an AI coding agent to upgrade a Java application from J
 - Default shell: zsh
 - curl is already installed
 - JDK Provider: Amazon Corretto
+- Build tool: Gradle with Groovy DSL (build.gradle)
+  - **Note:** Instructions are specific to Gradle with Groovy. For Maven or Gradle with Kotlin DSL, this file requires adaptation.
 
 ## Important: Build Tool Scope
 
@@ -241,15 +243,408 @@ JVM:          21.0.x (Amazon.com Inc. 21.0.x+xx-LTS)
 OS:           Mac OS X 14.x.x aarch64
 ```
 
+
+
+
+---
+
+## Step 5: Use OpenRewrite to Migrate Java Code
+
+OpenRewrite is an automated refactoring tool that can help migrate Java code from Java 17 to Java 21.
+
+### 5.1 Check if OpenRewrite Plugin is Present
+
+First, check if the OpenRewrite plugin is already configured in [build.gradle](build.gradle):
+
+```bash
+grep -q "org.openrewrite.rewrite" build.gradle && echo "OpenRewrite plugin found" || echo "OpenRewrite plugin not found"
+```
+
+### 5.2 Add OpenRewrite Plugin (if not present or upgrade needed)
+
+If the OpenRewrite plugin is not present, or if a newer version is required for Java 17 to 21 migration, add or update it in the `plugins` section of [build.gradle](build.gradle):
+
+```groovy
+plugins {
+  // ... existing plugins ...
+  id 'org.openrewrite.rewrite' version '6.30.3'
+}
+```
+
+**Note:** Version 6.30.3 or later is recommended for Java 21 migration. If an older version is present, update it to the latest version.
+
+### 5.3 Add Rewrite Dependencies
+
+Add the OpenRewrite dependencies to [build.gradle](build.gradle). These dependencies include the Java migration recipes:
+
+```groovy
+dependencies {
+  // ... existing dependencies ...
+
+  // OpenRewrite dependencies for Java migration
+  rewrite(platform("org.openrewrite.recipe:rewrite-recipe-bom:2.24.0"))
+  rewrite("org.openrewrite.recipe:rewrite-migrate-java")
+}
+```
+
+The `rewrite-migrate-java` recipe provides automated refactoring rules for Java version migrations.
+
+### 5.4 Configure Rewrite Task
+
+Add a configuration block for the rewrite task in [build.gradle](build.gradle) to specify the Java 17 to 21 migration recipe:
+
+```groovy
+rewrite {
+  activeRecipe("org.openrewrite.java.migrate.UpgradeToJava21")
+}
+```
+
+This tells OpenRewrite to apply the Java 21 migration recipe when running rewrite tasks.
+
+### 5.5 Run Rewrite Migration
+
+Execute the OpenRewrite migration to automatically refactor code for Java 21 compatibility:
+
+```bash
+./gradlew rewriteRun
+```
+
+This command will:
+- Analyze the codebase for Java 17 to Java 21 migration opportunities
+- Apply automated refactoring rules
+- Update deprecated APIs and patterns
+- Modify source files in place
+
+### 5.6 Review Changes
+
+After running the migration, review the changes made by OpenRewrite:
+
+```bash
+git diff
+```
+
+OpenRewrite makes changes directly to source files, so use git to review what was modified. Common changes include:
+- Updated API usage for Java 21
+- Removed deprecated method calls
+- Updated language constructs to use Java 21 features
+- Fixed compatibility issues
+
+### 5.7 Verify Migration Success
+
+After reviewing the changes, compile the project to ensure the migration was successful:
+
+```bash
+./gradlew clean build
+```
+
+If there are any compilation errors, address them before proceeding.
+
+---
+
+## Step 6: Update Dockerfile (If Present)
+
+If the repository contains a Dockerfile with a Java 17 base image, it needs to be updated to use Java 21.
+
+### 6.1 Check for Dockerfile
+
+Search for Dockerfile(s) in the repository:
+
+```bash
+find . -name "Dockerfile*" -type f
+```
+
+### 6.2 Identify Java Version in Dockerfile
+
+For each Dockerfile found, check if it references Java 17:
+
+```bash
+grep -i "java.*17\|17.*java\|VARIANT=17\|JAVA_VERSION=17" <path-to-dockerfile>
+```
+
+### 6.3 Update Dockerfile to Java 21
+
+If Java 17 is found in the Dockerfile, update it to Java 21. Common patterns to look for and update:
+
+#### Pattern 1: VARIANT argument
+```dockerfile
+# Before
+ARG VARIANT=17-bullseye
+
+# After
+ARG VARIANT=21-bullseye
+```
+
+#### Pattern 2: JAVA_VERSION argument
+```dockerfile
+# Before
+ARG JAVA_VERSION=17.0.7-ms
+
+# After
+ARG JAVA_VERSION=21.0.9-amzn
+```
+
+**Note:** Update the specific Java version to the latest available Java 21 version. For Amazon Corretto, use a version like `21.0.9-amzn` or later.
+
+#### Pattern 3: Base image with explicit Java version
+```dockerfile
+# Before
+FROM [<registry>/]amazoncorretto:17-alpine
+
+# After
+FROM [<registry>/]amazoncorretto:21-alpine
+```
+
+**Note:** The `[<registry>/]` prefix is optional and represents container registry paths like `ghcr.io/`, `docker.io/`, etc. If present, preserve the registry prefix and only update the Java version number from 17 to 21.
+
+#### Pattern 4: SDKMAN installation in Dockerfile
+```dockerfile
+# Before
+RUN bash -lc '. /usr/local/sdkman/bin/sdkman-init.sh && sdk install java 17.0.7-ms && sdk use java 17.0.7-ms'
+
+# After
+RUN bash -lc '. /usr/local/sdkman/bin/sdkman-init.sh && sdk install java 21.0.9-amzn && sdk use java 21.0.9-amzn'
+```
+
+### 6.4 Verify Dockerfile Changes
+
+After updating the Dockerfile, verify the changes:
+
+```bash
+grep -i "java.*21\|21.*java\|VARIANT=21\|JAVA_VERSION=21" <path-to-dockerfile>
+```
+
+This should confirm that all Java 17 references have been updated to Java 21.
+
+### 6.5 Test Docker Build (Optional)
+
+If Docker is available, test building the image to ensure the Dockerfile changes are valid:
+
+```bash
+docker build -f <path-to-dockerfile> -t test-java21-upgrade .
+```
+
+This verifies that the Dockerfile syntax is correct and the Java 21 base image is accessible.
+
+---
+
+## Step 7: Update GitHub Actions Workflow Files (If Present)
+
+GitHub Actions workflow files may specify Java versions for CI/CD builds. If any workflow files reference Java 17, they need to be updated to Java 21.
+
+### 7.1 Check for GitHub Actions Workflow Files
+
+Search for workflow files in the repository:
+
+```bash
+find .github/workflows -name "*.yml" -o -name "*.yaml" 2>/dev/null
+```
+
+### 7.2 Identify Java 17 References in Workflow Files
+
+Check all workflow files for Java 17 references:
+
+```bash
+grep -r -i "java.*17\|17.*java\|java-version.*17" .github/workflows/ 2>/dev/null
+```
+
+### 7.3 Update Workflow Files to Java 21
+
+If Java 17 is found in workflow files, update it to Java 21. Common patterns to look for and update:
+
+#### Pattern 1: Matrix strategy with Java version
+```yaml
+# Before
+strategy:
+  matrix:
+    java: [ '17' ]
+
+# After
+strategy:
+  matrix:
+    java: [ '21' ]
+```
+
+#### Pattern 2: Setup Java action with java-version
+```yaml
+# Before
+- name: Set up JDK 17
+  uses: actions/setup-java@v3
+  with:
+    java-version: '17'
+    distribution: 'corretto'
+
+# After
+- name: Set up JDK 21
+  uses: actions/setup-java@v3
+  with:
+    java-version: '21'
+    distribution: 'corretto'
+```
+
+#### Pattern 3: Multiple Java versions in matrix (keeping Java 17 for compatibility testing)
+```yaml
+# If testing against multiple Java versions and you want to keep Java 17 for compatibility:
+strategy:
+  matrix:
+    java: [ '17', '21' ]
+
+# If upgrading completely to Java 21 only:
+strategy:
+  matrix:
+    java: [ '21' ]
+```
+
+**Note:** Ensure the `distribution` field is set to `'corretto'` to use Amazon Corretto JDK, consistent with the local development environment.
+
+### 7.4 Verify Workflow File Changes
+
+After updating the workflow files, verify the changes:
+
+```bash
+grep -r -i "java.*21\|21.*java\|java-version.*21" .github/workflows/ 2>/dev/null
+```
+
+This should confirm that Java version references have been updated to 21.
+
+### 7.5 Validate Workflow Syntax (Optional)
+
+If the GitHub CLI (`gh`) is installed, you can validate the workflow syntax:
+
+```bash
+gh workflow list
+```
+
+Or commit the changes and check the Actions tab on GitHub to ensure workflows run successfully with Java 21.
+
+---
+
+## Step 8: Update AWS CodeBuild buildspec.yml Files (If Present)
+
+AWS CodeBuild buildspec.yml files may specify Java runtime versions. If any buildspec files reference Java 17, they need to be updated to Java 21.
+
+### 8.1 Check for AWS CodeBuild buildspec Files
+
+Search for buildspec files in the repository:
+
+```bash
+find . -name "buildspec*.yml" -o -name "buildspec*.yaml" 2>/dev/null
+```
+
+### 8.2 Identify Java 17 References in buildspec Files
+
+Check all buildspec files for Java 17 references:
+
+```bash
+grep -r -i "java.*17\|corretto17\|runtime.*17" buildspec*.yml buildspec*.yaml 2>/dev/null
+```
+
+### 8.3 Update buildspec Files to Java 21
+
+If Java 17 is found in buildspec files, update it to Java 21. Common patterns to look for and update:
+
+#### Pattern 1: Runtime version in install phase
+```yaml
+# Before
+phases:
+  install:
+    runtime-versions:
+      java: corretto17
+
+# After
+phases:
+  install:
+    runtime-versions:
+      java: corretto21
+```
+
+#### Pattern 2: Explicit Java version specification
+```yaml
+# Before
+phases:
+  install:
+    runtime-versions:
+      java: 17
+
+# After
+phases:
+  install:
+    runtime-versions:
+      java: 21
+```
+
+#### Pattern 3: Environment variables for Java version
+```yaml
+# Before
+env:
+  variables:
+    JAVA_VERSION: "17"
+    JAVA_HOME: "/usr/lib/jvm/java-17-amazon-corretto"
+
+# After
+env:
+  variables:
+    JAVA_VERSION: "21"
+    JAVA_HOME: "/usr/lib/jvm/java-21-amazon-corretto"
+```
+
+#### Pattern 4: CodeBuild image with Java version
+```yaml
+# Before
+version: 0.2
+# Using standard image with Java 17
+# If comments reference Java 17, update them
+
+# After
+version: 0.2
+# Using standard image with Java 21
+# Update any comments referencing Java version
+```
+
+**Note:** Ensure you're using Amazon Corretto (`corretto21`) to maintain consistency with the local development environment.
+
+### 8.4 Update CodeBuild Project Configuration
+
+If the CodeBuild project uses a specific image version, you may also need to update the project configuration in AWS Console or via Infrastructure as Code (IaC):
+
+```yaml
+# Terraform example
+resource "aws_codebuild_project" "example" {
+  environment {
+    image = "aws/codebuild/amazonlinux2-x86_64-standard:5.0"  # Supports Java 21
+  }
+}
+```
+
+**Note:** AWS CodeBuild standard images version 5.0 and later include support for Amazon Corretto 21.
+
+### 8.5 Verify buildspec File Changes
+
+After updating the buildspec files, verify the changes:
+
+```bash
+grep -r -i "java.*21\|corretto21\|runtime.*21" buildspec*.yml buildspec*.yaml 2>/dev/null
+```
+
+This should confirm that Java version references have been updated to 21.
+
+### 8.6 Test CodeBuild Execution (Optional)
+
+If you have access to AWS CodeBuild, trigger a build to ensure the buildspec changes work correctly with Java 21:
+
+```bash
+aws codebuild start-build --project-name <your-project-name>
+```
+
+Monitor the build logs to verify that Java 21 is being used during the build process.
+
 ---
 
 ## Next Steps
 
 After completing the above steps, proceed with:
-1. Updating dependencies to Java 21 compatible versions
-2. Running tests to identify compatibility issues
-3. Updating deprecated APIs
-4. Building and deploying the application
+1. Running tests to identify compatibility issues
+2. Manually updating any remaining deprecated APIs not handled by OpenRewrite
+3. Building and deploying the application
 
 ---
 

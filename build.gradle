@@ -7,6 +7,7 @@ plugins {
   id 'org.cyclonedx.bom' version '3.0.2'
   id 'io.spring.javaformat' version '0.0.47'
   id "io.spring.nohttp" version "0.0.11"
+  id 'org.openrewrite.rewrite' version 'latest.release'
 }
 
 gradle.startParameter.excludedTaskNames += [ "checkFormatAot", "checkFormatAotTest" ]
@@ -16,7 +17,7 @@ version = '4.0.0-SNAPSHOT'
 
 java {
   toolchain {
-    languageVersion = JavaLanguageVersion.of(17)
+    languageVersion = JavaLanguageVersion.of(21)
   }
 }
 
@@ -56,6 +57,10 @@ dependencies {
   testImplementation 'org.testcontainers:testcontainers-mysql'
   checkstyle "io.spring.javaformat:spring-javaformat-checkstyle:${springJavaformatCheckstyleVersion}"
   checkstyle "com.puppycrawl.tools:checkstyle:${checkstyleVersion}"
+
+  // OpenRewrite dependencies for Java migration
+  rewrite(platform("org.openrewrite.recipe:rewrite-recipe-bom:latest.release"))
+  rewrite("org.openrewrite.recipe:rewrite-migrate-java")
 }
 
 tasks.named('test') {
@@ -86,3 +91,7 @@ checkFormatAotTest.enabled = false
 
 formatAot.enabled = false
 formatAotTest.enabled = false
+
+rewrite {
+  activeRecipe("org.openrewrite.java.migrate.UpgradeToJava21")
+}

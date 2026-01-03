@@ -134,3 +134,44 @@ The highligted statements are a bit confusing.
 We need to use only version either 8.5 ot 8.11.
 
 It seems to me that 8.11 version is better. Please fix the instructions. Keep only 8.11 version.
+
+### Iterative prompt - Add instrutions to use Open Rewrite.
+
+Add step 5. Add instructions to add OpenRewrite Gradle plugin to upgrade this application from Java 17 to 21.
+
+The details of instructions to add are below:
+
+Add openrewrite rewrite plugin only if it is not already present in build.gradle.
+If it is already present, if the newer plugin is required for Java 17 to 21 upgrade, change the existing plugin.
+
+Add rewrite migrate java recipe to build.gradle to upgrade  Java.
+
+Add Rewrite dependency to build.gradle.
+
+Use run migrate command to upgrade Java version.
+
+### Iterative prompt - use amazoncorretto jdk instead of eclipse-temurin
+
+In Pattern 3, the eclipse-temurin is referenced.
+As per the initial instructions, I would like to use Amazon corretto jdk.
+
+Change lines 391, 394 to use amazoncorretto jdk.
+
+### Iterative prompt - optional registry name
+
+Under pattern 3, in line 391 and 394, after "FROM" keyword, there can be prefix such as ghcr.io/<some-pattern>/
+
+How to represent that in line 391 and 394?
+
+### Iterative prompt - Update Java version in Github Workflow yml files
+The Github Actions workflow files are present under .github/workflows/ as *.yml files. These yml files may have Java version set optionally.
+If any of these files set Java version as 17, change it to 21.
+
+Add instrunction to the above.
+
+### Iterative prompt - Update Java version ins buildspec.yml file
+Some Git Repos use AWS CodeBuild and use buildspec.yml files.
+The buildspec.yml file may contain Java version.
+If any of these files set Java version as 17, change it to 21.
+
+Add instrunction to the above.
