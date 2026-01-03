@@ -109,7 +109,48 @@ fi
 
 This checks if any Amazon Corretto Java 21 version is installed locally by filtering out the "local only" header and searching for installed versions.
 
-### 2.2 Find and Install Latest Amazon Corretto Java 21 (if not present)
+### 2.2 Prepare Organization Trusted Certificates (if applicable)
+
+**Before installing Java**, if your organization uses custom trusted certificates (e.g., for internal Certificate Authorities, SSL inspection, or corporate proxies), prepare them for import.
+
+First, create the directory for trusted certificates:
+
+```bash
+mkdir -p ~/trusted-certs
+```
+
+Then, prompt the developer to prepare certificates:
+
+```bash
+echo ""
+echo "=========================================="
+echo "Organization Trusted Certificates Setup"
+echo "=========================================="
+echo ""
+echo "If your organization uses custom trusted certificates, please copy them to:"
+echo "  ~/trusted-certs/"
+echo ""
+echo "Supported certificate formats: .pem, .cer, .crt"
+echo "Certificates with other extensions will be ignored during import."
+echo ""
+echo "If you don't have organization-specific certificates, you can skip this step."
+echo ""
+read -p "Have you copied all organization trusted certificates to ~/trusted-certs? (y/n): " cert_response
+echo ""
+
+if [[ "$cert_response" =~ ^[Yy]$ ]]; then
+    echo "✓ Proceeding with certificate preparation acknowledged"
+else
+    echo "ℹ No certificates prepared - will check directory anyway"
+fi
+
+echo "Certificate preparation step complete"
+echo ""
+```
+
+**Note:** The import process in section 2.4 will automatically detect and import any certificates present in `~/trusted-certs`, regardless of the response to this prompt.
+
+### 2.3 Find and Install Latest Amazon Corretto Java 21 (if not present)
 
 If Amazon Corretto Java 21 is not installed, find and install the latest version:
 
@@ -136,7 +177,97 @@ This script:
 - Installs it only if not already present
 - Provides clear feedback about what action was taken
 
-### 2.3 Set Java 21 as Default (Optional)
+### 2.4 Import Organization Trusted Certificates into Java 21 (if applicable)
+
+**Only if Amazon Corretto Java 21 was freshly installed in section 2.3**, import any organization trusted certificates into the Java keystore:
+
+```zsh
+# Only proceed if Java 21 was installed (not if installation was skipped)
+if [ "$JAVA21_ALREADY_INSTALLED" = false ]; then
+    # Get the installed Java 21 version and set JAVA_HOME
+    JAVA21_VERSION=$(sdk list java | grep "21\..*amzn" | head -1 | awk '{print $NF}')
+
+    if [ -n "$JAVA21_VERSION" ]; then
+        export JAVA_HOME=$(sdk home java "$JAVA21_VERSION")
+        echo "JAVA_HOME set to: $JAVA_HOME"
+
+        # Check if trusted certs directory exists and contains certificates
+        CERT_DIR="$HOME/trusted-certs"
+
+        if [ -d "$CERT_DIR" ]; then
+            # Count certificates with supported extensions
+            CERT_COUNT=$(find "$CERT_DIR" -type f \( -name "*.pem" -o -name "*.cer" -o -name "*.crt" \) 2>/dev/null | wc -l | tr -d ' ')
+
+            if [ "$CERT_COUNT" -gt 0 ]; then
+                echo "Found $CERT_COUNT certificate(s) to import from ~/trusted-certs"
+
+                # Get current date for alias suffix (YYYYMMDD format)
+                CURRENT_DATE=$(date +%Y%m%d)
+
+                # Import each certificate
+                find "$CERT_DIR" -type f \( -name "*.pem" -o -name "*.cer" -o -name "*.crt" \) | while read -r cert_file; do
+                    # Extract certificate filename without extension
+                    cert_basename=$(basename "$cert_file")
+                    cert_name="${cert_basename%.*}"
+
+                    # Create alias with cert name and current date
+                    alias_name="${cert_name}-${CURRENT_DATE}"
+
+                    echo "Importing certificate: $cert_basename as alias: $alias_name"
+
+                    # Import certificate into Java cacerts truststore
+                    "$JAVA_HOME/bin/keytool" -import -alias "$alias_name" \
+                        -cacerts -trustcacerts \
+                        -file "$cert_file" \
+                        -storepass changeit \
+                        -noprompt
+
+                    if [ $? -eq 0 ]; then
+                        echo "✓ Successfully imported: $cert_basename"
+                    else
+                        echo "✗ Failed to import: $cert_basename"
+                    fi
+                done
+
+                echo "Certificate import process complete"
+
+                # List imported certificates for verification
+                echo ""
+                echo "Verifying imported certificates in Java truststore:"
+                "$JAVA_HOME/bin/keytool" -list -cacerts -storepass changeit | grep -i "$CURRENT_DATE"
+
+            else
+                echo "No certificates found in ~/trusted-certs (looking for .pem, .cer, or .crt files)"
+                echo "Skipping certificate import"
+            fi
+        else
+            echo "Directory ~/trusted-certs does not exist"
+            echo "Skipping certificate import"
+        fi
+    else
+        echo "Error: Could not determine Java 21 version for certificate import"
+    fi
+else
+    echo "Skipping certificate import - Java 21 was already installed (certificates may have been imported previously)"
+fi
+```
+
+This script:
+- Only attempts to import certificates if Java 21 was freshly installed (not if it was already present)
+- Checks if the `~/trusted-certs` directory exists
+- Only processes files with `.pem`, `.cer`, or `.crt` extensions
+- Creates a unique alias for each certificate using the certificate name and current date
+- Imports each certificate into the Java cacerts truststore with the default password `changeit`
+- Uses `-noprompt` to avoid interactive confirmation
+- Displays import success/failure for each certificate
+- Lists the imported certificates for verification using the current date in the alias
+
+**Important Notes:**
+- If Java 21 was already installed before running these instructions, certificate import is skipped (assuming certificates were imported during the initial installation)
+- The default cacerts password is `changeit` (this is the standard Java default)
+- If you need to re-import certificates into an existing Java installation, you can manually run the import commands or temporarily set `JAVA21_ALREADY_INSTALLED=false`
+
+### 2.5 Set Java 21 as Default (Optional)
 
 To make Java 21 the default version for all new shell sessions:
 
@@ -154,7 +285,7 @@ fi
 
 This dynamically identifies the installed Java 21 version and sets it as default.
 
-### 2.4 Verify Java 21 Installation
+### 2.6 Verify Java 21 Installation
 
 Confirm Java 21 is active:
 
