@@ -134,3 +134,18 @@ The highligted statements are a bit confusing.
 We need to use only version either 8.5 ot 8.11.
 
 It seems to me that 8.11 version is better. Please fix the instructions. Keep only 8.11 version.
+
+### Iterative prompt - Add instrutions to use Open Rewrite.
+
+Add step 5. Add instructions to add OpenRewrite Gradle plugin to upgrade this application from Java 17 to 21.
+
+The details of instructions to add are below:
+
+Add openrewrite rewrite plugin only if it is not already present in build.gradle.
+If it is already present, if the newer plugin is required for Java 17 to 21 upgrade, change the existing plugin.
+
+Add rewrite migrate java recipe to build.gradle to upgrade  Java.
+
+Add Rewrite dependency to build.gradle.
+
+Use run migrate command to upgrade Java version.

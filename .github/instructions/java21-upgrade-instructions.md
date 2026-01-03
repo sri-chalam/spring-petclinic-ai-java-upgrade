@@ -8,6 +8,8 @@ These instructions guide an AI coding agent to upgrade a Java application from J
 - Default shell: zsh
 - curl is already installed
 - JDK Provider: Amazon Corretto
+- Build tool: Gradle with Groovy DSL (build.gradle)
+  - **Note:** Instructions are specific to Gradle with Groovy. For Maven or Gradle with Kotlin DSL, this file requires adaptation.
 
 ## Important: Build Tool Scope
 
@@ -241,15 +243,110 @@ JVM:          21.0.x (Amazon.com Inc. 21.0.x+xx-LTS)
 OS:           Mac OS X 14.x.x aarch64
 ```
 
+
+
+
+---
+
+## Step 5: Use OpenRewrite to Migrate Java Code
+
+OpenRewrite is an automated refactoring tool that can help migrate Java code from Java 17 to Java 21.
+
+### 5.1 Check if OpenRewrite Plugin is Present
+
+First, check if the OpenRewrite plugin is already configured in [build.gradle](build.gradle):
+
+```bash
+grep -q "org.openrewrite.rewrite" build.gradle && echo "OpenRewrite plugin found" || echo "OpenRewrite plugin not found"
+```
+
+### 5.2 Add OpenRewrite Plugin (if not present or upgrade needed)
+
+If the OpenRewrite plugin is not present, or if a newer version is required for Java 17 to 21 migration, add or update it in the `plugins` section of [build.gradle](build.gradle):
+
+```groovy
+plugins {
+  // ... existing plugins ...
+  id 'org.openrewrite.rewrite' version '6.30.3'
+}
+```
+
+**Note:** Version 6.30.3 or later is recommended for Java 21 migration. If an older version is present, update it to the latest version.
+
+### 5.3 Add Rewrite Dependencies
+
+Add the OpenRewrite dependencies to [build.gradle](build.gradle). These dependencies include the Java migration recipes:
+
+```groovy
+dependencies {
+  // ... existing dependencies ...
+
+  // OpenRewrite dependencies for Java migration
+  rewrite(platform("org.openrewrite.recipe:rewrite-recipe-bom:2.24.0"))
+  rewrite("org.openrewrite.recipe:rewrite-migrate-java")
+}
+```
+
+The `rewrite-migrate-java` recipe provides automated refactoring rules for Java version migrations.
+
+### 5.4 Configure Rewrite Task
+
+Add a configuration block for the rewrite task in [build.gradle](build.gradle) to specify the Java 17 to 21 migration recipe:
+
+```groovy
+rewrite {
+  activeRecipe("org.openrewrite.java.migrate.UpgradeToJava21")
+}
+```
+
+This tells OpenRewrite to apply the Java 21 migration recipe when running rewrite tasks.
+
+### 5.5 Run Rewrite Migration
+
+Execute the OpenRewrite migration to automatically refactor code for Java 21 compatibility:
+
+```bash
+./gradlew rewriteRun
+```
+
+This command will:
+- Analyze the codebase for Java 17 to Java 21 migration opportunities
+- Apply automated refactoring rules
+- Update deprecated APIs and patterns
+- Modify source files in place
+
+### 5.6 Review Changes
+
+After running the migration, review the changes made by OpenRewrite:
+
+```bash
+git diff
+```
+
+OpenRewrite makes changes directly to source files, so use git to review what was modified. Common changes include:
+- Updated API usage for Java 21
+- Removed deprecated method calls
+- Updated language constructs to use Java 21 features
+- Fixed compatibility issues
+
+### 5.7 Verify Migration Success
+
+After reviewing the changes, compile the project to ensure the migration was successful:
+
+```bash
+./gradlew clean build
+```
+
+If there are any compilation errors, address them before proceeding.
+
 ---
 
 ## Next Steps
 
 After completing the above steps, proceed with:
-1. Updating dependencies to Java 21 compatible versions
-2. Running tests to identify compatibility issues
-3. Updating deprecated APIs
-4. Building and deploying the application
+1. Running tests to identify compatibility issues
+2. Manually updating any remaining deprecated APIs not handled by OpenRewrite
+3. Building and deploying the application
 
 ---
 
