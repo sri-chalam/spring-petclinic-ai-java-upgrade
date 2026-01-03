@@ -149,3 +149,17 @@ Add rewrite migrate java recipe to build.gradle to upgrade  Java.
 Add Rewrite dependency to build.gradle.
 
 Use run migrate command to upgrade Java version.
+
+### Iterative prompt - use amazoncorretto jdk instead of eclipse-temurin
+
+In Pattern 3, the eclipse-temurin is referenced.
+As per the initial instructions, I would like to use Amazon corretto jdk.
+
+Change lines 391, 394 to use amazoncorretto jdk.
+
+### Iterative prompt - optional registry name
+
+Under pattern 3, in line 391 and 394, after "FROM" keyword, there can be prefix such as ghcr.io/<some-pattern>/
+
+How to represent that in line 391 and 394?
+

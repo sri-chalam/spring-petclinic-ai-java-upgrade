@@ -341,6 +341,92 @@ If there are any compilation errors, address them before proceeding.
 
 ---
 
+## Step 6: Update Dockerfile (If Present)
+
+If the repository contains a Dockerfile with a Java 17 base image, it needs to be updated to use Java 21.
+
+### 6.1 Check for Dockerfile
+
+Search for Dockerfile(s) in the repository:
+
+```bash
+find . -name "Dockerfile*" -type f
+```
+
+### 6.2 Identify Java Version in Dockerfile
+
+For each Dockerfile found, check if it references Java 17:
+
+```bash
+grep -i "java.*17\|17.*java\|VARIANT=17\|JAVA_VERSION=17" <path-to-dockerfile>
+```
+
+### 6.3 Update Dockerfile to Java 21
+
+If Java 17 is found in the Dockerfile, update it to Java 21. Common patterns to look for and update:
+
+#### Pattern 1: VARIANT argument
+```dockerfile
+# Before
+ARG VARIANT=17-bullseye
+
+# After
+ARG VARIANT=21-bullseye
+```
+
+#### Pattern 2: JAVA_VERSION argument
+```dockerfile
+# Before
+ARG JAVA_VERSION=17.0.7-ms
+
+# After
+ARG JAVA_VERSION=21.0.9-amzn
+```
+
+**Note:** Update the specific Java version to the latest available Java 21 version. For Amazon Corretto, use a version like `21.0.9-amzn` or later.
+
+#### Pattern 3: Base image with explicit Java version
+```dockerfile
+# Before
+FROM [<registry>/]amazoncorretto:17-alpine
+
+# After
+FROM [<registry>/]amazoncorretto:21-alpine
+```
+
+**Note:** The `[<registry>/]` prefix is optional and represents container registry paths like `ghcr.io/`, `docker.io/`, etc. If present, preserve the registry prefix and only update the Java version number from 17 to 21.
+
+#### Pattern 4: SDKMAN installation in Dockerfile
+```dockerfile
+# Before
+RUN bash -lc '. /usr/local/sdkman/bin/sdkman-init.sh && sdk install java 17.0.7-ms && sdk use java 17.0.7-ms'
+
+# After
+RUN bash -lc '. /usr/local/sdkman/bin/sdkman-init.sh && sdk install java 21.0.9-amzn && sdk use java 21.0.9-amzn'
+```
+
+### 6.4 Verify Dockerfile Changes
+
+After updating the Dockerfile, verify the changes:
+
+```bash
+grep -i "java.*21\|21.*java\|VARIANT=21\|JAVA_VERSION=21" <path-to-dockerfile>
+```
+
+This should confirm that all Java 17 references have been updated to Java 21.
+
+### 6.5 Test Docker Build (Optional)
+
+If Docker is available, test building the image to ensure the Dockerfile changes are valid:
+
+```bash
+docker build -f <path-to-dockerfile> -t test-java21-upgrade .
+```
+
+This verifies that the Dockerfile syntax is correct and the Java 21 base image is accessible.
+
+---
+
 ## Next Steps
 
 After completing the above steps, proceed with:
