@@ -518,6 +518,127 @@ Or commit the changes and check the Actions tab on GitHub to ensure workflows ru
 
 ---
 
+## Step 8: Update AWS CodeBuild buildspec.yml Files (If Present)
+
+AWS CodeBuild buildspec.yml files may specify Java runtime versions. If any buildspec files reference Java 17, they need to be updated to Java 21.
+
+### 8.1 Check for AWS CodeBuild buildspec Files
+
+Search for buildspec files in the repository:
+
+```bash
+find . -name "buildspec*.yml" -o -name "buildspec*.yaml" 2>/dev/null
+```
+
+### 8.2 Identify Java 17 References in buildspec Files
+
+Check all buildspec files for Java 17 references:
+
+```bash
+grep -r -i "java.*17\|corretto17\|runtime.*17" buildspec*.yml buildspec*.yaml 2>/dev/null
+```
+
+### 8.3 Update buildspec Files to Java 21
+
+If Java 17 is found in buildspec files, update it to Java 21. Common patterns to look for and update:
+
+#### Pattern 1: Runtime version in install phase
+```yaml
+# Before
+phases:
+  install:
+    runtime-versions:
+      java: corretto17
+
+# After
+phases:
+  install:
+    runtime-versions:
+      java: corretto21
+```
+
+#### Pattern 2: Explicit Java version specification
+```yaml
+# Before
+phases:
+  install:
+    runtime-versions:
+      java: 17
+
+# After
+phases:
+  install:
+    runtime-versions:
+      java: 21
+```
+
+#### Pattern 3: Environment variables for Java version
+```yaml
+# Before
+env:
+  variables:
+    JAVA_VERSION: "17"
+    JAVA_HOME: "/usr/lib/jvm/java-17-amazon-corretto"
+
+# After
+env:
+  variables:
+    JAVA_VERSION: "21"
+    JAVA_HOME: "/usr/lib/jvm/java-21-amazon-corretto"
+```
+
+#### Pattern 4: CodeBuild image with Java version
+```yaml
+# Before
+version: 0.2
+# Using standard image with Java 17
+# If comments reference Java 17, update them
+
+# After
+version: 0.2
+# Using standard image with Java 21
+# Update any comments referencing Java version
+```
+
+**Note:** Ensure you're using Amazon Corretto (`corretto21`) to maintain consistency with the local development environment.
+
+### 8.4 Update CodeBuild Project Configuration
+
+If the CodeBuild project uses a specific image version, you may also need to update the project configuration in AWS Console or via Infrastructure as Code (IaC):
+
+```yaml
+# Terraform example
+resource "aws_codebuild_project" "example" {
+  environment {
+    image = "aws/codebuild/amazonlinux2-x86_64-standard:5.0"  # Supports Java 21
+  }
+}
+```
+
+**Note:** AWS CodeBuild standard images version 5.0 and later include support for Amazon Corretto 21.
+
+### 8.5 Verify buildspec File Changes
+
+After updating the buildspec files, verify the changes:
+
+```bash
+grep -r -i "java.*21\|corretto21\|runtime.*21" buildspec*.yml buildspec*.yaml 2>/dev/null
+```
+
+This should confirm that Java version references have been updated to 21.
+
+### 8.6 Test CodeBuild Execution (Optional)
+
+If you have access to AWS CodeBuild, trigger a build to ensure the buildspec changes work correctly with Java 21:
+
+```bash
+aws codebuild start-build --project-name <your-project-name>
+```
+
+Monitor the build logs to verify that Java 21 is being used during the build process.
+
+---
+
 ## Next Steps
 
 After completing the above steps, proceed with:

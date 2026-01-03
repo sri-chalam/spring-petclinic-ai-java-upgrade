@@ -168,3 +168,10 @@ The Github Actions workflow files are present under .github/workflows/ as *.yml 
 If any of these files set Java version as 17, change it to 21.
 
 Add instrunction to the above.
+
+### Iterative prompt - Update Java version ins buildspec.yml file
+Some Git Repos use AWS CodeBuild and use buildspec.yml files.
+The buildspec.yml file may contain Java version.
+If any of these files set Java version as 17, change it to 21.
+
+Add instrunction to the above.
