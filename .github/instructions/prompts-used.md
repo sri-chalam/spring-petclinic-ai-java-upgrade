@@ -163,3 +163,8 @@ Under pattern 3, in line 391 and 394, after "FROM" keyword, there can be prefix 
 
 How to represent that in line 391 and 394?
 
+### Iterative prompt - Update Java version in Github Workflow yml files
+The Github Actions workflow files are present under .github/workflows/ as *.yml files. These yml files may have Java version set optionally.
+If any of these files set Java version as 17, change it to 21.
+
+Add instrunction to the above.

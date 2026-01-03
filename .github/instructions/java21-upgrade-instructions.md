@@ -427,6 +427,97 @@ This verifies that the Dockerfile syntax is correct and the Java 21 base image i
 
 ---
 
+## Step 7: Update GitHub Actions Workflow Files (If Present)
+
+GitHub Actions workflow files may specify Java versions for CI/CD builds. If any workflow files reference Java 17, they need to be updated to Java 21.
+
+### 7.1 Check for GitHub Actions Workflow Files
+
+Search for workflow files in the repository:
+
+```bash
+find .github/workflows -name "*.yml" -o -name "*.yaml" 2>/dev/null
+```
+
+### 7.2 Identify Java 17 References in Workflow Files
+
+Check all workflow files for Java 17 references:
+
+```bash
+grep -r -i "java.*17\|17.*java\|java-version.*17" .github/workflows/ 2>/dev/null
+```
+
+### 7.3 Update Workflow Files to Java 21
+
+If Java 17 is found in workflow files, update it to Java 21. Common patterns to look for and update:
+
+#### Pattern 1: Matrix strategy with Java version
+```yaml
+# Before
+strategy:
+  matrix:
+    java: [ '17' ]
+
+# After
+strategy:
+  matrix:
+    java: [ '21' ]
+```
+
+#### Pattern 2: Setup Java action with java-version
+```yaml
+# Before
+- name: Set up JDK 17
+  uses: actions/setup-java@v3
+  with:
+    java-version: '17'
+    distribution: 'corretto'
+
+# After
+- name: Set up JDK 21
+  uses: actions/setup-java@v3
+  with:
+    java-version: '21'
+    distribution: 'corretto'
+```
+
+#### Pattern 3: Multiple Java versions in matrix (keeping Java 17 for compatibility testing)
+```yaml
+# If testing against multiple Java versions and you want to keep Java 17 for compatibility:
+strategy:
+  matrix:
+    java: [ '17', '21' ]
+
+# If upgrading completely to Java 21 only:
+strategy:
+  matrix:
+    java: [ '21' ]
+```
+
+**Note:** Ensure the `distribution` field is set to `'corretto'` to use Amazon Corretto JDK, consistent with the local development environment.
+
+### 7.4 Verify Workflow File Changes
+
+After updating the workflow files, verify the changes:
+
+```bash
+grep -r -i "java.*21\|21.*java\|java-version.*21" .github/workflows/ 2>/dev/null
+```
+
+This should confirm that Java version references have been updated to 21.
+
+### 7.5 Validate Workflow Syntax (Optional)
+
+If the GitHub CLI (`gh`) is installed, you can validate the workflow syntax:
+
+```bash
+gh workflow list
+```
+
+Or commit the changes and check the Actions tab on GitHub to ensure workflows run successfully with Java 21.
+
+---
+
 ## Next Steps
 
 After completing the above steps, proceed with:
