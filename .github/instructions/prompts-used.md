@@ -212,3 +212,8 @@ Section 2.4 starting in line number 180, imports the certs, even if the JDK is a
 
 Change the scripts such that import the certs only if the JDK is installed as part of executing these instructions.
 
+### Iterative Prompt - Skip the instructions, if the application is already in Java 17
+
+Somewhere In the beginning of the instruction file, add instruction to skip all the instructions, if the current application does not have Java 17.
+
+In order to find whether the current Java version, check build.gradle or gradle.properties.
