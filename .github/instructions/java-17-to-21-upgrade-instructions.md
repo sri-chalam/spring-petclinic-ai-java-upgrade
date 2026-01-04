@@ -395,7 +395,32 @@ echo $JAVA_HOME
 
 ## Step 4: Upgrade Gradle Wrapper (If Needed)
 
-### 4.1 Check Current Gradle Wrapper Version
+### 4.1 Check if Gradle Wrapper Exists
+
+First, verify that the project uses Gradle wrapper:
+
+```bash
+if [ ! -f "gradlew" ] || [ ! -f "gradle/wrapper/gradle-wrapper.properties" ]; then
+    echo "=========================================="
+    echo "Gradle wrapper not found"
+    echo "=========================================="
+    echo ""
+    echo "This project does not use Gradle wrapper."
+    echo "Skipping Gradle wrapper upgrade (Step 4)."
+    echo ""
+    GRADLE_WRAPPER_EXISTS=false
+else
+    echo "✓ Gradle wrapper found - proceeding with version check"
+    echo ""
+    GRADLE_WRAPPER_EXISTS=true
+fi
+```
+
+**If Gradle wrapper is not found, skip the remaining subsections of Step 4 and proceed to Step 5.**
+
+### 4.2 Check Current Gradle Wrapper Version
+
+**Only proceed if `GRADLE_WRAPPER_EXISTS=true`.**
 
 Check the Gradle version specified in `gradle/wrapper/gradle-wrapper.properties`:
 
@@ -405,12 +430,12 @@ grep "distributionUrl" gradle/wrapper/gradle-wrapper.properties
 
 This will display the current Gradle version being used by the wrapper.
 
-### 4.2 Verify Java 21 Compatibility
+### 4.3 Verify Java 21 Compatibility
+
+**Only proceed if `GRADLE_WRAPPER_EXISTS=true`.**
 
 Gradle versions have specific Java compatibility requirements:
 - **Gradle 8.5+**: Full support for Java 21
-- **Gradle 7.6+**: Basic Java 21 compatibility
-- **Gradle < 7.6**: Not compatible with Java 21
 
 To check your current Gradle version:
 
@@ -418,7 +443,9 @@ To check your current Gradle version:
 ./gradlew --version
 ```
 
-### 4.3 Upgrade Gradle Wrapper (If Necessary)
+### 4.4 Upgrade Gradle Wrapper (If Necessary)
+
+**Only proceed if `GRADLE_WRAPPER_EXISTS=true`.**
 
 If the current Gradle version is below 8.5, upgrade to Gradle 8.11 (recommended for Java 21):
 
@@ -428,7 +455,9 @@ If the current Gradle version is below 8.5, upgrade to Gradle 8.11 (recommended 
 
 This command will update the Gradle wrapper files to use version 8.11.
 
-### 4.4 Verify Gradle Wrapper Upgrade
+### 4.5 Verify Gradle Wrapper Upgrade
+
+**Only proceed if `GRADLE_WRAPPER_EXISTS=true`.**
 
 After upgrading, verify the new Gradle version:
 
