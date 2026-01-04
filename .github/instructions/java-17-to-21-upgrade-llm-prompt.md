@@ -1,6 +1,6 @@
 # Prompt for Java 21 Upgrade
 
-You are tasked with upgrading a Java application from Java 17 to Java 21 using Amazon Corretto JDK. **You must strictly follow the instructions provided in the file [java21-upgrade-instructions.md](.github/instructions/java21-upgrade-instructions.md).**
+You are tasked with upgrading a Java application from Java 17 to Java 21 using Amazon Corretto JDK. **You must strictly follow the instructions provided in the file [java21-upgrade-instructions.md](.github/instructions/java-17-to-21-upgrade-instructions.md).**
 
 **Important constraints:**
 - **Only use the procedures, commands, and steps explicitly documented in the instructions file**
