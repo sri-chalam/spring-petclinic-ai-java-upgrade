@@ -542,11 +542,42 @@ OpenRewrite makes changes directly to source files, so use git to review what wa
 
 After reviewing the changes, compile the project to ensure the migration was successful:
 
-```bash
+```zsh
 ./gradlew clean build
 ```
 
 If there are any compilation errors, address them before proceeding.
+
+### 5.8 Build/Fix Loop for Compilation Errors
+
+After running the OpenRewrite migration and reviewing changes, iteratively fix any remaining compilation errors:
+
+1. Execute the build command:
+   ```zsh
+   ./gradlew clean build
+   ```
+2. If there are compilation errors:
+  - Analyze each error message carefully
+  - Fix the errors using appropriate Java 21 APIs and patterns
+  - Common issues to address:
+    - Deprecated APIs not handled by OpenRewrite
+    - Changed method signatures in Java 21
+    - New restrictions or requirements in Java 21
+    - Third-party library compatibility issues
+3. Re-run the build after making fixes
+4. Repeat steps 2-3 until the build succeeds without compilation errors
+5. Once compilation succeeds, run the test suite:
+   ```zsh
+   ./gradlew test
+   ```
+6. If tests fail:
+  - Analyze test failure messages
+  - Fix test code or application code as needed
+  - Common test issues:
+    - Behavior changes in Java 21 APIs
+    - Timing or ordering differences
+    - Mock/stub compatibility with new APIs
+7. Repeat steps 5-6 until all tests pass   
 
 ---
 

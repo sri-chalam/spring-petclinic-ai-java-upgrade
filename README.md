@@ -51,6 +51,68 @@ A comprehensive Java upgrade involves addressing numerous organizational, techni
 
 To properly address all these variations and provide concrete examples for each scenario, a complete upgrade guide would easily span hundreds or even thousands of lines. Each combination of choices (distribution × installation method × build tool × upgrade approach) represents a unique path that requires specific instructions and examples.
 
+## Why Custom Instructions Instead of Automated Tools?
+
+The tools such as GitHub Copilot and Amazon Q offer features to upgrade Java, Spring Boot version. However, having a custom instruction file to upgrade have multiple advantages.
+
+### Benefits of Custom Instructions File
+
+**1. LLM-Agnostic Flexibility**
+- Works with any LLM (Claude, ChatGPT, Gemini, etc.), not locked to a specific vendor
+- Lower cost - no additional subscriptions beyond your chosen LLM
+
+**2. Addresses What Automated Tools Don't Handle**
+- GitHub Copilot App Modernization and Amazon Q use OpenRewrite underneath for code transformations
+- However, they don't address environment-specific requirements:
+  - JDK distribution selection (Amazon Corretto vs others)
+  - Installation methods (SDKMAN vs package managers)
+  - Certificate management (importing trusted certificates)
+
+**3. Includes the Same Build/Fix Loop as Copilot**
+- Custom instructions can direct the LLM to perform iterative build/fix cycles
+- Same capability as GitHub Copilot's automated loop, but transparent and customizable
+
+**3. OpenRewrite Has Known Limitations**
+- Not exhaustive - recipes handle subsets of migration patterns to avoid unintended side effects
+- Missing recipes for many third-party library migrations
+- Even GitHub Copilot uses an AI "build/fix loop" to handle what OpenRewrite can't automate
+
+**4. Misc.**
+- Serves as documentation
+- Can embed organization-specific requirements and coding standards
+- What ever the tool used, some manual intervention is required for edge cases and unsupported libraries
+
+### CVE Vulnerability Scanning - A Separate Concern
+
+While GitHub Copilot App Modernization includes CVE vulnerability scanning as part of the upgrade workflow, security scanning should be treated as a separate, independent concern.
+
+**Rationale:**
+- CVE vulnerabilities should be checked and fixed **frequently** (weekly or before each release), not just during major upgrades
+- Security scanning is applicable to **all projects**, regardless of whether they're being upgraded
+- Keeping CVE scanning separate allows it to be **reused independently** across different workflows
+
+For this reason, comprehensive CVE scanning and remediation instructions are provided in a separate instruction file (see References section below).
+
+### What About Third-Party Library Migrations?
+
+Both OpenRewrite and GitHub Copilot App Modernization have the **same limitation** for third-party library migrations:
+
+**The Core Issue:**
+- OpenRewrite can only migrate libraries that have **predefined recipes**
+- GitHub Copilot App Modernization uses OpenRewrite underneath, so it inherits this limitation
+- For libraries without recipes (e.g., Ehcache2→Ehcache3, proprietary frameworks), **neither tool can automatically migrate them**
+
+**What Copilot Adds:**
+- After OpenRewrite runs, Copilot's AI can fix **compilation errors** and **build issues** through its iterative build/fix loop
+- It can **scan for CVE vulnerabilities** and update dependency versions
+- It can **learn from your manual migrations** and apply patterns to other codebases
+
+**Bottom Line:**
+- For standard Java API upgrades: Both tools work well
+- For third-party library migrations without recipes: **Manual migration is still required**, whether you use OpenRewrite, Copilot, or custom instructions
+- Custom instructions can explicitly guide the LLM on how to migrate specific libraries, providing the same (or better) control as Copilot's custom pattern feature
+
+
 ## AI-Driven Upgrades - Limitations and Expectations
 
 When using AI-driven instruction files for Java upgrades, it's important to understand the nature and limitations of this approach:
@@ -96,6 +158,28 @@ If your environment does not match these prerequisites, you should:
 - Review the instruction file and adapt it to your specific environment
 - Consult with your organization's development standards and tooling requirements
 - Consider creating a customized version of the instruction file for your use case
+
+---
+
+## How the Upgrade Instructions Work
+
+The upgrade process is automated through a series of steps that handle both environment setup and code migration:
+
+### Core Components
+
+1. **OpenRewrite Plugin**: The code migration is performed by the OpenRewrite plugin, the same underlying tool used by AI-powered upgrade assistants like GitHub Copilot Workspace and Amazon Q Developer
+
+2. **SDKMAN Installation**: Installs SDKMAN if not already present at `~/.sdkman/` for Java version management
+
+3. **Java 21 Installation**: Installs Amazon Corretto JDK 21 via SDKMAN if not already present in `~/.sdkman/candidates/java/`
+   - If JDK 21 exists in other locations, the instructions still install it via SDKMAN for consistency
+   - Installation is skipped only if Amazon Corretto 21 is already installed through SDKMAN
+
+4. **Trusted Certificates Import**: Automatically imports organization certificates from `~/trusted-certs/` into the Java 21 truststore during fresh installations
+
+5. **Project Configuration Updates**: Updates Gradle wrapper, build files, Dockerfiles, CI/CD workflows, and other configuration files to use Java 21
+
+6. **Code Migration**: Executes OpenRewrite recipes to automatically refactor code for Java 21 compatibility
 
 ---
 
@@ -236,4 +320,10 @@ For IDEs such as IntelliJ IDEA, update the project settings to use the new Java 
    - For each module, verify the "Language level" is set appropriately
 
 After making these changes, rebuild the project in your IDE to ensure everything compiles correctly with the new Java version.
+
+---
+
+## References
+
+- [GitHub Awesome Copilot - Instructions](https://github.com/github/awesome-copilot/tree/main/instructions) - A community-contributed collection of instruction files for GitHub Copilot and AI coding agents
 
