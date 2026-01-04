@@ -46,6 +46,84 @@ When executing these instructions, the AI agent should:
 
 ---
 
+## Step 0: Verify Current Java Version (Prerequisite Check)
+
+**IMPORTANT: These instructions are designed to upgrade Java 17 applications to Java 21 only.** Before proceeding, verify that the application is currently using Java 17.
+
+### 0.1 Check Java Version in Project Configuration
+
+Check the Java version specified in the project's Gradle configuration files:
+
+```bash
+echo "Checking current Java version in project configuration..."
+echo ""
+
+# Check build.gradle for Java version
+if [ -f "build.gradle" ]; then
+    echo "Checking build.gradle..."
+    JAVA_VERSION_BUILD_GRADLE=$(grep -E "sourceCompatibility|targetCompatibility|JavaVersion\.VERSION_" build.gradle | grep -o "1[0-9]\+\|[0-9]\+" | head -1)
+
+    if [ -n "$JAVA_VERSION_BUILD_GRADLE" ]; then
+        echo "Found Java version in build.gradle: $JAVA_VERSION_BUILD_GRADLE"
+    fi
+fi
+
+# Check gradle.properties for Java version
+if [ -f "gradle.properties" ]; then
+    echo "Checking gradle.properties..."
+    JAVA_VERSION_GRADLE_PROPS=$(grep -E "javaVersion|java\.version|sourceCompatibility|targetCompatibility" gradle.properties | grep -o "1[0-9]\+\|[0-9]\+" | head -1)
+
+    if [ -n "$JAVA_VERSION_GRADLE_PROPS" ]; then
+        echo "Found Java version in gradle.properties: $JAVA_VERSION_GRADLE_PROPS"
+    fi
+fi
+
+# Determine the current Java version
+CURRENT_JAVA_VERSION=${JAVA_VERSION_BUILD_GRADLE:-$JAVA_VERSION_GRADLE_PROPS}
+
+echo ""
+echo "Current Java version detected: ${CURRENT_JAVA_VERSION:-Not found}"
+echo ""
+```
+
+### 0.2 Validate Java 17 Requirement
+
+Verify that the detected Java version is 17:
+
+```bash
+if [ "$CURRENT_JAVA_VERSION" != "17" ]; then
+    echo "=========================================="
+    echo "ERROR: Java Version Mismatch"
+    echo "=========================================="
+    echo ""
+    echo "These instructions are designed to upgrade Java 17 applications to Java 21."
+    echo "Current Java version detected: ${CURRENT_JAVA_VERSION:-Not found}"
+    echo ""
+    echo "Please verify:"
+    echo "  - If the application is already using Java 21, no upgrade is needed"
+    echo "  - If the application is using a version other than 17, these instructions may not be appropriate"
+    echo "  - Check build.gradle and gradle.properties for Java version configuration"
+    echo ""
+    echo "STOPPING: Cannot proceed with Java 21 upgrade."
+    exit 1
+else
+    echo "✓ Java 17 detected - proceeding with upgrade to Java 21"
+    echo ""
+fi
+```
+
+This script:
+- Searches `build.gradle` for Java version patterns (sourceCompatibility, targetCompatibility, JavaVersion.VERSION_XX)
+- Searches `gradle.properties` for Java version properties
+- Extracts the Java version number
+- Validates that the current version is 17
+- Exits with an error message if the version is not 17
+- Proceeds only if Java 17 is detected
+
+**If this check fails, STOP here and do not proceed with the remaining steps.**
+
+---
+
 ## Step 1: Check and Install SDKMAN
 
 SDKMAN (Software Development Kit Manager) is required to manage Java versions.
