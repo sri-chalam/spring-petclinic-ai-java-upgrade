@@ -54,7 +54,7 @@ To properly address all these variations and provide concrete examples for each 
 
 ## Why Custom Instructions Instead of Automated Tools?
 
-The tools such as GitHub Copilot and Amazon Q offer features to upgrade Java, Spring Boot version. However, having a custom instruction file to upgrade have multiple advantages.
+The AI assistants such as GitHub Copilot app modernization and Amazon Q offer features to upgrade Java, Spring Boot version. However, having a custom instruction file to upgrade have multiple advantages.
 
 ### Benefits of Custom Instructions File
 
@@ -171,6 +171,36 @@ If your environment does not match these prerequisites, you should:
 
 ---
 
+## What the Upgrade Instructions Will NOT Do
+
+It's important to understand the scope boundaries of the upgrade instructions. The following modifications will **NOT** be performed:
+
+### 1. Maven Project Modifications
+**The instructions will NOT modify Maven-based projects.** The upgrade is designed exclusively for Gradle projects with Groovy DSL. If your project uses Maven, you must adapt the instructions for Maven (modify `pom.xml` instead of `build.gradle`)
+
+### 2. Spring Boot Upgrade
+**The instructions will NOT upgrade Spring Boot version.** The focus is exclusively on upgrading Java from version 17 to version 21. To reduce complexity, Spring Boot upgrades are not part of this instruction file. Additionally, keeping Java upgrade and Spring Boot upgrade in separate instruction files allows them to be used independently.
+
+---
+
+## Updated CI/CD and Build Files
+
+The upgrade instructions automatically update Java version references in the following files:
+
+- **GitHub Actions**: `.github/workflows/*.yml`
+- **AWS CodeBuild**: `buildspec*.yml`
+- **Docker**: `Dockerfile`, `Dockerfile.*`
+- **Gradle Build Files**: `build.gradle`, `gradle.properties`, `gradle/wrapper/gradle-wrapper.properties`
+
+**Updates applied to build.gradle:**
+- sourceCompatibility and targetCompatibility (`'17'` → `'21'`)
+- JavaVersion enum references (`JavaVersion.VERSION_17` → `JavaVersion.VERSION_21`)
+- OpenRewrite plugin addition/update (version 6.30.3+)
+- OpenRewrite dependencies and recipe configuration
+- Gradle wrapper upgrade to 8.11 (if current version < 8.5)
+
+---
+
 ## How the Upgrade Instructions Work
 
 The upgrade process is automated through a series of steps that handle both environment setup and code migration:
@@ -200,8 +230,11 @@ The upgrade process is automated through a series of steps that handle both envi
    - AWS CodeBuild buildspec files (`buildspec*.yml`)
    - Dockerfile base images (if present)
 
-10. **Iterative Build/Fix Loop**: After OpenRewrite migration, performs an automated build/fix cycle to resolve any remaining compilation errors and test failures that OpenRewrite couldn't handle automatically.
-
+10. **Iterative Build/Fix Loop**: After OpenRewrite migration, performs an automated build/fix cycle to resolve any remaining compilation errors and test failures that OpenRewrite couldn't handle automatically. This loop:
+   - Executes `./gradlew clean build` to compile code and run tests
+   - Analyzes compilation errors and identifies root causes
+   - Fixes common issues
+   - Re-runs the build after each fix
 
 ---
 
