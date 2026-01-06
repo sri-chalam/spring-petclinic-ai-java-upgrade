@@ -54,7 +54,7 @@ To properly address all these variations and provide concrete examples for each 
 
 ## Why Custom Instructions Instead of Automated Tools?
 
-The AI assistants such as GitHub Copilot app modernization and Amazon Q offer features to upgrade Java, Spring Boot version. However, having a custom instruction file to upgrade have multiple advantages.
+The AI assistants such as GitHub Copilot app modernization and Amazon Q Developer offer features to upgrade Java, Spring Boot version. However, having a custom instruction file to upgrade have multiple advantages.
 
 ### Benefits of Custom Instructions File
 
@@ -63,7 +63,7 @@ The AI assistants such as GitHub Copilot app modernization and Amazon Q offer fe
 - Lower cost - no additional subscriptions beyond your chosen LLM
 
 **2. Addresses What Automated Tools Don't Handle**
-- GitHub Copilot App Modernization and Amazon Q use OpenRewrite underneath for code transformations
+- GitHub Copilot App Modernization and Amazon Q Developer use OpenRewrite underneath for code transformations
 - However, they don't address environment-specific requirements:
   - JDK distribution selection (Amazon Corretto vs others)
   - Installation methods (SDKMAN vs package managers)
@@ -207,7 +207,7 @@ The upgrade process is automated through a series of steps that handle both envi
 
 ### Core Components
 
-1. **OpenRewrite Plugin**: The code migration is performed by the OpenRewrite plugin, the same underlying tool used by AI-powered upgrade assistants like GitHub Copilot Workspace and Amazon Q Developer
+1. **OpenRewrite Plugin**: The code migration is performed by the OpenRewrite plugin, the same underlying tool used by AI-powered upgrade assistants like GitHub Copilot app modernization and Amazon Q Developer
 
 2. **SDKMAN Installation**: Installs SDKMAN if not already present at `~/.sdkman/` for Java version management
 
@@ -221,14 +221,11 @@ The upgrade process is automated through a series of steps that handle both envi
 
 6. **Code Migration**: Executes OpenRewrite recipes to automatically refactor code for Java 21 compatibility
 
-7. **Java 17 Prerequisite Check**: Automatically validates that the project is using Java 17 before starting the upgrade. If Java 17 is not detected, the upgrade process halts with an error message to prevent inappropriate upgrades.
+7. **Java 17 Prerequisite Check**: Validates the project uses Java 17 before proceeding (see Prerequisites section)
 
-8. **Gradle Compatibility Check**: Verifies Gradle wrapper version and automatically upgrades to Gradle 8.11 if the current version is below 8.5. Projects without Gradle wrapper or already using Gradle 8.5+ are not modified.
+8. **Gradle Compatibility Check**: Upgrades Gradle wrapper to 8.11 if needed (see Prerequisites for details).
 
-9. **CI/CD Pipeline Updates**: Automatically updates configuration files for multiple CI/CD platforms:
-   - GitHub Actions workflow files (`.github/workflows/*.yml`)
-   - AWS CodeBuild buildspec files (`buildspec*.yml`)
-   - Dockerfile base images (if present)
+9. **CI/CD Pipeline Updates**: Updates CI/CD configuration files (see "Updated CI/CD and Build Files" section for details)
 
 10. **Iterative Build/Fix Loop**: After OpenRewrite migration, performs an automated build/fix cycle to resolve any remaining compilation errors and test failures that OpenRewrite couldn't handle automatically. This loop:
    - Executes `./gradlew clean build` to compile code and run tests
@@ -244,25 +241,16 @@ If your organization uses custom trusted certificates (e.g., for internal Certif
 
 ### Certificate Preparation Requirements
 
-1. **Certificate Directory**: All organization trusted certificates must be placed in the directory:
-   ```
-   ~/trusted-certs/
-   ```
+1. **Certificate Directory**: All organization trusted certificates need to be copied to `~/trusted-certs/`
 
-2. **Supported Certificate Formats**: Only certificates with the following file extensions will be imported:
-   - `.pem` files
-   - `.cer` files
-   - `.crt` files
-
-   Files with other extensions will be ignored during the import process.
+2. **Supported Certificate Formats**: Only certificates with `.pem`, `.cer`, or `.crt` file extensions will be imported. Files with other extensions will be ignored during the import process.
 
 3. **Certificate Import Process**:
    - The upgrade instructions will automatically detect and import all valid certificates from `~/trusted-certs/`
    - Each certificate will be imported into the Java cacerts truststore with a unique alias
    - The import only occurs when Java 21 is freshly installed (not if it's already present)
 
-5. **Optional Step**: If your organization does not use custom trusted certificates, this step can be skipped. The upgrade instructions will check for certificates and proceed accordingly.
-
+4. **Optional Step**: If your organization does not use custom trusted certificates, this step can be skipped. The upgrade continues normally if no certificates are found.
 
 Once the certificates are in place, proceed with the Java upgrade instructions as documented below.
 
@@ -315,24 +303,28 @@ Follow the instructions in @.github/instructions/java-17-to-21-upgrade-llm-promp
 
 The AI agent will read the prompt file, which in turn references the detailed instructions file, and execute each step of the upgrade process systematically.
 
-### Step 4: Validate the Java 21 Upgrade
+---
+
+## Post-Upgrade Validation and Configuration
+
+### Step 1: Validate the Java 21 Upgrade
 
 After the upgrade instructions have been executed, it's important to validate that the upgrade was successful. The instruction file includes Gradle build execution with unit tests at the end. However, additional validation steps are recommended to ensure comprehensive testing and proper IDE configuration.
 
-#### 4.1 Execute End-to-End Tests
+#### 1.1 Execute End-to-End Tests
 
 Run your application's end-to-end test suite to verify that the system works correctly as a whole:
 
 Ensure that all critical user workflows and integrations are functioning correctly with Java 21.
 
-#### 4.2 Execute Integration Tests (if available)
+#### 1.2 Execute Integration Tests (if available)
 
-```bash
+```zsh
 # Example for Gradle
 ./gradlew integrationTest
 ```
 
-#### 4.3 Execute Manual Tests
+#### 1.3 Execute Manual Tests
 
 Perform manual testing to check the application works as expected.
 
@@ -343,7 +335,7 @@ Perform manual testing to check the application works as expected.
 5. Validate any Java version-specific features or optimizations
 6. Verify communication to external services (AWS services or microservices)
 
-#### 4.4 Configure IDE Settings
+### Step 2: Configure IDE Settings
 
 For IDEs such as IntelliJ IDEA, update the project settings to use the new Java 21 JDK:
 
@@ -364,7 +356,7 @@ For IDEs such as IntelliJ IDEA, update the project settings to use the new Java 
 
 After making these changes, rebuild the project in your IDE to ensure everything compiles correctly with the new Java version.
 
-#### 4.5 Upgrading to Java 25
+### Step 3: Upgrading to Java 25
 
 **For Java 21 to Java 25 Upgrades:**
 
