@@ -1,16 +1,56 @@
  
 # spring-petclinic-ai-java-upgrade
 
-## Purpose
+## Introduction
 
-This repository is a **work in progress** focused on exploring the use of AI coding agents for Java version upgrades.
+AI coding agents have become remarkably powerful tools, capable of implementing solutions in dozens of different ways. However, this flexibility presents a challenge: organizations have specific conventions, standards, and requirements that guide how solutions should be implemented in their particular context.
 
-The source code in this repository is a snapshot taken from the [Spring PetClinic](https://github.com/spring-projects/spring-petclinic) project, which currently uses Java 17. The primary objective of this exploration is to leverage AI coding agents to upgrade the codebase to Java 21 and Java 25.
+To effectively leverage AI coding agents, detailed instructions are needed to communicate these organization-specific conventions and guide the agent toward the desired implementation approach. **Even as AI agents continue to mature and become more sophisticated, the need for clear and unambiguous instructions to indicate a specific approach that follows team and organization-specific conventions will remain essential**. This article explores this concept through a practical example: upgrading a Java application from version 17 to version 21 using AI-driven instructions.
+
+What might seem like a straightforward task—such as upgrading a Java version—often involves numerous organization-specific decisions that AI agents need guidance to navigate effectively.
+
+## About This Article
+
+This article is focused on using AI coding agents for Java version upgrades.
+
+For Java upgrades with organization-specific requirements, AI instruction files provide distinct advantages over generic AI agent platforms: LLM-agnostic flexibility, cost control, transparency, and customization for organizational conventions. This article demonstrates this approach using a practical example.
+
+The Git repository used to test the instructions is available at [https://github.com/sri-chalam/spring-petclinic-ai-java-upgrade](https://github.com/sri-chalam/spring-petclinic-ai-java-upgrade). The source code in this repository is a snapshot taken from the [Spring PetClinic](https://github.com/spring-projects/spring-petclinic) project, which currently uses Java 17. The primary objective is to leverage AI coding agents to upgrade the codebase to Java 21 and Java 25.
 
 The outcome of this exploration will be a set of AI-generated instructions and best practices for automated Java version upgrades.
 
-## 1.0. Table of Contents
-<!-- TODO Add Table of Contents at the end. -->
+## Core Concepts
+
+### AI Instructions File
+An AI Instruction Markdown file is a structured document (typically with a .md extension) that contains prompts, guidelines, and instructions for how an AI model should behave or respond.
+
+Instructions file contains things like:
+Task-specific instructions
+Behavioral guidelines and constraints
+
+### AI Agent
+An AI agent is a more complex system that can:
+
+- Perceive its environment (receive inputs)
+- Reason about what actions to take
+- Act autonomously to achieve goals
+- Learn from feedback (in some cases)
+- Use tools or call external APIs
+- Maintain state across interactions
+- Plan multi-step sequences of actions
+
+
+### How They Work Together
+
+An AI instruction file is not an AI agent, though it can be a component of one.
+
+An instruction file is static configuration—it's like a rulebook that tells the AI how to behave, but it doesn't execute actions on its own.
+
+An AI agent is a dynamic system—it combines instructions with reasoning capabilities, tool access, and decision-making logic to autonomously work toward goals.
+
+For specialized tasks like Java upgrades with organization-specific requirements, instruction files often provide better cost-effectiveness than full agent systems, as they deliver targeted guidance without the computational overhead of autonomous decision-making.
+
+However, if using AI agent platforms (such as Copilot App Modernization), organization-specific instruction files should still be provided to customize the agent's behavior for your context.
 
 
 ## Why Java Upgrades Are Not Simple
@@ -383,3 +423,6 @@ Using individual instruction files for each upgrade path (17→21, 21→25) is m
 
 - [GitHub Awesome Copilot - Instructions](https://github.com/github/awesome-copilot/tree/main/instructions) - A community-contributed collection of instruction files for GitHub Copilot and AI coding agents
 
+### Development Notes
+
+The AI instruction files in this repository were developed using Claude Sonnet 4.5, but are designed to be LLM-agnostic and work with any AI coding agent that supports file operations and terminal commands.
