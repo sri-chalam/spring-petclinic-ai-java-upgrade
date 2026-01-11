@@ -628,7 +628,101 @@ After running the OpenRewrite migration and reviewing changes, iteratively fix a
 - Include relevant error messages and stack traces
 - Stop execution and notify the user for manual review and intervention
 
-#### 5.8.1 Error Resolution Methodology
+#### 5.8.1 Upgrade Log Documentation
+
+**All fixes, changes, and unresolved errors must be documented** in the upgrade log file located at:
+
+```
+/docs/ai-tasks/logs/java-21-upgrade-log.md
+```
+
+**Before starting the build/fix loop**, create the directory structure and initialize the log file if it doesn't exist:
+
+```zsh
+mkdir -p docs/ai-tasks/logs
+```
+
+**Log File Structure:**
+
+The upgrade log file should contain the following sections:
+
+```markdown
+# Java 21 Upgrade Log
+
+**Date**: YYYY-MM-DD
+**Upgrade**: Java 17 to Java 21
+**Status**: In Progress | Completed | Blocked
+
+---
+
+## Summary
+
+Brief overview of the upgrade process and overall status.
+
+---
+
+## Fixes Applied
+
+### Fix #1: [Brief description]
+- **File**: path/to/file.java:line_number
+- **Error Type**: Compilation Error | Deprecated API | etc.
+- **Root Cause**: Description of the issue
+- **Solution Applied**: Description of the fix
+- **Source**: URL or reference to documentation/Stack Overflow
+- **Date**: YYYY-MM-DD
+
+### Fix #2: [Brief description]
+...
+
+---
+
+## Unresolved Errors
+
+### Error #1: [Brief description]
+- **File**: path/to/file.java:line_number
+- **Error Message**: Complete error message
+- **Error Category**: API Deprecation | Package Migration | etc.
+- **Attempted Solutions**:
+  1. OpenRewrite recipe attempted: recipe-name (Result: Failed)
+  2. Internet search queries: "query text"
+  3. Manual fix attempted: Description (Result: Failed because...)
+- **References**: Links to documentation, Stack Overflow, etc.
+- **Recommended Next Steps**: Suggestions for manual resolution
+- **Date**: YYYY-MM-DD
+
+---
+
+## Build/Test Summary
+
+- **Total Build Iterations**: X
+- **Total Fixes Applied**: X
+- **Unresolved Errors**: X
+- **Tests Passed**: X / Y
+- **Final Status**: Success | Needs Manual Intervention
+```
+
+**Documentation Requirements:**
+
+1. **For each successful fix** (Step 4 of section 5.8.2 Error Resolution Methodology):
+   - Document in the "Fixes Applied" section
+   - Include file path, error type, root cause, solution, and source
+   - Add immediately after applying the fix
+
+2. **For each unresolved error** (Step 5 of section 5.8.2 Error Resolution Methodology):
+   - Document in the "Unresolved Errors" section
+   - Include complete error details and all attempted solutions
+   - Add when the error cannot be resolved
+
+3. **Update the Summary section**:
+   - Update status as the process progresses
+   - Provide high-level overview of changes
+
+4. **Update Build/Test Summary**:
+   - Keep track of iteration counts
+   - Update success/failure metrics
+   - Update final status when complete
+
+#### 5.8.2 Error Resolution Methodology
 
 When compilation errors or test failures occur, follow this systematic approach to resolve them:
 
@@ -725,11 +819,11 @@ When compilation errors or test failures occur, follow this systematic approach 
    - Verify the solution applies to your specific Java version (17 → 21)
    - Check if the solution has been tested and validated by others
 
-4. **Document the source** of the solution for future reference
+4. **Document the source** of the solution for future reference in the upgrade log file (see Documentation section below)
 
-##### Step 4: Apply Manual Code Fixes
+##### Step 4: Apply Automated Code Fixes
 
-**If OpenRewrite recipes and Internet research provide a solution**, apply the fix manually:
+**If Internet research provides a solution**, automatically apply the fix and document the changes in the upgrade log file:
 
 1. **Common fix patterns for Java 21 migration:**
 
@@ -793,7 +887,7 @@ When compilation errors or test failures occur, follow this systematic approach 
 
 **If the error cannot be resolved** after trying all strategies:
 
-1. **Create a detailed error report** including:
+1. **Create a detailed error report** in the upgrade log file including:
    - Complete error message and stack trace
    - File path and line number
    - Error category (from Step 1)
@@ -803,7 +897,7 @@ When compilation errors or test failures occur, follow this systematic approach 
    - Links to relevant documentation or Stack Overflow posts
    - Recommended next steps or alternatives
 
-2. **Add the error to the unresolved errors list** for the final report
+2. **Add the error to the unresolved errors section** in the upgrade log file
 
 3. **Continue to the next error** (if within iteration limits) or exit the loop
 

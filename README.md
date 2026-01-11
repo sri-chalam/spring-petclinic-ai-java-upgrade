@@ -230,9 +230,9 @@ The upgrade instructions automatically update Java version references in the fol
 
 The upgrade process is automated through a series of steps that handle both environment setup and code migration:
 
-### Core Components
+### Upgrade Steps
 
-1. **OpenRewrite Plugin**: The code migration is performed by the OpenRewrite plugin, the same underlying tool used by AI-powered upgrade assistants like GitHub Copilot app modernization and Amazon Q Developer
+1. **OpenRewrite Plugin**: Adds the OpenRewrite Gradle plugin to the project configuration. This is the same underlying tool used by AI-powered upgrade assistants like GitHub Copilot App Modernization and Amazon Q Developer.
 
 2. **SDKMAN Installation**: Installs SDKMAN if not already present at `~/.sdkman/` for Java version management
 
@@ -244,11 +244,11 @@ The upgrade process is automated through a series of steps that handle both envi
 
 5. **Project Configuration Updates**: Updates Gradle wrapper, build files, Dockerfiles, CI/CD workflows, and other configuration files to use Java 21
 
-6. **Code Migration**: Executes OpenRewrite recipes to automatically refactor code for Java 21 compatibility
+6. **Java 17 Prerequisite Check**: Validates the project uses Java 17 before proceeding (see Prerequisites section)
 
-7. **Java 17 Prerequisite Check**: Validates the project uses Java 17 before proceeding (see Prerequisites section)
+7. **Gradle Compatibility Check**: Upgrades Gradle wrapper to 8.11 if needed (see Prerequisites for details).
 
-8. **Gradle Compatibility Check**: Upgrades Gradle wrapper to 8.11 if needed (see Prerequisites for details).
+8. **Code Migration**: Executes OpenRewrite plugin to automatically refactor code for Java 21 compatibility
 
 9. **CI/CD Pipeline Updates**: Updates CI/CD configuration files (see "Updated CI/CD and Build Files" section for details)
 
@@ -258,9 +258,16 @@ The upgrade process is automated through a series of steps that handle both envi
    - Applies fixes using a three-tier resolution strategy:
      1. **OpenRewrite recipes** - Searches for and applies automated recipes (safest approach)
      2. **Internet search** - Researches solutions from official Java documentation, Stack Overflow, and technical resources
-     3. **Manual code fixes** - Applies targeted code changes as a last resort
+     3. **Automated code fixes** - If a solution is found through Internet research, automatically applies targeted code changes and documents the changes
    - Re-runs the build after each fix
    - Documents unresolved errors if maximum iterations are reached
+
+### Upgrade Log Documentation
+
+All fixes, changes, and unresolved errors are documented during the upgrade process in:
+```
+/docs/ai-tasks/logs/java-21-upgrade-log.md
+```
 
 ## OpenRewrite and Recipes Used
 
