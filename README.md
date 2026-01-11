@@ -269,6 +269,13 @@ All fixes, changes, and unresolved errors are documented during the upgrade proc
 /docs/ai-tasks/logs/java-21-upgrade-log.md
 ```
 
+The log file contains:
+- **Fixes Applied**: Details of each successful fix including file paths, error types, solutions, and sources
+- **Unresolved Errors**: Complete documentation of errors that could not be resolved, with attempted solutions and references
+- **Build/Test Summary**: Iteration counts, success metrics, and final status
+
+This log provides full traceability of all changes made during the upgrade and serves as a reference for any manual interventions needed.
+
 ## OpenRewrite and Recipes Used
 
 **OpenRewrite** is an automated refactoring tool that applies code transformations through reusable migration recipes.
@@ -322,24 +329,24 @@ Once these files are in place, the upgrade can be executed by referencing the pr
 
 Download the instruction file from the following URL:
 ```
-https://github.com/sri-chalam/spring-petclinic-ai-java-upgrade/blob/main/.github/instructions/java-17-to-21-upgrade-instructions.md
+https://github.com/sri-chalam/spring-petclinic-ai-java-upgrade/blob/main/docs/ai-tasks/instructions/java-17-to-21-upgrade-instructions.md
 ```
 
 Save this file in your Git repository that needs to be upgraded from Java 17 to Java 21. The suggested location is:
 ```
-<Git repo root>/.github/instructions/
+<Git repo root>/docs/ai-tasks/instructions/
 ```
 
 ### Step 2: Download the LLM Prompt
 
 Download the LLM prompt file that executes the upgrade from the following URL:
 ```
-https://github.com/sri-chalam/spring-petclinic-ai-java-upgrade/blob/main/.github/instructions/java-17-to-21-upgrade-llm-prompt.md
+https://github.com/sri-chalam/spring-petclinic-ai-java-upgrade/blob/main/docs/ai-tasks/instructions/java-17-to-21-upgrade-llm-prompt.md
 ```
 
 Save this file in the same location as the instruction file:
 ```
-<Git repo root>/.github/instructions/
+<Git repo root>/docs/ai-tasks/instructions/
 ```
 
 ### Step 3: Execute the Upgrade with an LLM
@@ -347,7 +354,7 @@ Save this file in the same location as the instruction file:
 In your LLM chat interface (such as Claude, ChatGPT, or any AI coding agent), reference the prompt file location to initiate the upgrade process:
 
 ```
-Follow the instructions in @.github/instructions/java-17-to-21-upgrade-llm-prompt.md
+Follow the instructions in @docs/ai-tasks/instructions/java-17-to-21-upgrade-llm-prompt.md
 ```
 
 The AI agent will read the prompt file, which in turn references the detailed instructions file, and execute each step of the upgrade process systematically.
