@@ -118,23 +118,30 @@ The AI assistants such as GitHub Copilot app modernization and Amazon Q Develope
 
 ### What About Third-Party Library Migrations?
 
-Both OpenRewrite and GitHub Copilot App Modernization have the **same limitation** for third-party library migrations:
+Both OpenRewrite and GitHub Copilot App Modernization have the **some limitation** for third-party library migrations:
 
 **The Core Issue:**
 - OpenRewrite can only migrate libraries that have **predefined recipes**
-- GitHub Copilot App Modernization uses OpenRewrite underneath, so it inherits this limitation
-- For libraries without recipes (e.g., Ehcache2→Ehcache3, proprietary frameworks), **neither tool can automatically migrate them**
-
-**What Copilot Adds:**
-- After OpenRewrite runs, Copilot's AI can fix **compilation errors** and **build issues** through its iterative build/fix loop
-- It can **scan for CVE vulnerabilities** and update dependency versions
-- It can **learn from your manual migrations** and apply patterns to other codebases
+- GitHub Copilot App Modernization uses OpenRewrite for its initial transformation pass, which is limited to available recipes
+- For libraries without recipes (e.g., Ehcache2→Ehcache3, proprietary frameworks), **OpenRewrite's initial pass will skip them. However, Copilot App Modernization's AI agent can then address these migrations through its iterative build/fix loop by researching documentation and examples online, though this is non-deterministic (unlike recipe-based transformations) and requires human oversight.**
 
 **Bottom Line:**
-- For standard Java API upgrades: Both tools work well
-- For third-party library migrations without recipes: **Manual migration is still required**, whether you use OpenRewrite, Copilot, or custom instructions
-- Custom instructions can explicitly guide the LLM on how to migrate specific libraries, providing the same (or better) control as Copilot's custom pattern feature
+- For standard Java API upgrades: Both tools work well with deterministic, recipe-based transformations
+- For third-party library migrations without recipes: **AI agents can often complete the migration** through web research and iterative build/fix loops, though this requires human oversight and is non-deterministic (unlike recipe-based transformations). Some complex cases may still require manual intervention.
 
+## OpenRewrite vs. Pure AI Agents for Code Transformations
+
+**OpenRewrite's Strengths:**
+- **Deterministic Transformations:** Provides predictable results—you know exactly what changes will be made, and the same recipe produces identical results on every run
+- **Enterprise-Scale Migrations:** Well-suited for processing hundreds or thousands of repositories with consistent, auditable transformations
+
+**Pure AI Agent's Strengths (e.g., Copilot App Modernization):**
+- **Contextual Problem-Solving:** Analyzes specific error messages and suggests fixes tailored to your application's architecture
+- **Web-Enhanced Knowledge:** Can access recent changes to languages and libraries beyond training cut-off dates
+- **Interactive Iteration:** Allows conversation and feedback to refine solutions
+- **Multi-Step Reasoning:** Investigates errors, proposes multiple solution options, and adapts based on build results
+
+**Recommendation:** Organizations should evaluate both approaches with pilot projects to determine which option better aligns with their specific requirements, codebase complexity, and migration scale.
 
 ## AI-Driven Upgrades - Limitations and Expectations
 
@@ -146,7 +153,7 @@ Unlike executing a traditional script, executing an AI instruction file is not d
 
 ### Potential for AI Hallucination and Mistakes
 
-This approach is similar to using an AI agent to reply to emails or perform other automated tasks. Sometimes, the AI agent could experience hallucination or make mistakes. 
+This approach is similar to using an AI agent to reply to emails or perform other automated tasks. Sometimes, the AI agent could experience hallucination or make mistakes.
 
 ### Instruction Coverage Limitations
 
@@ -418,6 +425,8 @@ Using individual instruction files for each upgrade path (17→21, 21→25) is m
 ## References
 
 - [GitHub Awesome Copilot - Instructions](https://github.com/github/awesome-copilot/tree/main/instructions) - A community-contributed collection of instruction files for GitHub Copilot and AI coding agents
+
+- [OpenRewrite Java Recipes Catalog](https://docs.openrewrite.org/recipes/java)
 
 ### Development Notes
 
