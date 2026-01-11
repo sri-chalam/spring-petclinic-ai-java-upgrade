@@ -25,12 +25,11 @@ The outcome of this exploration will be a set of AI-generated instructions and b
 An AI Instruction Markdown file is a structured document (typically with a .md extension) that contains prompts, guidelines, and instructions for how an AI model should behave or respond.
 
 Instructions file contains things like:
-Task-specific instructions
-Behavioral guidelines and constraints
+- Task-specific instructions
+- Behavioral guidelines and constraints
 
 ### AI Agent
 An AI agent is a more complex system that can:
-
 - Perceive its environment (receive inputs)
 - Reason about what actions to take
 - Act autonomously to achieve goals
@@ -38,7 +37,6 @@ An AI agent is a more complex system that can:
 - Use tools or call external APIs
 - Maintain state across interactions
 - Plan multi-step sequences of actions
-
 
 ### How They Work Together
 
@@ -52,8 +50,7 @@ For specialized tasks like Java upgrades with organization-specific requirements
 
 However, if using AI agent platforms (such as Copilot App Modernization), organization-specific instruction files should still be provided to customize the agent's behavior for your context.
 
-
-## Why Java Upgrades Are Not Simple
+## Why Are Java Upgrades Not Simple?
 
 At first glance, upgrading a Java project from version 17 to 21 might seem straightforward. One could simply prompt an LLM: "upgrade this project from Java 17 to Java 21" and expect it to handle everything. While such a prompt might accomplish a few basic changes, the reality is far more nuanced.
 
@@ -98,41 +95,26 @@ The AI assistants such as GitHub Copilot app modernization and Amazon Q Develope
 
 ### Benefits of Custom Instructions File
 
-**1. LLM-Agnostic Flexibility**
+**LLM-Agnostic Flexibility**
 - Works with any LLM (Claude, ChatGPT, Gemini, etc.), not locked to a specific vendor
 - Lower cost - no additional subscriptions beyond your chosen LLM
 
-**2. Addresses What Automated Tools Don't Handle**
+**Addresses What Automated Tools Don't Handle**
 - GitHub Copilot App Modernization and Amazon Q Developer use OpenRewrite underneath for code transformations
 - However, they don't address environment-specific requirements:
   - JDK distribution selection (Amazon Corretto vs others)
   - Installation methods (SDKMAN vs package managers)
   - Certificate management (importing trusted certificates)
 
-**3. Includes the Same Build/Fix Loop as Copilot**
+**Includes the Same Build/Fix Loop as Copilot App Modernization**
 - Custom instructions can direct the LLM to perform iterative build/fix cycles
 - Same capability as GitHub Copilot's automated loop, but transparent and customizable
+- Addresses what OpenRewrite can't automate (OpenRewrite isn't exhaustive and has missing recipes for third-party libraries)
 
-**3. OpenRewrite Has Known Limitations**
-- Not exhaustive - recipes handle subsets of migration patterns to avoid unintended side effects
-- Missing recipes for many third-party library migrations
-- Even GitHub Copilot uses an AI "build/fix loop" to handle what OpenRewrite can't automate
-
-**4. Misc.**
+**Misc.**
 - Serves as documentation
 - Can embed organization-specific requirements and coding standards
 - What ever the tool used, some manual intervention is required for edge cases and unsupported libraries
-
-### CVE Vulnerability Scanning - A Separate Concern
-
-While GitHub Copilot App Modernization includes CVE vulnerability scanning as part of the upgrade workflow, security scanning should be treated as a separate, independent concern.
-
-**Rationale:**
-- CVE vulnerabilities should be checked and fixed **frequently** (weekly or before each release), not just during major upgrades
-- Security scanning is applicable to **all projects**, regardless of whether they're being upgraded
-- Keeping CVE scanning separate allows it to be **reused independently** across different workflows
-
-For this reason, comprehensive CVE scanning and remediation instructions are provided in a separate instruction file (see References section below).
 
 ### What About Third-Party Library Migrations?
 
@@ -209,19 +191,26 @@ If your environment does not match these prerequisites, you should:
 - Consult with your organization's development standards and tooling requirements
 - Consider creating a customized version of the instruction file for your use case
 
----
-
 ## What the Upgrade Instructions Will NOT Do
 
 It's important to understand the scope boundaries of the upgrade instructions. The following modifications will **NOT** be performed:
 
-### 1. Maven Project Modifications
+### Maven Project Modifications
 **The instructions will NOT modify Maven-based projects.** The upgrade is designed exclusively for Gradle projects with Groovy DSL. If your project uses Maven, you must adapt the instructions for Maven (modify `pom.xml` instead of `build.gradle`)
 
-### 2. Spring Boot Upgrade
+### Spring Boot Upgrade
 **The instructions will NOT upgrade Spring Boot version.** The focus is exclusively on upgrading Java from version 17 to version 21. To reduce complexity, Spring Boot upgrades are not part of this instruction file. Additionally, keeping Java upgrade and Spring Boot upgrade in separate instruction files allows them to be used independently.
 
----
+### CVE Vulnerability Scanning - A Separate Concern
+
+While GitHub Copilot App Modernization includes CVE vulnerability scanning as part of the upgrade workflow, security scanning should be treated as a separate, independent concern.
+
+**Rationale:**
+- CVE vulnerabilities should be checked and fixed **frequently** (weekly or before each release), not just during major upgrades
+- Security scanning is applicable to **all projects**, regardless of whether they're being upgraded
+- Keeping CVE scanning separate allows it to be **reused independently** across different workflows
+
+For this reason, CVE scanning and remediation can be handled with a separate instruction file.
 
 ## Updated CI/CD and Build Files
 
@@ -238,8 +227,6 @@ The upgrade instructions automatically update Java version references in the fol
 - OpenRewrite plugin addition/update (version 6.30.3+)
 - OpenRewrite dependencies and recipe configuration
 - Gradle wrapper upgrade to 8.11 (if current version < 8.5)
-
----
 
 ## How the Upgrade Instructions Work
 
@@ -273,7 +260,22 @@ The upgrade process is automated through a series of steps that handle both envi
    - Fixes common issues
    - Re-runs the build after each fix
 
----
+## OpenRewrite and Recipes Used
+
+**OpenRewrite** is an automated refactoring tool that applies code transformations through reusable migration recipes.
+
+**Recipes** are predefined migration patterns that transform code to adopt new language features or fix deprecated APIs. In addition to built-in recipes, there are community-provided recipes available, and teams can create custom recipes to implement organization-specific migrations.
+
+### Recipes Applied in This Upgrade
+
+The upgrade instructions use the following OpenRewrite recipes:
+
+1. **`org.openrewrite.java.migrate.UpgradeToJava21`** - Migrates Java code from earlier versions to Java 21 compatibility
+2. **`org.openrewrite.java.migrate.PatternMatchingInstanceof`** - Refactors instanceof checks to use pattern matching (Java 16+ feature)
+3. **`org.openrewrite.java.migrate.SwitchExpressions`** - Converts traditional switch statements to modern switch expressions
+4. **`org.openrewrite.java.migrate.SwitchPatternMatching`** - Applies pattern matching in switch statements (Java 21 feature)
+
+**Purpose of Additional Recipes:** Rather than simply updating the Java version, the additional recipes (`PatternMatchingInstanceof`, `SwitchExpressions`, `SwitchPatternMatching`) enable the codebase to adopt modern Java 21 language features, making the code more concise.
 
 ## Organization Trusted Certificates
 
@@ -293,8 +295,6 @@ If your organization uses custom trusted certificates (e.g., for internal Certif
 4. **Optional Step**: If your organization does not use custom trusted certificates, this step can be skipped. The upgrade continues normally if no certificates are found.
 
 Once the certificates are in place, proceed with the Java upgrade instructions as documented below.
-
----
 
 ## How to Execute the Java 17 to Java 21 Upgrade Instructions
 
@@ -342,8 +342,6 @@ Follow the instructions in @.github/instructions/java-17-to-21-upgrade-llm-promp
 ```
 
 The AI agent will read the prompt file, which in turn references the detailed instructions file, and execute each step of the upgrade process systematically.
-
----
 
 ## Post-Upgrade Validation and Configuration
 
@@ -416,8 +414,6 @@ For each of these upgrade paths, there are two separate instruction files provid
 **Why Separate Instruction Files?**
 
 Using individual instruction files for each upgrade path (17→21, 21→25) is more modular and reduces complexity. If a single instruction file attempted to handle multiple upgrade paths (17→21 or 21→25 or 17→25), the instructions would become complex and could confuse or cause hallucination in LLMs. Separate, focused instruction files ensure clearer execution and more predictable results.
-
----
 
 ## References
 
