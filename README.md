@@ -143,17 +143,9 @@ Both OpenRewrite and GitHub Copilot App Modernization have the **some limitation
 
 **Recommendation:** Organizations should evaluate both approaches with pilot projects to determine which option better aligns with their specific requirements, codebase complexity, and migration scale.
 
-## AI-Driven Upgrades - Limitations and Expectations
+## AI Instruction Files - Limitations and Expectations
 
-When using AI-driven instruction files for Java upgrades, it's important to understand the nature and limitations of this approach:
-
-### Non-Deterministic Execution
-
-Unlike executing a traditional script, executing an AI instruction file is not deterministic. When the same instructions are executed multiple times, the output could potentially be somewhat different. Each execution may involve slightly different decisions, even when following the same instruction set.
-
-### Potential for AI Hallucination and Mistakes
-
-This approach is similar to using an AI agent to reply to emails or perform other automated tasks. Sometimes, the AI agent could experience hallucination or make mistakes.
+When using AI instruction files (the approach demonstrated in this repository) for Java upgrades, it's important to understand the nature and limitations:
 
 ### Instruction Coverage Limitations
 
@@ -161,7 +153,6 @@ The Git repository in which the instructions are executed may have unique scenar
 - Review the AI's changes carefully
 - Handle scenarios not covered by the instructions
 - Adapt or supplement the instructions for their specific use case
-
 
 ## Prerequisites and Constraints for Using the Upgrade Instructions
 
