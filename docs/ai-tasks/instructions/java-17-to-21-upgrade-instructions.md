@@ -527,35 +527,32 @@ dependencies {
 
 The `rewrite-migrate-java` recipe provides automated refactoring rules for Java version migrations.
 
-### 5.4 Configure Rewrite Task
+### 5.4 Run Rewrite Migration
 
-Add a configuration block for the rewrite task in [build.gradle](build.gradle) to specify the Java 17 to 21 migration recipes:
+Execute the OpenRewrite migration to automatically refactor code for Java 21 compatibility. Pass the recipes directly as command line parameters:
 
-```groovy
-rewrite {
-  activeRecipe("org.openrewrite.java.migrate.UpgradeToJava21")
-  activeRecipe("org.openrewrite.java.migrate.PatternMatchingInstanceof")
-  activeRecipe("org.openrewrite.java.migrate.SwitchExpressions")
-  activeRecipe("org.openrewrite.java.migrate.SwitchPatternMatching")
-}
+```zsh
+./gradlew rewriteRun \
+  -Drewrite.activeRecipes=org.openrewrite.java.migrate.UpgradeToJava21,\
+org.openrewrite.java.migrate.PatternMatchingInstanceof,\
+org.openrewrite.java.migrate.SwitchExpressions,\
+org.openrewrite.java.migrate.SwitchPatternMatching
 ```
 
-This tells OpenRewrite to apply the Java 21 migration recipes when running rewrite tasks. In addition to the core Java 21 upgrade recipe, this configuration includes recipes for:
-- Pattern matching for instanceof expressions
-- Switch expressions (introduced in Java 14, enhanced in later versions)
-- Pattern matching in switch statements (preview in Java 17, finalized in Java 21)
+**Recipe Descriptions:**
+- `UpgradeToJava21` - Core Java 21 upgrade recipe that updates deprecated APIs and patterns
+- `PatternMatchingInstanceof` - Refactors instanceof checks to use pattern matching (Java 16+ feature)
+- `SwitchExpressions` - Converts traditional switch statements to modern switch expressions
+- `SwitchPatternMatching` - Applies pattern matching in switch statements (Java 21 feature)
 
-### 5.5 Run Rewrite Migration
-
-Execute the OpenRewrite migration to automatically refactor code for Java 21 compatibility:
-
-```bash
-./gradlew rewriteRun
-```
+**Why pass recipes via command line?**
+- Upgrade recipes are one-time operations and shouldn't be permanently added to [build.gradle](build.gradle)
+- Prevents accidental re-execution of upgrade recipes in future builds
+- Keeps the build configuration clean and focused on ongoing build tasks
 
 This command will:
 - Analyze the codebase for Java 17 to Java 21 migration opportunities
-- Apply automated refactoring rules
+- Apply automated refactoring rules for the specified recipes
 - Update deprecated APIs and patterns
 - Modify source files in place
 
@@ -767,20 +764,19 @@ When compilation errors or test failures occur, follow this systematic approach 
    - Search for more recipes at: https://docs.openrewrite.org/recipes/java/migrate/upgradetojava21
 
 4. **If a relevant recipe is found:**
-   - Add it to the `rewrite` configuration block in [build.gradle](build.gradle):
-     ```groovy
-     rewrite {
-       activeRecipe("org.openrewrite.java.migrate.UpgradeToJava21")
-       activeRecipe("org.openrewrite.java.migrate.PatternMatchingInstanceof")
-       activeRecipe("org.openrewrite.java.migrate.SwitchExpressions")
-       activeRecipe("org.openrewrite.java.migrate.SwitchPatternMatching")
-       activeRecipe("org.openrewrite.java.migrate.<NewRecipeForTheError>")  // Add the new recipe
-     }
-     ```
-   - Re-run the OpenRewrite migration:
+   - Run ONLY the new recipe to fix the specific error (do not re-run the recipes that were already executed in section 5.4):
      ```bash
-     ./gradlew rewriteRun
+     ./gradlew rewriteRun \
+       -Drewrite.activeRecipes=org.openrewrite.java.migrate.<NewRecipeForTheError>
      ```
+     Replace `<NewRecipeForTheError>` with the actual recipe name that addresses the error.
+
+   **Why run only the new recipe?**
+   - The initial migration recipes (`UpgradeToJava21`, `PatternMatchingInstanceof`, `SwitchExpressions`, `SwitchPatternMatching`) have already been executed in section 5.4
+   - Re-running them is unnecessary and wasteful - they are idempotent but will re-scan the entire codebase
+   - Running only the new recipe is faster and makes it easier to see what changed in git diff
+   - OpenRewrite recipes are designed to be independent and can be run individually
+
    - Re-run the build to verify the fix:
      ```bash
      ./gradlew clean build

@@ -278,9 +278,9 @@ This log provides full traceability of all changes made during the upgrade and s
 
 ## OpenRewrite and Recipes Used
 
-**OpenRewrite** is an automated refactoring tool that applies code transformations through reusable migration recipes.
+**OpenRewrite** is an automated refactoring tool that applies code transformations through reusable security fixes, migrations, and code quality improvements recipes.
 
-**Recipes** are predefined migration patterns that transform code to adopt new language features or fix deprecated APIs. In addition to built-in recipes, there are community-provided recipes available, and teams can create custom recipes to implement organization-specific migrations.
+**Recipes** are predefined transformation patterns that transform code to adopt new language features, fix deprecated APIs, patch security vulnerabilities, or improve code quality. In addition to built-in recipes, there are community-provided recipes available, and teams can create custom recipes to implement organization-specific transformations.
 
 ### Recipes Applied in This Upgrade
 
@@ -291,7 +291,7 @@ The upgrade instructions use the following OpenRewrite recipes:
 3. **`org.openrewrite.java.migrate.SwitchExpressions`** - Converts traditional switch statements to modern switch expressions
 4. **`org.openrewrite.java.migrate.SwitchPatternMatching`** - Applies pattern matching in switch statements (Java 21 feature)
 
-**Purpose of Additional Recipes:** Rather than simply updating the Java version, the additional recipes (`PatternMatchingInstanceof`, `SwitchExpressions`, `SwitchPatternMatching`) enable the codebase to adopt modern Java 21 language features, making the code more concise.
+**Purpose of Additional Recipes:** Migrating to Java 21 alone is not sufficient if the codebase doesn't leverage its new features. The additional recipes (`PatternMatchingInstanceof`, `SwitchExpressions`, `SwitchPatternMatching`) transform the code to actively use modern, simple, and safe Java 21 language features, making the code more concise, readable, and type-safe.
 
 ## Organization Trusted Certificates
 
