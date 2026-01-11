@@ -593,14 +593,18 @@ After running the OpenRewrite migration and reviewing changes, iteratively fix a
    ```
 2. If there are compilation errors:
   - Analyze each error message carefully
-  - Fix the errors using appropriate Java 21 APIs and patterns
+  - Fix the errors using the **Error Resolution Methodology** (see section 5.8.1 below)
   - Common issues to address:
     - Deprecated APIs not handled by OpenRewrite
     - Changed method signatures in Java 21
     - New restrictions or requirements in Java 21
     - Third-party library compatibility issues
 3. Re-run the build after making fixes
-4. Repeat steps 2-3 until the build succeeds without compilation errors
+4. **Repeat steps 2-3 with the following exit conditions:**
+   - **Success condition:** Build succeeds without compilation errors
+   - **Maximum iterations:** Up to 5 build/fix cycles
+   - **Stalled progress detection:** If the same error persists for 3 consecutive iterations, stop and document the issue
+   - **Failure exit:** If unable to resolve after maximum iterations, document all remaining errors and request human intervention
 5. Once compilation succeeds, run the test suite:
    ```zsh
    ./gradlew test
@@ -612,7 +616,250 @@ After running the OpenRewrite migration and reviewing changes, iteratively fix a
     - Behavior changes in Java 21 APIs
     - Timing or ordering differences
     - Mock/stub compatibility with new APIs
-7. Repeat steps 5-6 until all tests pass   
+7. **Repeat steps 5-6 with the following exit conditions:**
+   - **Success condition:** All tests pass
+   - **Maximum iterations:** Up to 5 test/fix cycles
+   - **Stalled progress detection:** If the same test failure persists for 3 consecutive iterations, stop and document the issue
+   - **Failure exit:** If unable to resolve after maximum iterations, document all remaining test failures and request human intervention
+
+**Important:** If either loop exits due to reaching maximum iterations or stalled progress:
+- Create a detailed report listing all unresolved errors/failures
+- Document any attempted fixes that didn't work
+- Include relevant error messages and stack traces
+- Stop execution and notify the user for manual review and intervention
+
+#### 5.8.1 Error Resolution Methodology
+
+When compilation errors or test failures occur, follow this systematic approach to resolve them:
+
+##### Step 1: Extract and Categorize the Error
+
+1. **Capture the complete error message** including:
+   - File path and line number
+   - Error type (compilation error, deprecation warning, etc.)
+   - Full error description and stack trace
+   - Any suggested fixes from the compiler
+
+2. **Categorize the error type:**
+   - **API Deprecation/Removal**: Method or class no longer available in Java 21
+   - **API Signature Change**: Method parameters or return types changed
+   - **Package Migration**: Classes moved to different packages (e.g., javax.* → jakarta.*)
+   - **Access Modifier Restriction**: New access restrictions in Java 21
+   - **Third-party Library Incompatibility**: External dependencies not compatible with Java 21
+   - **Behavioral Change**: API behavior changed in Java 21
+   - **Other**: Uncategorized errors
+
+##### Step 2: Search for OpenRewrite Recipes
+
+**Before making manual code changes**, search for existing OpenRewrite recipes that can automatically fix the error:
+
+1. **Search the OpenRewrite recipe catalog:**
+   ```bash
+   # List all available recipes in the rewrite-migrate-java dependency
+   ./gradlew rewriteDiscover
+   ```
+
+2. **Search for recipes by keyword** related to the error:
+   - Visit the OpenRewrite recipe catalog: https://docs.openrewrite.org/recipes
+   - Search for recipes related to the error (e.g., "deprecated", "remove", "migrate", specific API names)
+   - Look specifically in the "Java version migration" section: https://docs.openrewrite.org/recipes/java/migrate
+
+3. **Common OpenRewrite recipes for Java 21 migration:**
+   - `org.openrewrite.java.migrate.RemovedModifierRestrictions` - Fix removed modifier restrictions
+   - `org.openrewrite.java.migrate.DeprecatedAPIs` - Replace deprecated APIs
+   - `org.openrewrite.java.migrate.RemovedJavaSecurityManagerAPIs` - Remove SecurityManager usage
+   - `org.openrewrite.java.migrate.RemovedThreadMethods` - Update removed Thread methods
+   - `org.openrewrite.java.migrate.jakarta.*` - Migrate javax to jakarta packages
+   - Search for more recipes at: https://docs.openrewrite.org/recipes/java/migrate/upgradetojava21
+
+4. **If a relevant recipe is found:**
+   - Add it to the `rewrite` configuration block in [build.gradle](build.gradle):
+     ```groovy
+     rewrite {
+       activeRecipe("org.openrewrite.java.migrate.UpgradeToJava21")
+       activeRecipe("org.openrewrite.java.migrate.PatternMatchingInstanceof")
+       activeRecipe("org.openrewrite.java.migrate.SwitchExpressions")
+       activeRecipe("org.openrewrite.java.migrate.SwitchPatternMatching")
+       activeRecipe("org.openrewrite.java.migrate.<NewRecipeForTheError>")  // Add the new recipe
+     }
+     ```
+   - Re-run the OpenRewrite migration:
+     ```bash
+     ./gradlew rewriteRun
+     ```
+   - Re-run the build to verify the fix:
+     ```bash
+     ./gradlew clean build
+     ```
+   - If the error is resolved, continue to the next error (if any)
+   - If the error persists, proceed to Step 3
+
+##### Step 3: Search the Internet for Solutions
+
+**If no OpenRewrite recipe is found or the recipe didn't resolve the error**, search the Internet for solutions:
+
+1. **Construct an effective search query** using:
+   - The exact error message (in quotes)
+   - "Java 21" or "Java 17 to 21 migration"
+   - The affected API, class, or method name
+   - Example: `"java.lang.SecurityManager deprecated" Java 21 migration`
+
+2. **Search authoritative sources in this order:**
+   - **Official Java documentation:**
+     - Java 21 Release Notes: https://www.oracle.com/java/technologies/javase/21-relnotes.html
+     - Java 21 API Documentation: https://docs.oracle.com/en/java/javase/21/docs/api/
+     - JEP (JDK Enhancement Proposals) related to Java 21
+   - **Stack Overflow** with filters:
+     - Search with tags: [java-21], [java], [migration]
+     - Look for answers with high votes and recent dates (2023+)
+   - **GitHub Issues and Discussions:**
+     - Search in repositories of affected third-party libraries
+     - Look for migration guides and compatibility issues
+   - **Technical blogs and migration guides:**
+     - Baeldung, DZone, InfoQ articles on Java 21 migration
+     - Spring Blog (if using Spring Framework)
+
+3. **Evaluate search results:**
+   - Prioritize official documentation and well-established sources
+   - Look for solutions that explain the root cause, not just workarounds
+   - Verify the solution applies to your specific Java version (17 → 21)
+   - Check if the solution has been tested and validated by others
+
+4. **Document the source** of the solution for future reference
+
+##### Step 4: Apply Manual Code Fixes
+
+**If OpenRewrite recipes and Internet research provide a solution**, apply the fix manually:
+
+1. **Common fix patterns for Java 21 migration:**
+
+   **A. Deprecated API Replacement:**
+   ```java
+   // Before (Java 17)
+   Integer.parseInt("123", 10);
+
+   // After (Java 21) - if the API was removed or changed
+   // Use the recommended replacement from documentation
+   ```
+
+   **B. Package Migration (javax → jakarta):**
+   ```java
+   // Before
+   import javax.servlet.http.HttpServlet;
+
+   // After
+   import jakarta.servlet.http.HttpServlet;
+   ```
+
+   **C. SecurityManager Removal:**
+   ```java
+   // Before
+   SecurityManager sm = System.getSecurityManager();
+
+   // After
+   // Remove SecurityManager usage or use alternative security mechanisms
+   ```
+
+   **D. Thread Method Changes:**
+   ```java
+   // Before
+   Thread.stop();  // Removed in Java 21
+
+   // After
+   // Use interrupt() and proper thread coordination
+   thread.interrupt();
+   ```
+
+   **E. Third-party Library Updates:**
+   - Check if a newer version of the library supports Java 21
+   - Update the dependency version in [build.gradle](build.gradle):
+     ```groovy
+     dependencies {
+       implementation 'group:artifact:new-version'  // Updated version
+     }
+     ```
+
+2. **Make targeted, minimal changes:**
+   - Only modify the code necessary to fix the error
+   - Avoid refactoring or restructuring beyond what's needed
+   - Preserve existing functionality and behavior
+
+3. **Test the fix:**
+   - Re-run the build after each fix
+   - Verify the specific error is resolved
+   - Ensure no new errors are introduced
+
+##### Step 5: Document Unresolvable Errors
+
+**If the error cannot be resolved** after trying all strategies:
+
+1. **Create a detailed error report** including:
+   - Complete error message and stack trace
+   - File path and line number
+   - Error category (from Step 1)
+   - OpenRewrite recipes attempted (if any)
+   - Internet search queries used
+   - Solutions attempted and why they didn't work
+   - Links to relevant documentation or Stack Overflow posts
+   - Recommended next steps or alternatives
+
+2. **Add the error to the unresolved errors list** for the final report
+
+3. **Continue to the next error** (if within iteration limits) or exit the loop
+
+##### Step 6: Track Error Resolution Progress
+
+**To implement stalled progress detection:**
+
+1. **Maintain a record** of errors encountered in each iteration:
+   - Error signature (file path + line number + error message)
+   - Iteration number when the error was first seen
+   - Resolution attempts made
+
+2. **Compare errors across iterations:**
+   - If the exact same error appears in 3 consecutive iterations, it's considered "stalled"
+   - Stop attempting to fix that error and add it to the unresolvable list
+
+3. **Count successful fixes:**
+   - If at least one error is fixed in an iteration, continue to the next iteration
+   - If no progress is made (same number of errors or same errors), increment the stall counter
+
+##### Example Workflow
+
+**Example: Fixing a deprecated API error**
+
+1. **Error encountered:**
+   ```
+   error: cannot find symbol
+   symbol:   method getSubject()
+   location: class javax.security.auth.Subject
+   ```
+
+2. **Categorize:** API Deprecation/Removal
+
+3. **Search OpenRewrite recipes:**
+   - Find recipe: `org.openrewrite.java.migrate.RemovedJavaSecurityManagerAPIs`
+   - Add recipe to build.gradle
+   - Run `./gradlew rewriteRun`
+   - Result: Error persists (recipe doesn't cover this specific case)
+
+4. **Search Internet:**
+   - Query: `"Subject.getSubject() deprecated" Java 21 migration`
+   - Find: Official Java 21 release notes indicating `Subject.getSubject()` was removed
+   - Solution: Use `Subject.current()` instead
+
+5. **Apply fix:**
+   ```java
+   // Before
+   Subject subject = Subject.getSubject(AccessController.getContext());
+
+   // After
+   Subject subject = Subject.current();
+   ```
+
+6. **Verify:**
+   - Run `./gradlew clean build`
+   - Error resolved ✓
 
 ---
 
