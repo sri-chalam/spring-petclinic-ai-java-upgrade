@@ -529,15 +529,21 @@ The `rewrite-migrate-java` recipe provides automated refactoring rules for Java 
 
 ### 5.4 Configure Rewrite Task
 
-Add a configuration block for the rewrite task in [build.gradle](build.gradle) to specify the Java 17 to 21 migration recipe:
+Add a configuration block for the rewrite task in [build.gradle](build.gradle) to specify the Java 17 to 21 migration recipes:
 
 ```groovy
 rewrite {
   activeRecipe("org.openrewrite.java.migrate.UpgradeToJava21")
+  activeRecipe("org.openrewrite.java.migrate.PatternMatchingInstanceof")
+  activeRecipe("org.openrewrite.java.migrate.SwitchExpressions")
+  activeRecipe("org.openrewrite.java.migrate.SwitchPatternMatching")
 }
 ```
 
-This tells OpenRewrite to apply the Java 21 migration recipe when running rewrite tasks.
+This tells OpenRewrite to apply the Java 21 migration recipes when running rewrite tasks. In addition to the core Java 21 upgrade recipe, this configuration includes recipes for:
+- Pattern matching for instanceof expressions
+- Switch expressions (introduced in Java 14, enhanced in later versions)
+- Pattern matching in switch statements (preview in Java 17, finalized in Java 21)
 
 ### 5.5 Run Rewrite Migration
 

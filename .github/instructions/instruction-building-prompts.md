@@ -217,3 +217,11 @@ Change the scripts such that import the certs only if the JDK is installed as pa
 Somewhere In the beginning of the instruction file, add instruction to skip all the instructions, if the current application does not have Java 17.
 
 In order to find whether the current Java version, check build.gradle or gradle.properties.
+
+### Iterative Prompt - adding additional Rewrite Recipes - Use couple of minor new features
+
+In the list of active Recipes, in addition to the UpgradeToJava21, add the following recipes:
+"org.openrewrite.java.migrate.PatternMatchingInstanceof"
+"org.openrewrite.java.migrate.SwitchExpressions"
+"org.openrewrite.java.migrate.SwitchPatternMatching"
+
