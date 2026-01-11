@@ -163,7 +163,7 @@ Before using the Java 17 to Java 21 upgrade instruction file, ensure your enviro
 1. **Operating System**: macOS 
 2. **Current Java Version**: Must be Java 17 
 3. **Build Tool**: Gradle with Groovy DSL (`build.gradle`) - Maven and Gradle Kotlin DSL require adaptation
-4. **Required Tools**: `curl` and Git
+4. **Required Tools**: `curl` and `git`
 
 ### Scope Limitations
 
@@ -178,9 +178,9 @@ Before using the Java 17 to Java 21 upgrade instruction file, ensure your enviro
 For Java 21 compatibility, your Gradle version must meet these requirements:
 - **Gradle 8.5+**: Full support for Java 21 (recommended)
 
-The upgrade instructions will automatically upgrade Gradle to version 8.11 if your current version is below 8.5.
+The upgrade instructions will automatically upgrade Gradle wrapper to version 8.11 if your current version is below 8.5.
 
-**Note:** The instructions will only upgrade Gradle if the current wrapper version is below 8.5. If your project already uses Gradle 8.5 or higher (including 9.x), the Gradle wrapper will not be modified. If your project does not contain a Gradle wrapper, one will not be installed.
+**Note:** The instructions will only upgrade Gradle wrapper if the current wrapper version is below 8.5. If your project already uses Gradle 8.5 or higher (including 9.x), the Gradle wrapper will not be modified. If your project does not contain a Gradle wrapper, one will not be installed.
 
 ### Compatibility Note
 
@@ -252,11 +252,15 @@ The upgrade process is automated through a series of steps that handle both envi
 
 9. **CI/CD Pipeline Updates**: Updates CI/CD configuration files (see "Updated CI/CD and Build Files" section for details)
 
-10. **Iterative Build/Fix Loop**: After OpenRewrite migration, performs an automated build/fix cycle to resolve any remaining compilation errors and test failures that OpenRewrite couldn't handle automatically. This loop:
+10. **Iterative Build/Fix Loop**: After OpenRewrite migration, performs an automated build/fix cycle to resolve any remaining compilation errors and test failures that OpenRewrite couldn't handle automatically. The loop executes up to 5 iterations maximum and exits early if the same error persists for 3 consecutive attempts. This loop:
    - Executes `./gradlew clean build` to compile code and run tests
    - Analyzes compilation errors and identifies root causes
-   - Fixes common issues
+   - Applies fixes using a three-tier resolution strategy:
+     1. **OpenRewrite recipes** - Searches for and applies automated recipes (safest approach)
+     2. **Internet search** - Researches solutions from official Java documentation, Stack Overflow, and technical resources
+     3. **Manual code fixes** - Applies targeted code changes as a last resort
    - Re-runs the build after each fix
+   - Documents unresolved errors if maximum iterations are reached
 
 ## OpenRewrite and Recipes Used
 
