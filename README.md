@@ -295,7 +295,7 @@ The upgrade instructions use the following OpenRewrite recipes:
 
 ## Organization Trusted Certificates
 
-If your organization uses custom trusted certificates (e.g., for internal Certificate Authorities or corporate proxies), these certificates need to be copied to certain directory before executing the Java upgrade instructions.
+If your organization uses custom trusted certificates (e.g., for internal Certificate Authorities or corporate proxies), these certificates need to be imported into the newly installed Java 21 keystore. To enable this, copy your organization's trusted certificates to a specific directory before executing the Java upgrade instructions. The LLM will then automatically import these certificates into Java 21 during the upgrade process.
 
 ### Certificate Preparation Requirements
 
@@ -304,17 +304,16 @@ If your organization uses custom trusted certificates (e.g., for internal Certif
 2. **Supported Certificate Formats**: Only certificates with `.pem`, `.cer`, or `.crt` file extensions will be imported. Files with other extensions will be ignored during the import process.
 
 3. **Certificate Import Process**:
-   - The upgrade instructions will automatically detect and import all valid certificates from `~/trusted-certs/`
+   - The upgrade instructions will automatically detect and import all certificate files with supported extensions from `~/trusted-certs/`
    - Each certificate will be imported into the Java cacerts truststore with a unique alias
    - The import only occurs when Java 21 is freshly installed (not if it's already present)
+   - Note: The process imports files based on extension only; it does not validate certificate authenticity or format
 
 4. **Optional Step**: If your organization does not use custom trusted certificates, this step can be skipped. The upgrade continues normally if no certificates are found.
 
 Once the certificates are in place, proceed with the Java upgrade instructions as documented below.
 
 ## How to Execute the Java 17 to Java 21 Upgrade Instructions
-
-This repository provides automated AI-driven instructions to upgrade Java applications from version 17 to version 21.
 
 ### Overview
 
@@ -323,7 +322,7 @@ The upgrade process consists of two instruction files that should be copied into
 1. **Instruction File** - Contains the detailed step-by-step procedures for the upgrade
 2. **LLM Prompt File** - Contains the prompt that directs an AI agent to execute the instructions
 
-Once these files are in place, the upgrade can be executed by referencing the prompt file in an AI coding agent, which will systematically work through all the necessary steps.
+Once these files are in place, the upgrade can be executed by referencing the prompt file in LLM, which will systematically work through all the necessary steps.
 
 ### Step 1: Download the Instruction File
 
@@ -351,7 +350,7 @@ Save this file in the same location as the instruction file:
 
 ### Step 3: Execute the Upgrade with an LLM
 
-In your LLM chat interface (such as Claude, ChatGPT, or any AI coding agent), reference the prompt file location to initiate the upgrade process:
+In your LLM chat interface (such as Claude, ChatGPT, Copilot or any AI coding agent), reference the prompt file location to initiate the upgrade process:
 
 ```
 Follow the instructions in @docs/ai-tasks/instructions/java-17-to-21-upgrade-llm-prompt.md
@@ -367,14 +366,14 @@ After the upgrade instructions have been executed, it's important to validate th
 
 #### 1.1 Execute End-to-End Tests
 
-Run your application's end-to-end test suite to verify that the system works correctly as a whole:
-
-Ensure that all critical user workflows and integrations are functioning correctly with Java 21.
+Run your application's end-to-end test suite to verify that the system works correctly as a whole. Ensure that all critical user workflows and integrations are functioning correctly with Java 21.
 
 #### 1.2 Execute Integration Tests (if available)
 
+If your project has integration tests, run them using your project's specific test command. For example:
+
 ```zsh
-# Example for Gradle
+# Example for Gradle projects
 ./gradlew integrationTest
 ```
 
@@ -402,15 +401,13 @@ For IDEs such as IntelliJ IDEA, update the project settings to use the new Java 
 2. **Update Project Structure:**
    - Navigate to: `File` → `Project Structure` → `Project`
    - Set "SDK" to Java 21
-   - Set "Language level" to "21 - Record patterns, pattern matching for switch"
-
-3. **Update Module Settings:**
-   - Navigate to: `File` → `Project Structure` → `Modules`
-   - For each module, verify the "Language level" is set appropriately
+   - Set "Language level" to "SDK default"
 
 After making these changes, rebuild the project in your IDE to ensure everything compiles correctly with the new Java version.
 
-### Step 3: Upgrading to Java 25
+### Step 3: Future Upgrade Path to Java 25 (Optional)
+
+If you need to upgrade to Java 25 in the future, separate upgrade instructions are available.
 
 **For Java 21 to Java 25 Upgrades:**
 
@@ -439,4 +436,4 @@ Using individual instruction files for each upgrade path (17→21, 21→25) is m
 
 ### Development Notes
 
-The AI instruction files in this repository were developed using Claude Sonnet 4.5, but are designed to be LLM-agnostic and work with any AI coding agent that supports file operations and terminal commands.
+The AI instruction files referenced in this article were developed using Claude Sonnet 4.5, but are designed to be LLM-agnostic and work with any AI coding agent that supports file operations and terminal commands.
