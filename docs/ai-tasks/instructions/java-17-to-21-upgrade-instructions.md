@@ -28,6 +28,70 @@ If the project uses Maven instead of Gradle, skip all Gradle-specific steps (Ste
 
 **IMPORTANT: DO NOT upgrade Spring Boot version during the Java upgrade.** Spring Boot will be upgraded in a separate task using a separate instruction file. This instruction file is focused solely on upgrading Java from version 17 to version 21.
 
+## Gradle Project Structure Assumptions
+
+**CRITICAL:** This section describes how Gradle projects can be structured. AI agents must understand these patterns to correctly locate and modify build files throughout the upgrade process.
+
+### Single-Module Projects
+
+In single-module projects:
+- Root directory contains: `build.gradle` or `build.gradle.kts`
+- All plugins and dependencies are declared in the root build file
+- Simple, straightforward structure
+
+### Multi-Module Projects
+
+In multi-module projects:
+- **Root directory** may contain a minimal `build.gradle` or `build.gradle.kts` that only has project-wide configuration (no plugins or dependencies)
+- **Submodules** in subdirectories (e.g., `app/`, `core/`, `service/`, `api/`) each have their own `build.gradle` or `build.gradle.kts` files
+- **Plugins and dependencies** may be declared in:
+  - Root build file only (applied to all modules)
+  - Individual submodule build files only
+  - Both root and submodule build files (with different configurations per module)
+  - The root build file may be empty or minimal, with all actual build logic in submodules
+
+### Dependency Declaration Locations
+
+Dependencies can be declared in multiple locations:
+- **Traditional approach:** `build.gradle` or `build.gradle.kts` (at root level or in any submodule)
+- **Version catalogs:** `gradle/libs.versions.toml` or other `gradle/*.toml` files
+
+### Variable Declaration Locations
+
+Version numbers and other values may be referenced as variables defined in:
+- **gradle.properties:** Simple key-value pairs (e.g., `javaVersion=17`)
+- **ext {} block:** Extra properties in `build.gradle` or `build.gradle.kts` (commonly used in multi-module projects to define shared values in the root build file)
+  ```groovy
+  ext {
+      javaVersion = '17'
+      springBootVersion = '3.1.0'
+  }
+  ```
+
+### Important Guidelines for AI Agents
+
+When these instructions reference `build.gradle`, `build.gradle.kts`, or dependency files, the AI agent must:
+
+1. **Search comprehensively:**
+   - First check the root directory
+   - If not found OR if the root file is minimal (no plugins/dependencies), search all subdirectories
+   - Use `find` command to locate all build files: `find . -type f \( -name "build.gradle" -o -name "build.gradle.kts" \)`
+
+2. **Add to the correct location:**
+   - Add plugins and dependencies to build files that already contain them
+   - Do NOT blindly add to the root build file if it's empty or minimal
+   - For multi-module projects, you may need to modify multiple build files
+
+3. **Check for version catalogs:**
+   - Look for `gradle/libs.versions.toml` or other `.toml` files
+   - Update dependency versions in the appropriate location (build file vs. version catalog)
+
+4. **Verify variable references:**
+   - Dependencies may reference variables from `gradle.properties` or other build files
+   - Resolve variable values before making changes
+
+**Throughout this document, whenever build files are mentioned, refer back to this section to ensure correct file location and modification.**
+
 ## Guidelines for AI Agent Execution
 
 When executing these instructions, the AI agent should:
@@ -45,6 +109,8 @@ When executing these instructions, the AI agent should:
 6. **Use Dynamic Values**: Prefer dynamically detecting versions and paths over hardcoded values to ensure the instructions work at the time of execution
 
 7. **Document All Changes**: Maintain an upgrade log file at `/docs/ai-tasks/logs/java-21-upgrade-log.md` to track all fixes applied and unresolved errors (see Section 6.7.1 for detailed logging requirements)
+
+8. **Multi-Module Project Awareness**: Always refer to the "Gradle Project Structure Assumptions" section when locating and modifying build files. Do not assume all projects have a single root `build.gradle` file.
 
 ---
 
@@ -611,17 +677,28 @@ OS:           Mac OS X 14.x.x aarch64
 
 OpenRewrite is an automated refactoring tool that can help migrate Java code from Java 17 to Java 21.
 
+**Before proceeding with Step 6:** Review the "Gradle Project Structure Assumptions" section to understand where build files may be located in single-module vs. multi-module projects.
+
 ### 6.1 Check if OpenRewrite Plugin is Present
 
-First, check if the OpenRewrite plugin is already configured in [build.gradle](build.gradle):
+First, check if the OpenRewrite plugin is already configured in your build file(s).
 
+> **Multi-Module Project Note:** The plugin may be in the root `build.gradle`/`build.gradle.kts` or in submodule build files. Check all build files if needed. See "Gradle Project Structure Assumptions" for details.
+
+Check for the plugin:
 ```zsh
-grep -q "org.openrewrite.rewrite" build.gradle && echo "OpenRewrite plugin found" || echo "OpenRewrite plugin not found"
+# Check root build file
+grep -q "org.openrewrite.rewrite" build.gradle && echo "OpenRewrite plugin found in root" || echo "OpenRewrite plugin not found in root"
+
+# For multi-module projects, check all build files
+find . -type f \( -name "build.gradle" -o -name "build.gradle.kts" \) -exec grep -l "org.openrewrite.rewrite" {} \;
 ```
 
 ### 6.2 Add OpenRewrite Plugin (if not present or upgrade needed)
 
-If the OpenRewrite plugin is not present, or if a newer version is required for Java 17 to 21 migration, add or update it in the `plugins` section of [build.gradle](build.gradle):
+> **Multi-Module Project Note:** Add the plugin to the build file that contains other plugins. This may be the root build file or a submodule build file. See "Gradle Project Structure Assumptions" for guidance.
+
+If the OpenRewrite plugin is not present, or if a newer version is required for Java 17 to 21 migration, add or update it in the `plugins` section of your build file:
 
 ```groovy
 plugins {
@@ -634,7 +711,9 @@ plugins {
 
 ### 6.3 Add Rewrite Dependencies (if not present)
 
-Check if the OpenRewrite dependencies are already present in your build file ([build.gradle](build.gradle) or [build.gradle.kts](build.gradle.kts)). If they are not present, add them to the `dependencies` section:
+> **Multi-Module Project Note:** Add dependencies to the build file that already contains other dependencies. Refer to "Gradle Project Structure Assumptions" for guidance on locating the correct build file.
+
+Check if the OpenRewrite dependencies are already present in your build file. If they are not present, add them to the `dependencies` section:
 
 ```groovy
 dependencies {
@@ -650,10 +729,7 @@ dependencies {
 
 The `rewrite-migrate-java` recipe provides automated refactoring rules for Java version migrations.
 
-**Notes:**
-- If these dependencies already exist in the build file, skip this step and proceed to the next section.
-- For multi-module projects, these dependencies are typically added to the root `build.gradle` or `build.gradle.kts` file. However, if subprojects have their own build files in subdirectories, you may need to add these dependencies to the appropriate subproject build files as well.
-- In some project structures, the root-level `build.gradle` or `build.gradle.kts` file may not contain plugins or dependencies. Instead, these are defined in submodule build files (e.g., in subdirectories like `app/build.gradle` or `service/build.gradle.kts`). In such cases, add the OpenRewrite plugin and dependencies to the build file(s) that already contain plugins and dependencies.
+**Note:** If these dependencies already exist in the build file, skip this step and proceed to the next section.
 
 ### 6.4 Run Rewrite Migration
 
@@ -1004,9 +1080,12 @@ When compilation errors or test failures occur, follow this systematic approach 
    ```
 
    **E. Third-party Library Updates:**
+
+   > **Multi-Module Project Note:** Dependencies may be in root or submodule build files, or in version catalog files. Refer to "Gradle Project Structure Assumptions" to locate the correct file.
+
    - Check if a newer version of the library supports Java 21
    - Update the dependency version in your dependency configuration file:
-     - [build.gradle](build.gradle) or [build.gradle.kts](build.gradle.kts) for traditional dependency declarations
+     - [build.gradle](build.gradle) or [build.gradle.kts](build.gradle.kts) for traditional dependency declarations (check root and submodule directories)
      - [gradle/libs.versions.toml](gradle/libs.versions.toml) if using Gradle version catalogs
 
      Example for build.gradle:
