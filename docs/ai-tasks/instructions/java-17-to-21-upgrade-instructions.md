@@ -28,7 +28,7 @@ If the project uses Maven instead of Gradle, skip all Gradle-specific steps (Ste
 
 **IMPORTANT: DO NOT upgrade Spring Boot version during the Java upgrade.** Spring Boot will be upgraded in a separate task using a separate instruction file. This instruction file is focused solely on upgrading Java from version 17 to version 21.
 
-## Gradle Project Structure Assumptions
+## Gradle Project Structure Patterns
 
 **CRITICAL:** This section describes how Gradle projects can be structured. AI agents must understand these patterns to correctly locate and modify build files throughout the upgrade process.
 
@@ -110,7 +110,7 @@ When executing these instructions, the AI agent should:
 
 7. **Document All Changes**: Maintain an upgrade log file at `/docs/ai-tasks/logs/java-21-upgrade-log.md` to track all fixes applied and unresolved errors (see Section 6.7.1 for detailed logging requirements)
 
-8. **Multi-Module Project Awareness**: Always refer to the "Gradle Project Structure Assumptions" section when locating and modifying build files. Do not assume all projects have a single root `build.gradle` file.
+8. **Multi-Module Project Awareness**: Always refer to the "Gradle Project Structure Patterns" section when locating and modifying build files. Do not assume all projects have a single root `build.gradle` file.
 
 ---
 
@@ -677,13 +677,13 @@ OS:           Mac OS X 14.x.x aarch64
 
 OpenRewrite is an automated refactoring tool that can help migrate Java code from Java 17 to Java 21.
 
-**Before proceeding with Step 6:** Review the "Gradle Project Structure Assumptions" section to understand where build files may be located in single-module vs. multi-module projects.
+**Before proceeding with Step 6:** Review the "Gradle Project Structure Patterns" section to understand where build files may be located in single-module vs. multi-module projects.
 
 ### 6.1 Check if OpenRewrite Plugin is Present
 
 First, check if the OpenRewrite plugin is already configured in your build file(s).
 
-> **Multi-Module Project Note:** The plugin may be in the root `build.gradle`/`build.gradle.kts` or in submodule build files. Check all build files if needed. See "Gradle Project Structure Assumptions" for details.
+> **Multi-Module Project Note:** The plugin may be in the root `build.gradle`/`build.gradle.kts` or in submodule build files. Check all build files if needed. See "Gradle Project Structure Patterns" for details.
 
 Check for the plugin:
 ```zsh
@@ -696,7 +696,7 @@ find . -type f \( -name "build.gradle" -o -name "build.gradle.kts" \) -exec grep
 
 ### 6.2 Add OpenRewrite Plugin (if not present or upgrade needed)
 
-> **Multi-Module Project Note:** Add the plugin to the build file that contains other plugins. This may be the root build file or a submodule build file. See "Gradle Project Structure Assumptions" for guidance.
+> **Multi-Module Project Note:** Add the plugin to the build file that contains other plugins. This may be the root build file or a submodule build file. See "Gradle Project Structure Patterns" for guidance.
 
 If the OpenRewrite plugin is not present, or if a newer version is required for Java 17 to 21 migration, add or update it in the `plugins` section of your build file:
 
@@ -711,7 +711,7 @@ plugins {
 
 ### 6.3 Add Rewrite Dependencies (if not present)
 
-> **Multi-Module Project Note:** Add dependencies to the build file that already contains other dependencies. Refer to "Gradle Project Structure Assumptions" for guidance on locating the correct build file.
+> **Multi-Module Project Note:** Add dependencies to the build file that already contains other dependencies. Refer to "Gradle Project Structure Patterns" for guidance on locating the correct build file.
 
 Check if the OpenRewrite dependencies are already present in your build file. If they are not present, add them to the `dependencies` section:
 
@@ -1081,7 +1081,7 @@ When compilation errors or test failures occur, follow this systematic approach 
 
    **E. Third-party Library Updates:**
 
-   > **Multi-Module Project Note:** Dependencies may be in root or submodule build files, or in version catalog files. Refer to "Gradle Project Structure Assumptions" to locate the correct file.
+   > **Multi-Module Project Note:** Dependencies may be in root or submodule build files, or in version catalog files. Refer to "Gradle Project Structure Patterns" to locate the correct file.
 
    - Check if a newer version of the library supports Java 21
    - Update the dependency version in your dependency configuration file:
