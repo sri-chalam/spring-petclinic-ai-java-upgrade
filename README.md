@@ -24,7 +24,7 @@ The outcome of this exploration will be a set of AI-generated instructions and b
 ### AI Instructions File
 An AI Instruction Markdown file is a structured document (typically with a .md extension) that contains prompts, guidelines, and instructions for how an AI model should behave or respond.
 
-Instructions file contains things like:
+An instructions file contains things like:
 - Task-specific instructions
 - Behavioral guidelines and constraints
 
@@ -91,7 +91,7 @@ To properly address all these variations and provide concrete examples for each 
 
 ## Why Custom Instructions Instead of Automated Tools?
 
-The AI assistants such as GitHub Copilot app modernization and Amazon Q Developer offer features to upgrade Java, Spring Boot version. However, having a custom instruction file to upgrade have multiple advantages.
+The AI agents, such as GitHub Copilot App Modernization and Amazon Q Developer offer features to upgrade Java, Spring Boot version. However, having a custom instruction file to upgrade have multiple advantages.
 
 ### Benefits of Custom Instructions File
 
@@ -111,14 +111,14 @@ The AI assistants such as GitHub Copilot app modernization and Amazon Q Develope
 - Same capability as GitHub Copilot's automated loop, but transparent and customizable
 - Addresses what OpenRewrite can't automate (OpenRewrite isn't exhaustive and has missing recipes for third-party libraries)
 
-**Misc.**
+**Additional Benefits**
 - Serves as documentation
 - Can embed organization-specific requirements and coding standards
-- What ever the tool used, some manual intervention is required for edge cases and unsupported libraries
+- Whatever the tool used, some manual intervention is required for edge cases and unsupported libraries
 
 ### What About Third-Party Library Migrations?
 
-Both OpenRewrite and GitHub Copilot App Modernization have the **some limitation** for third-party library migrations:
+Both OpenRewrite and GitHub Copilot App Modernization have **some limitations** for third-party library migrations:
 
 **The Core Issue:**
 - OpenRewrite can only migrate libraries that have **predefined recipes**
@@ -278,7 +278,7 @@ This log provides full traceability of all changes made during the upgrade and s
 
 ## OpenRewrite and Recipes Used
 
-**OpenRewrite** is an automated refactoring tool that applies code transformations through reusable security fixes, migrations, and code quality improvements recipes.
+**OpenRewrite** is an automated refactoring tool that applies code transformations through reusable security fixes, migrations, and code quality improvement recipes.
 
 **Recipes** are predefined transformation patterns that transform code to adopt new language features, fix deprecated APIs, patch security vulnerabilities, or improve code quality. In addition to built-in recipes, there are community-provided recipes available, and teams can create custom recipes to implement organization-specific transformations.
 
@@ -428,12 +428,52 @@ For each of these upgrade paths, there are two separate instruction files provid
 
 Using individual instruction files for each upgrade path (17→21, 21→25) is more modular and reduces complexity. If a single instruction file attempted to handle multiple upgrade paths (17→21 or 21→25 or 17→25), the instructions would become complex and could confuse or cause hallucination in LLMs. Separate, focused instruction files ensure clearer execution and more predictable results.
 
+## Lessons Learned
+
+Building these AI instruction files revealed several important lessons that can save time and prevent common pitfalls.
+
+### AI-Generated Instructions Need Human Review
+
+When first creating these instructions with AI assistance, it's easy to trust the output without sufficient scrutiny. A critical example: the initial instructions added the `activeRecipes` list directly to `build.gradle`.
+
+While this worked functionally, OpenRewrite's documentation indicates this isn't best practice. Since Java upgrades are one-time migrations, these recipes don't need to be committed to the build file. Additionally, teams often want to run specific recipes (like static code analysis) separately and more frequently.
+
+**Takeaway:** Always review AI-generated instructions critically and consult official documentation. Question the approach, discuss alternatives with the AI agent, and refine the instructions iteratively.
+
+### The Build/Fix Loop Required Multiple Iterations
+
+The initial build/fix loop instructions had significant gaps:
+
+- **Infinite loop risk:** If the AI agent couldn't resolve certain errors, the loop would continue indefinitely without recognition
+- **Missing diagnostic guidance:** There were no instructions on how to systematically identify the root cause of compilation errors
+- **Lack of resolution strategies:** The instructions didn't provide a tiered approach for attempting fixes (recipes first, then research, then code changes)
+
+These instructions required refinement through trial and error, adding:
+- Maximum iteration limits (5 attempts)
+- Early exit conditions (same error 3 times consecutively)
+- A three-tier resolution strategy (OpenRewrite recipes → Internet research → Automated fixes)
+- Comprehensive logging of all attempts and outcomes
+
+**Takeaway:** Build/fix loops need explicit guardrails, diagnostic procedures, and escalation strategies to prevent infinite loops and ensure transparency.
+
+## Where to Go From Here
+
+The key takeaway from this work is that **instruction files created with AI assistance can deliver substantial value with relatively modest effort**—but they're not magic bullets.
+
+Creating these instruction files takes a fraction of the time a full custom AI agent would require, while still providing much of the benefit. The build/fix loop mimics what sophisticated AI platforms do, but with full transparency into every decision.
+
+However, every codebase is unique. Users will likely need to:
+- Adjust the instructions for their specific Java distribution and tooling
+- Add organization-specific requirements not covered here
+- Handle edge cases that arise in their particular context
+
+These instruction files should be treated as collaborative starting points. They work best when treated as living documents, refined based on real-world experiences and shared improvements with the community.
+
+Additional instructions are being developed for Java 25 upgrades and other migration scenarios. Feedback on what works, what doesn't, and how these instructions have been adapted for different use cases is welcome and appreciated.
+
+
 ## References
 
 - [GitHub Awesome Copilot - Instructions](https://github.com/github/awesome-copilot/tree/main/instructions) - A community-contributed collection of instruction files for GitHub Copilot and AI coding agents
 
 - [OpenRewrite Java Recipes Catalog](https://docs.openrewrite.org/recipes/java)
-
-### Development Notes
-
-The AI instruction files referenced in this article were developed using Claude Sonnet 4.5, but are designed to be LLM-agnostic and work with any AI coding agent that supports file operations and terminal commands.
