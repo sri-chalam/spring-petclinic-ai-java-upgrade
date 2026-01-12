@@ -885,16 +885,29 @@ When compilation errors or test failures occur, follow this systematic approach 
    - Search for recipes related to the error (e.g., "deprecated", "remove", "migrate", specific API names)
    - Look specifically in the "Java version migration" section: https://docs.openrewrite.org/recipes/java/migrate
 
-3. **Common OpenRewrite recipes for Java 21 migration:**
+3. **Search for additional OpenRewrite recipes:**
+
+   **Note:** The `UpgradeToJava21` recipe executed in section 6.4 is a comprehensive recipe that includes many common migration sub-recipes. However, if you encounter compilation errors, there may be additional specialized recipes that weren't included or that need to be run independently.
+
+   **How to search for recipes:**
+   - Visit the OpenRewrite recipe catalog: https://docs.openrewrite.org/recipes/java/migrate/upgradetojava21
+   - Look for recipes that specifically address the error you're seeing
+   - Check if the recipe is already included in `UpgradeToJava21` by reviewing the recipe composition page
+
+   **Examples of specialized recipes that might help:**
    - `org.openrewrite.java.migrate.RemovedModifierRestrictions` - Fix removed modifier restrictions
    - `org.openrewrite.java.migrate.DeprecatedAPIs` - Replace deprecated APIs
    - `org.openrewrite.java.migrate.RemovedJavaSecurityManagerAPIs` - Remove SecurityManager usage
    - `org.openrewrite.java.migrate.RemovedThreadMethods` - Update removed Thread methods
-   - `org.openrewrite.java.migrate.jakarta.*` - Migrate javax to jakarta packages
-   - Search for more recipes at: https://docs.openrewrite.org/recipes/java/migrate/upgradetojava21
+   - `org.openrewrite.java.migrate.jakarta.*` - Migrate javax to jakarta packages (often needed for Spring/Jakarta EE projects)
+
+   **When to run additional recipes:**
+   - Only if the error is clearly related to a specific migration pattern
+   - If the recipe is NOT already part of `UpgradeToJava21` (check the recipe documentation)
+   - For specialized migrations like javax → jakarta that may not be in the core upgrade recipe
 
 4. **If a relevant recipe is found:**
-   - Run ONLY the new recipe to fix the specific error (do not re-run the recipes that were already executed in section 5.4):
+   - Run ONLY the new recipe to fix the specific error (do not re-run the recipes that were already executed in section 6.4):
      ```bash
      ./gradlew rewriteRun \
        -Drewrite.activeRecipes=org.openrewrite.java.migrate.<NewRecipeForTheError>
@@ -902,7 +915,7 @@ When compilation errors or test failures occur, follow this systematic approach 
      Replace `<NewRecipeForTheError>` with the actual recipe name that addresses the error.
 
    **Why run only the new recipe?**
-   - The initial migration recipes (`UpgradeToJava21`, `PatternMatchingInstanceof`, `SwitchExpressions`, `SwitchPatternMatching`) have already been executed in section 5.4
+   - The initial migration recipes (`UpgradeToJava21`, `PatternMatchingInstanceof`, `SwitchExpressions`, `SwitchPatternMatching`) have already been executed in section 6.4
    - Re-running them is unnecessary and wasteful - they are idempotent but will re-scan the entire codebase
    - Running only the new recipe is faster and makes it easier to see what changed in git diff
    - OpenRewrite recipes are designed to be independent and can be run individually
@@ -992,11 +1005,24 @@ When compilation errors or test failures occur, follow this systematic approach 
 
    **E. Third-party Library Updates:**
    - Check if a newer version of the library supports Java 21
-   - Update the dependency version in [build.gradle](build.gradle):
+   - Update the dependency version in your dependency configuration file:
+     - [build.gradle](build.gradle) or [build.gradle.kts](build.gradle.kts) for traditional dependency declarations
+     - [gradle/libs.versions.toml](gradle/libs.versions.toml) if using Gradle version catalogs
+
+     Example for build.gradle:
      ```groovy
      dependencies {
        implementation 'group:artifact:new-version'  // Updated version
      }
+     ```
+
+     Example for gradle/libs.versions.toml:
+     ```toml
+     [versions]
+     library = "new-version"
+
+     [libraries]
+     library-name = { group = "group", name = "artifact", version.ref = "library" }
      ```
 
 2. **Make targeted, minimal changes:**
