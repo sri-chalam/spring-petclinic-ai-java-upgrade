@@ -1,25 +1,21 @@
  
-# spring-petclinic-ai-java-upgrade
+# Automating Java Upgrades with Custom AI Instructions: Lessons Learned
 
 ## Introduction
 
 AI coding agents have become remarkably powerful tools, capable of implementing solutions in dozens of different ways. However, this flexibility presents a challenge: organizations have specific conventions, standards, and requirements that guide how solutions should be implemented in their particular context.
 
-To effectively leverage AI coding agents, detailed instructions are needed to communicate these organization-specific conventions and guide the agent toward the desired implementation approach. **Even as AI agents continue to mature and become more sophisticated, the need for clear and unambiguous instructions to indicate a specific approach that follows team and organization-specific conventions will remain essential**. This article explores this concept through a practical example: upgrading a Java application from version 17 to version 21 using AI-driven instructions.
+To effectively leverage AI coding agents, detailed instructions are needed to communicate these organization-specific conventions and guide the agent toward the desired implementation approach. **Even as AI agents continue to mature and become more sophisticated, the need for clear and unambiguous instructions that follow team and organization-specific conventions will remain essential**.
+
+This article presents an approach to automating Java version upgrades using custom AI instruction files, along with a set of reusable instructions and best practices.
 
 What might seem like a straightforward task—such as upgrading a Java version—often involves numerous organization-specific decisions that AI agents need guidance to navigate effectively.
 
-## About This Article
+The approach demonstrated here provides key advantages: LLM-agnostic flexibility, cost control, transparency, and customization for organizational conventions.
 
-This article is focused on using AI coding agents for Java version upgrades.
+## Understanding AI Instructions vs. AI Agents
 
-For Java upgrades with organization-specific requirements, AI instruction files provide distinct advantages over generic AI agent platforms: LLM-agnostic flexibility, cost control, transparency, and customization for organizational conventions. This article demonstrates this approach using a practical example.
-
-The Git repository used to test the instructions is available at [https://github.com/sri-chalam/spring-petclinic-ai-java-upgrade](https://github.com/sri-chalam/spring-petclinic-ai-java-upgrade). The source code in this repository is a snapshot taken from the [Spring PetClinic](https://github.com/spring-projects/spring-petclinic) project, which currently uses Java 17. The primary objective is to leverage AI coding agents to upgrade the codebase to Java 21 and Java 25.
-
-The outcome of this exploration will be a set of AI-generated instructions and best practices for automated Java version upgrades.
-
-## Core Concepts
+To understand the approach described in this article, it's helpful to distinguish between two related but different concepts:
 
 ### AI Instructions File
 An AI Instruction Markdown file is a structured document (typically with a .md extension) that contains prompts, guidelines, and instructions for how an AI model should behave or respond.
@@ -91,7 +87,7 @@ To properly address all these variations and provide concrete examples for each 
 
 ## Why Custom Instructions Instead of Automated Tools?
 
-The AI agents, such as GitHub Copilot App Modernization and Amazon Q Developer offer features to upgrade Java, Spring Boot version. However, having a custom instruction file to upgrade have multiple advantages.
+AI agents, such as GitHub Copilot App Modernization and Amazon Q Developer, offer features to upgrade Java and Spring Boot versions. However, having a custom instruction file for upgrades has multiple advantages.
 
 ### Benefits of Custom Instructions File
 
@@ -114,20 +110,19 @@ The AI agents, such as GitHub Copilot App Modernization and Amazon Q Developer o
 **Additional Benefits**
 - Serves as documentation
 - Can embed organization-specific requirements and coding standards
-- Whatever the tool used, some manual intervention is required for edge cases and unsupported libraries
+- Regardless of the tool used, some manual intervention is required for edge cases and unsupported libraries.
 
 ### What About Third-Party Library Migrations?
 
-Both OpenRewrite and GitHub Copilot App Modernization have **some limitations** for third-party library migrations:
+Both OpenRewrite and GitHub Copilot App Modernization have **limitations** for third-party library migrations:
 
 **The Core Issue:**
 - OpenRewrite can only migrate libraries that have **predefined recipes**
-- GitHub Copilot App Modernization uses OpenRewrite for its initial transformation pass, which is limited to available recipes
-- For libraries without recipes (e.g., Ehcache2→Ehcache3, proprietary frameworks), **OpenRewrite's initial pass will skip them. However, Copilot App Modernization's AI agent can then address these migrations through its iterative build/fix loop by researching documentation and examples online, though this is non-deterministic (unlike recipe-based transformations) and requires human oversight.**
+- For libraries without recipes (e.g., Ehcache2→Ehcache3, proprietary frameworks), OpenRewrite cannot perform automated transformations
 
 **Bottom Line:**
-- For standard Java API upgrades: Both tools work well with deterministic, recipe-based transformations
-- For third-party library migrations without recipes: **AI agents can often complete the migration** through web research and iterative build/fix loops, though this requires human oversight and is non-deterministic (unlike recipe-based transformations). Some complex cases may still require manual intervention.
+- For standard Java API upgrades: Recipe-based transformations work well and produce deterministic results
+- For third-party libraries without recipes: Build/fix loops (whether in Copilot or custom instruction files) can address many cases through research and iteration, though this requires human oversight and may not handle all edge cases
 
 ## OpenRewrite vs. Pure AI Agents for Code Transformations
 
