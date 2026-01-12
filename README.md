@@ -24,7 +24,7 @@ The outcome of this exploration will be a set of AI-generated instructions and b
 ### AI Instructions File
 An AI Instruction Markdown file is a structured document (typically with a .md extension) that contains prompts, guidelines, and instructions for how an AI model should behave or respond.
 
-Instructions file contains things like:
+An instructions file contains things like:
 - Task-specific instructions
 - Behavioral guidelines and constraints
 
@@ -91,7 +91,7 @@ To properly address all these variations and provide concrete examples for each 
 
 ## Why Custom Instructions Instead of Automated Tools?
 
-The AI assistants such as GitHub Copilot app modernization and Amazon Q Developer offer features to upgrade Java, Spring Boot version. However, having a custom instruction file to upgrade have multiple advantages.
+The AI agents, such as GitHub Copilot App Modernization and Amazon Q Developer offer features to upgrade Java, Spring Boot version. However, having a custom instruction file to upgrade have multiple advantages.
 
 ### Benefits of Custom Instructions File
 
@@ -111,14 +111,14 @@ The AI assistants such as GitHub Copilot app modernization and Amazon Q Develope
 - Same capability as GitHub Copilot's automated loop, but transparent and customizable
 - Addresses what OpenRewrite can't automate (OpenRewrite isn't exhaustive and has missing recipes for third-party libraries)
 
-**Misc.**
+**Additional Benefits**
 - Serves as documentation
 - Can embed organization-specific requirements and coding standards
-- What ever the tool used, some manual intervention is required for edge cases and unsupported libraries
+- Whatever the tool used, some manual intervention is required for edge cases and unsupported libraries
 
 ### What About Third-Party Library Migrations?
 
-Both OpenRewrite and GitHub Copilot App Modernization have the **some limitation** for third-party library migrations:
+Both OpenRewrite and GitHub Copilot App Modernization have **some limitations** for third-party library migrations:
 
 **The Core Issue:**
 - OpenRewrite can only migrate libraries that have **predefined recipes**
@@ -230,9 +230,9 @@ The upgrade instructions automatically update Java version references in the fol
 
 The upgrade process is automated through a series of steps that handle both environment setup and code migration:
 
-### Core Components
+### Upgrade Steps
 
-1. **OpenRewrite Plugin**: The code migration is performed by the OpenRewrite plugin, the same underlying tool used by AI-powered upgrade assistants like GitHub Copilot app modernization and Amazon Q Developer
+1. **OpenRewrite Plugin**: Adds the OpenRewrite Gradle plugin to the project configuration. This is the same underlying tool used by AI-powered upgrade assistants like GitHub Copilot App Modernization and Amazon Q Developer.
 
 2. **SDKMAN Installation**: Installs SDKMAN if not already present at `~/.sdkman/` for Java version management
 
@@ -244,11 +244,11 @@ The upgrade process is automated through a series of steps that handle both envi
 
 5. **Project Configuration Updates**: Updates Gradle wrapper, build files, Dockerfiles, CI/CD workflows, and other configuration files to use Java 21
 
-6. **Code Migration**: Executes OpenRewrite recipes to automatically refactor code for Java 21 compatibility
+6. **Java 17 Prerequisite Check**: Validates the project uses Java 17 before proceeding (see Prerequisites section)
 
-7. **Java 17 Prerequisite Check**: Validates the project uses Java 17 before proceeding (see Prerequisites section)
+7. **Gradle Compatibility Check**: Upgrades Gradle wrapper to 8.11 if needed (see Prerequisites for details).
 
-8. **Gradle Compatibility Check**: Upgrades Gradle wrapper to 8.11 if needed (see Prerequisites for details).
+8. **Code Migration**: Executes OpenRewrite plugin to automatically refactor code for Java 21 compatibility
 
 9. **CI/CD Pipeline Updates**: Updates CI/CD configuration files (see "Updated CI/CD and Build Files" section for details)
 
@@ -258,15 +258,29 @@ The upgrade process is automated through a series of steps that handle both envi
    - Applies fixes using a three-tier resolution strategy:
      1. **OpenRewrite recipes** - Searches for and applies automated recipes (safest approach)
      2. **Internet search** - Researches solutions from official Java documentation, Stack Overflow, and technical resources
-     3. **Manual code fixes** - Applies targeted code changes as a last resort
+     3. **Automated code fixes** - If a solution is found through Internet research, automatically applies targeted code changes and documents the changes
    - Re-runs the build after each fix
    - Documents unresolved errors if maximum iterations are reached
 
+### Upgrade Log Documentation
+
+All fixes, changes, and unresolved errors are documented during the upgrade process in:
+```
+/docs/ai-tasks/logs/java-21-upgrade-log.md
+```
+
+The log file contains:
+- **Fixes Applied**: Details of each successful fix including file paths, error types, solutions, and sources
+- **Unresolved Errors**: Complete documentation of errors that could not be resolved, with attempted solutions and references
+- **Build/Test Summary**: Iteration counts, success metrics, and final status
+
+This log provides full traceability of all changes made during the upgrade and serves as a reference for any manual interventions needed.
+
 ## OpenRewrite and Recipes Used
 
-**OpenRewrite** is an automated refactoring tool that applies code transformations through reusable migration recipes.
+**OpenRewrite** is an automated refactoring tool that applies code transformations through reusable security fixes, migrations, and code quality improvement recipes.
 
-**Recipes** are predefined migration patterns that transform code to adopt new language features or fix deprecated APIs. In addition to built-in recipes, there are community-provided recipes available, and teams can create custom recipes to implement organization-specific migrations.
+**Recipes** are predefined transformation patterns that transform code to adopt new language features, fix deprecated APIs, patch security vulnerabilities, or improve code quality. In addition to built-in recipes, there are community-provided recipes available, and teams can create custom recipes to implement organization-specific transformations.
 
 ### Recipes Applied in This Upgrade
 
@@ -277,11 +291,11 @@ The upgrade instructions use the following OpenRewrite recipes:
 3. **`org.openrewrite.java.migrate.SwitchExpressions`** - Converts traditional switch statements to modern switch expressions
 4. **`org.openrewrite.java.migrate.SwitchPatternMatching`** - Applies pattern matching in switch statements (Java 21 feature)
 
-**Purpose of Additional Recipes:** Rather than simply updating the Java version, the additional recipes (`PatternMatchingInstanceof`, `SwitchExpressions`, `SwitchPatternMatching`) enable the codebase to adopt modern Java 21 language features, making the code more concise.
+**Purpose of Additional Recipes:** Migrating to Java 21 alone is not sufficient if the codebase doesn't leverage its new features. The additional recipes (`PatternMatchingInstanceof`, `SwitchExpressions`, `SwitchPatternMatching`) transform the code to actively use modern, simple, and safe Java 21 language features, making the code more concise, readable, and type-safe.
 
 ## Organization Trusted Certificates
 
-If your organization uses custom trusted certificates (e.g., for internal Certificate Authorities or corporate proxies), these certificates need to be copied to certain directory before executing the Java upgrade instructions.
+If your organization uses custom trusted certificates (e.g., for internal Certificate Authorities or corporate proxies), these certificates need to be imported into the newly installed Java 21 keystore. To enable this, copy your organization's trusted certificates to a specific directory before executing the Java upgrade instructions. The LLM will then automatically import these certificates into Java 21 during the upgrade process.
 
 ### Certificate Preparation Requirements
 
@@ -290,17 +304,16 @@ If your organization uses custom trusted certificates (e.g., for internal Certif
 2. **Supported Certificate Formats**: Only certificates with `.pem`, `.cer`, or `.crt` file extensions will be imported. Files with other extensions will be ignored during the import process.
 
 3. **Certificate Import Process**:
-   - The upgrade instructions will automatically detect and import all valid certificates from `~/trusted-certs/`
+   - The upgrade instructions will automatically detect and import all certificate files with supported extensions from `~/trusted-certs/`
    - Each certificate will be imported into the Java cacerts truststore with a unique alias
    - The import only occurs when Java 21 is freshly installed (not if it's already present)
+   - Note: The process imports files based on extension only; it does not validate certificate authenticity or format
 
 4. **Optional Step**: If your organization does not use custom trusted certificates, this step can be skipped. The upgrade continues normally if no certificates are found.
 
 Once the certificates are in place, proceed with the Java upgrade instructions as documented below.
 
 ## How to Execute the Java 17 to Java 21 Upgrade Instructions
-
-This repository provides automated AI-driven instructions to upgrade Java applications from version 17 to version 21.
 
 ### Overview
 
@@ -309,38 +322,38 @@ The upgrade process consists of two instruction files that should be copied into
 1. **Instruction File** - Contains the detailed step-by-step procedures for the upgrade
 2. **LLM Prompt File** - Contains the prompt that directs an AI agent to execute the instructions
 
-Once these files are in place, the upgrade can be executed by referencing the prompt file in an AI coding agent, which will systematically work through all the necessary steps.
+Once these files are in place, the upgrade can be executed by referencing the prompt file in LLM, which will systematically work through all the necessary steps.
 
 ### Step 1: Download the Instruction File
 
 Download the instruction file from the following URL:
 ```
-https://github.com/sri-chalam/spring-petclinic-ai-java-upgrade/blob/main/.github/instructions/java-17-to-21-upgrade-instructions.md
+https://github.com/sri-chalam/spring-petclinic-ai-java-upgrade/blob/main/docs/ai-tasks/instructions/java-17-to-21-upgrade-instructions.md
 ```
 
 Save this file in your Git repository that needs to be upgraded from Java 17 to Java 21. The suggested location is:
 ```
-<Git repo root>/.github/instructions/
+<Git repo root>/docs/ai-tasks/instructions/
 ```
 
 ### Step 2: Download the LLM Prompt
 
 Download the LLM prompt file that executes the upgrade from the following URL:
 ```
-https://github.com/sri-chalam/spring-petclinic-ai-java-upgrade/blob/main/.github/instructions/java-17-to-21-upgrade-llm-prompt.md
+https://github.com/sri-chalam/spring-petclinic-ai-java-upgrade/blob/main/docs/ai-tasks/instructions/java-17-to-21-upgrade-llm-prompt.md
 ```
 
 Save this file in the same location as the instruction file:
 ```
-<Git repo root>/.github/instructions/
+<Git repo root>/docs/ai-tasks/instructions/
 ```
 
 ### Step 3: Execute the Upgrade with an LLM
 
-In your LLM chat interface (such as Claude, ChatGPT, or any AI coding agent), reference the prompt file location to initiate the upgrade process:
+In your LLM chat interface (such as Claude, ChatGPT, Copilot or any AI coding agent), reference the prompt file location to initiate the upgrade process:
 
 ```
-Follow the instructions in @.github/instructions/java-17-to-21-upgrade-llm-prompt.md
+Follow the instructions in @docs/ai-tasks/instructions/java-17-to-21-upgrade-llm-prompt.md
 ```
 
 The AI agent will read the prompt file, which in turn references the detailed instructions file, and execute each step of the upgrade process systematically.
@@ -353,14 +366,14 @@ After the upgrade instructions have been executed, it's important to validate th
 
 #### 1.1 Execute End-to-End Tests
 
-Run your application's end-to-end test suite to verify that the system works correctly as a whole:
-
-Ensure that all critical user workflows and integrations are functioning correctly with Java 21.
+Run your application's end-to-end test suite to verify that the system works correctly as a whole. Ensure that all critical user workflows and integrations are functioning correctly with Java 21.
 
 #### 1.2 Execute Integration Tests (if available)
 
+If your project has integration tests, run them using your project's specific test command. For example:
+
 ```zsh
-# Example for Gradle
+# Example for Gradle projects
 ./gradlew integrationTest
 ```
 
@@ -388,15 +401,13 @@ For IDEs such as IntelliJ IDEA, update the project settings to use the new Java 
 2. **Update Project Structure:**
    - Navigate to: `File` → `Project Structure` → `Project`
    - Set "SDK" to Java 21
-   - Set "Language level" to "21 - Record patterns, pattern matching for switch"
-
-3. **Update Module Settings:**
-   - Navigate to: `File` → `Project Structure` → `Modules`
-   - For each module, verify the "Language level" is set appropriately
+   - Set "Language level" to "SDK default"
 
 After making these changes, rebuild the project in your IDE to ensure everything compiles correctly with the new Java version.
 
-### Step 3: Upgrading to Java 25
+### Step 3: Future Upgrade Path to Java 25 (Optional)
+
+If you need to upgrade to Java 25 in the future, separate upgrade instructions are available.
 
 **For Java 21 to Java 25 Upgrades:**
 
@@ -417,12 +428,52 @@ For each of these upgrade paths, there are two separate instruction files provid
 
 Using individual instruction files for each upgrade path (17→21, 21→25) is more modular and reduces complexity. If a single instruction file attempted to handle multiple upgrade paths (17→21 or 21→25 or 17→25), the instructions would become complex and could confuse or cause hallucination in LLMs. Separate, focused instruction files ensure clearer execution and more predictable results.
 
+## Lessons Learned
+
+Building these AI instruction files revealed several important lessons that can save time and prevent common pitfalls.
+
+### AI-Generated Instructions Need Human Review
+
+When first creating these instructions with AI assistance, it's easy to trust the output without sufficient scrutiny. A critical example: the initial instructions added the `activeRecipes` list directly to `build.gradle`.
+
+While this worked functionally, OpenRewrite's documentation indicates this isn't best practice. Since Java upgrades are one-time migrations, these recipes don't need to be committed to the build file. Additionally, teams often want to run specific recipes (like static code analysis) separately and more frequently.
+
+**Takeaway:** Always review AI-generated instructions critically and consult official documentation. Question the approach, discuss alternatives with the AI agent, and refine the instructions iteratively.
+
+### The Build/Fix Loop Required Multiple Iterations
+
+The initial build/fix loop instructions had significant gaps:
+
+- **Infinite loop risk:** If the AI agent couldn't resolve certain errors, the loop would continue indefinitely without recognition
+- **Missing diagnostic guidance:** There were no instructions on how to systematically identify the root cause of compilation errors
+- **Lack of resolution strategies:** The instructions didn't provide a tiered approach for attempting fixes (recipes first, then research, then code changes)
+
+These instructions required refinement through trial and error, adding:
+- Maximum iteration limits (5 attempts)
+- Early exit conditions (same error 3 times consecutively)
+- A three-tier resolution strategy (OpenRewrite recipes → Internet research → Automated fixes)
+- Comprehensive logging of all attempts and outcomes
+
+**Takeaway:** Build/fix loops need explicit guardrails, diagnostic procedures, and escalation strategies to prevent infinite loops and ensure transparency.
+
+## Where to Go From Here
+
+The key takeaway from this work is that **instruction files created with AI assistance can deliver substantial value with relatively modest effort**—but they're not magic bullets.
+
+Creating these instruction files takes a fraction of the time a full custom AI agent would require, while still providing much of the benefit. The build/fix loop mimics what sophisticated AI platforms do, but with full transparency into every decision.
+
+However, every codebase is unique. Users will likely need to:
+- Adjust the instructions for their specific Java distribution and tooling
+- Add organization-specific requirements not covered here
+- Handle edge cases that arise in their particular context
+
+These instruction files should be treated as collaborative starting points. They work best when treated as living documents, refined based on real-world experiences and shared improvements with the community.
+
+Additional instructions are being developed for Java 25 upgrades and other migration scenarios. Feedback on what works, what doesn't, and how these instructions have been adapted for different use cases is welcome and appreciated.
+
+
 ## References
 
 - [GitHub Awesome Copilot - Instructions](https://github.com/github/awesome-copilot/tree/main/instructions) - A community-contributed collection of instruction files for GitHub Copilot and AI coding agents
 
 - [OpenRewrite Java Recipes Catalog](https://docs.openrewrite.org/recipes/java)
-
-### Development Notes
-
-The AI instruction files in this repository were developed using Claude Sonnet 4.5, but are designed to be LLM-agnostic and work with any AI coding agent that supports file operations and terminal commands.
