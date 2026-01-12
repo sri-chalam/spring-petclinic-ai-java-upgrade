@@ -108,9 +108,196 @@ When executing these instructions, the AI agent should:
 
 6. **Use Dynamic Values**: Prefer dynamically detecting versions and paths over hardcoded values to ensure the instructions work at the time of execution
 
-7. **Document All Changes**: Maintain an upgrade log file at `/docs/ai-tasks/logs/java-21-upgrade-log.md` to track all fixes applied and unresolved errors (see Section 6.7.1 for detailed logging requirements)
+7. **Document All Changes**: Maintain an upgrade log file at `/docs/ai-tasks/logs/java-21-upgrade-log.md` to track all actions, decisions, and outcomes throughout the entire upgrade process (see "Logging Requirements" section below for detailed instructions)
 
 8. **Multi-Module Project Awareness**: Always refer to the "Gradle Project Structure Patterns" section when locating and modifying build files. Do not assume all projects have a single root `build.gradle` file.
+
+---
+
+## Logging Requirements
+
+**CRITICAL:** Throughout the entire upgrade process, maintain a detailed log file to track all actions, decisions, and outcomes. This log provides a complete audit trail and helps with troubleshooting if issues arise.
+
+### Log File Location
+
+Create and maintain the upgrade log at:
+
+```
+/docs/ai-tasks/logs/java-21-upgrade-log.md
+```
+
+**Before starting Step 1**, create the directory structure and initialize the log file:
+
+```zsh
+mkdir -p docs/ai-tasks/logs
+touch docs/ai-tasks/logs/java-21-upgrade-log.md
+```
+
+### When to Log
+
+Log important actions and outcomes at each step of the upgrade process:
+
+- **Step 1:** Java version detection results and decision to proceed
+- **Steps 2-4:** JDK installation, configuration, and certificate imports
+- **Step 5:** Gradle wrapper version updates and verification
+- **Step 6:** OpenRewrite migration results, compilation errors, test failures, fixes applied, and unresolved issues
+- **Step 7:** Dockerfile updates (if applicable)
+- **Step 8:** GitHub Actions workflow updates (if applicable)
+- **Step 9:** AWS CodeBuild buildspec updates (if applicable)
+- **Step 10:** Final build and test verification results
+
+**See each step for specific details on what to log.** Each step section includes detailed logging guidance for that particular step.
+
+### Log File Structure
+
+Initialize the log file with the following structure:
+
+```markdown
+# Java 21 Upgrade Log
+
+**Date**: YYYY-MM-DD
+**Project**: [Project Name]
+**Upgrade**: Java 17 to Java 21
+**Status**: In Progress | Completed | Blocked
+
+---
+
+## Summary
+
+Brief overview of the upgrade process and overall status. Update this section as you progress.
+
+---
+
+## Step 1: Java Version Detection
+
+**Date**: YYYY-MM-DD
+
+### Current Configuration
+- **Java Version Detected**: [version or "Not detected"]
+- **Detection Location**: [e.g., build.gradle, gradle.properties, ext{} block]
+- **Build Files Checked**:
+  - ./build.gradle
+  - ./app/build.gradle
+  - [list all files checked]
+- **Variable Resolution**: [Any variables resolved and their values]
+
+### Issues Encountered
+- [List any issues or "None"]
+
+### Decision
+- [Proceeding with upgrade | Skipping - already Java 21 | Continuing despite detection issues]
+
+---
+
+## Steps 2-4: JDK Installation and Configuration
+
+**Date**: YYYY-MM-DD
+
+### Installation Details
+- **JDK Version**: Amazon Corretto 21.x.x
+- **Installation Method**: [SDKMAN | Manual Download]
+- **Installation Path**: [path]
+- **JAVA_HOME**: [path]
+- **Default JDK Set**: [Yes/No]
+
+### Certificate Configuration
+- **Organization Certificates**: [Yes/No]
+- **Certificates Imported**: [List certificate file names (e.g., company-root-ca.pem, internal-ca.crt) or "None"]
+
+### Issues Encountered
+- [List any issues or "None"]
+
+---
+
+## Step 5: Gradle Wrapper Update
+
+**Date**: YYYY-MM-DD
+
+### Gradle Version Update
+- **Current Version**: [version]
+- **Updated Version**: [version]
+- **Update Method**: [./gradlew wrapper --gradle-version=X.X]
+- **Verification**: [Success/Failed]
+
+### Issues Encountered
+- [List any issues or "None"]
+
+---
+
+## Step 6: OpenRewrite Migration
+
+**Date**: YYYY-MM-DD
+
+### Recipes Executed
+- org.openrewrite.java.migrate.UpgradeToJava21
+- org.openrewrite.java.migrate.PatternMatchingInstanceof
+- org.openrewrite.java.migrate.SwitchExpressions
+- org.openrewrite.java.migrate.SwitchPatternMatching
+
+### Changes Applied
+- **Files Modified**: [number]
+- **Key Changes**:
+  - [Brief description of automated refactoring]
+
+### Issues Encountered
+- [List any issues or "None"]
+
+---
+
+## Fixes Applied
+
+### Fix #1: [Brief description]
+- **File**: path/to/file.java:line_number
+- **Error Type**: [Compilation Error | Test Failure | Deprecated API | etc.]
+- **Root Cause**: Description of the issue
+- **Solution Applied**: Description of the fix
+- **Source**: [URL or reference to documentation/Stack Overflow]
+- **Date**: YYYY-MM-DD
+
+### Fix #2: [Brief description]
+...
+
+---
+
+## Unresolved Errors
+
+### Error #1: [Brief description]
+- **File**: path/to/file.java:line_number
+- **Error Message**: Complete error message
+- **Error Category**: [API Deprecation | Package Migration | etc.]
+- **Attempted Solutions**:
+  1. OpenRewrite recipe attempted: recipe-name (Result: Failed)
+  2. Internet search queries: "query text"
+  3. Manual fix attempted: Description (Result: Failed because...)
+- **References**: Links to documentation, Stack Overflow, etc.
+- **Recommended Next Steps**: Suggestions for manual resolution
+- **Date**: YYYY-MM-DD
+
+---
+
+## Build/Test Summary
+
+- **Total Build Iterations**: X
+- **Total Test Iterations**: X
+- **Total Fixes Applied**: X
+- **Unresolved Errors**: X
+- **Tests Passed**: X / Y
+- **Final Status**: [In Progress | Success | Needs Manual Intervention]
+```
+
+### Logging Best Practices
+
+1. **Log immediately** after completing each major action or step
+2. **Be specific** about file paths, line numbers, and versions
+3. **Include timestamps** in the Date fields (use YYYY-MM-DD format)
+4. **Document both successes and failures**
+5. **Keep entries concise but informative** - focus on what was done and why
+6. **Update the Summary section** as you progress through the upgrade
+7. **Update Status field** at the top of the log file as the upgrade progresses
+
+### Integration with Steps
+
+At the beginning of each major step, add an entry to the log file. At the end of each step, update the entry with results. This creates a complete audit trail of the entire upgrade process.
 
 ---
 
@@ -119,6 +306,16 @@ When executing these instructions, the AI agent should:
 ### Step 1: Verify Current Java Version (Prerequisite Check)
 
 **IMPORTANT: These instructions are designed to upgrade Java 17 applications to Java 21 only.** Before proceeding, verify that the application is currently using Java 17.
+
+**Before starting Step 1:** Initialize the upgrade log file as described in the "Logging Requirements" section.
+
+**Logging for this step:** Update the "Step 1: Java Version Detection" section in the log file with:
+- Current Java version detected (or "Not detected")
+- Location where version was found (build.gradle, gradle.properties, ext{} block, version catalog)
+- All build files checked (list each file path)
+- Any variables resolved and their values
+- Any issues with version detection (e.g., variable resolution failed, edge cases, complex patterns)
+- Decision made (Proceeding with upgrade | Skipping - already Java 21 | Continuing despite detection issues)
 
 ### 1.1 Check Java Version in Project Configuration
 
@@ -317,6 +514,15 @@ This script:
 ### Step 2: Check and Install SDKMAN
 
 SDKMAN (Software Development Kit Manager) is used to install and manage Java versions.
+
+**Logging for Steps 2-4:** Update the "Steps 2-4: JDK Installation and Configuration" section in the log file with:
+- JDK version being installed (Amazon Corretto 21.x.x)
+- Note if SDKMAN was already installed or newly installed
+- Installation path
+- JAVA_HOME configuration
+- Default JDK setting (Yes/No)
+- Certificate imports: List the names of each certificate file imported (or "None")
+- Any installation issues or warnings
 
 ### 2.1 Check if SDKMAN is Already Installed
 
@@ -585,6 +791,13 @@ echo $JAVA_HOME
 
 ### Step 5: Upgrade Gradle Wrapper (If Needed)
 
+**Logging for this step:** Update the "Step 5: Gradle Wrapper Update" section in the log file with:
+- Current Gradle version (from gradle-wrapper.properties)
+- Target/Updated Gradle version
+- Update method used (e.g., ./gradlew wrapper --gradle-version=X.X)
+- Verification results (Success/Failed)
+- Any compatibility issues or warnings encountered
+
 ### 5.1 Check if Gradle Wrapper Exists
 
 First, verify that the project uses Gradle wrapper:
@@ -678,6 +891,17 @@ OS:           Mac OS X 14.x.x aarch64
 OpenRewrite is an automated refactoring tool that can help migrate Java code from Java 17 to Java 21.
 
 **Before proceeding with Step 6:** Review the "Gradle Project Structure Patterns" section to understand where build files may be located in single-module vs. multi-module projects.
+
+**Logging for this step:** Update the "Step 6: OpenRewrite Migration" section and build/fix sections in the log file with:
+- OpenRewrite recipes executed (list each recipe name)
+- Number of files modified by OpenRewrite
+- Summary of key automated changes made
+- Compilation errors encountered (document each in "Fixes Applied" or "Unresolved Errors" sections)
+- Test failures encountered (document each appropriately)
+- Fixes applied using Error Resolution Methodology (detailed documentation in "Fixes Applied" section)
+- Unresolved issues (detailed documentation in "Unresolved Errors" section)
+- Build/test iteration counts
+- Final status (Success, Completed with warnings, or Needs Manual Intervention)
 
 ### 6.1 Check if OpenRewrite Plugin is Present
 
@@ -831,99 +1055,75 @@ After running the OpenRewrite migration and reviewing changes, iteratively fix a
 - Include relevant error messages and stack traces
 - Stop execution and notify the user for manual review and intervention
 
-#### 6.7.1 Upgrade Log Documentation
+#### 6.7.1 Upgrade Log Documentation for Build/Fix Loop
 
-**All fixes, changes, and unresolved errors must be documented** in the upgrade log file located at:
+Continue using the upgrade log file initialized at the beginning of the process (see "Logging Requirements" section). The log file should already exist at:
 
 ```
 /docs/ai-tasks/logs/java-21-upgrade-log.md
 ```
 
-**Before starting the build/fix loop**, create the directory structure and initialize the log file if it doesn't exist:
-
-```zsh
-mkdir -p docs/ai-tasks/logs
-```
-
-**Log File Structure:**
-
-The upgrade log file should contain the following sections:
-
-```markdown
-# Java 21 Upgrade Log
-
-**Date**: YYYY-MM-DD
-**Upgrade**: Java 17 to Java 21
-**Status**: In Progress | Completed | Blocked
-
----
-
-## Summary
-
-Brief overview of the upgrade process and overall status.
-
----
-
-## Fixes Applied
-
-### Fix #1: [Brief description]
-- **File**: path/to/file.java:line_number
-- **Error Type**: Compilation Error | Deprecated API | etc.
-- **Root Cause**: Description of the issue
-- **Solution Applied**: Description of the fix
-- **Source**: URL or reference to documentation/Stack Overflow
-- **Date**: YYYY-MM-DD
-
-### Fix #2: [Brief description]
-...
-
----
-
-## Unresolved Errors
-
-### Error #1: [Brief description]
-- **File**: path/to/file.java:line_number
-- **Error Message**: Complete error message
-- **Error Category**: API Deprecation | Package Migration | etc.
-- **Attempted Solutions**:
-  1. OpenRewrite recipe attempted: recipe-name (Result: Failed)
-  2. Internet search queries: "query text"
-  3. Manual fix attempted: Description (Result: Failed because...)
-- **References**: Links to documentation, Stack Overflow, etc.
-- **Recommended Next Steps**: Suggestions for manual resolution
-- **Date**: YYYY-MM-DD
-
----
-
-## Build/Test Summary
-
-- **Total Build Iterations**: X
-- **Total Fixes Applied**: X
-- **Unresolved Errors**: X
-- **Tests Passed**: X / Y
-- **Final Status**: Success | Needs Manual Intervention
-```
+**For the build/fix loop specifically**, ensure you document the following in the appropriate sections of the log:
 
 **Documentation Requirements:**
 
-1. **For each successful fix** (Step 4 of section 5.8.2 Error Resolution Methodology):
-   - Document in the "Fixes Applied" section
+1. **For each compilation error or test failure encountered**:
+   - Note the error in real-time as you work through fixes
+   - Track which iteration of the build/fix loop you're on
+
+2. **For each successful fix** (Step 4 of Error Resolution Methodology):
+   - Document in the "Fixes Applied" section of the log
    - Include file path, error type, root cause, solution, and source
    - Add immediately after applying the fix
+   - Example:
+     ```markdown
+     ### Fix #3: Removed deprecated Thread.stop() usage
+     - **File**: src/main/java/com/example/Worker.java:45
+     - **Error Type**: Compilation Error - Deprecated API
+     - **Root Cause**: Thread.stop() was deprecated and removed in Java 21
+     - **Solution Applied**: Replaced with thread.interrupt() and proper coordination
+     - **Source**: https://docs.oracle.com/en/java/javase/21/docs/api/
+     - **Date**: 2024-01-15
+     ```
 
-2. **For each unresolved error** (Step 5 of section 5.8.2 Error Resolution Methodology):
+3. **For each unresolved error** (Step 5 of Error Resolution Methodology):
    - Document in the "Unresolved Errors" section
    - Include complete error details and all attempted solutions
-   - Add when the error cannot be resolved
+   - Add when the error cannot be resolved after maximum iterations
+   - Example:
+     ```markdown
+     ### Error #1: Third-party library incompatibility
+     - **File**: src/main/java/com/example/Service.java:120
+     - **Error Message**: cannot find symbol: class OldLibraryClass
+     - **Error Category**: Third-party Library Incompatibility
+     - **Attempted Solutions**:
+       1. Searched for updated library version (Result: No Java 21 compatible version available)
+       2. Searched for alternative libraries (Result: Found potential alternative but requires significant refactoring)
+       3. Attempted manual workaround (Result: Failed due to API changes)
+     - **References**: https://github.com/library/issues/123
+     - **Recommended Next Steps**: Contact library maintainer or migrate to alternative library
+     - **Date**: 2024-01-15
+     ```
 
-3. **Update the Summary section**:
-   - Update status as the process progresses
-   - Provide high-level overview of changes
-
-4. **Update Build/Test Summary**:
-   - Keep track of iteration counts
+4. **Update the Build/Test Summary section**:
+   - Keep track of iteration counts for both build and test loops
    - Update success/failure metrics
-   - Update final status when complete
+   - Update final status when complete or blocked
+   - Example:
+     ```markdown
+     ## Build/Test Summary
+
+     - **Total Build Iterations**: 3
+     - **Total Test Iterations**: 2
+     - **Total Fixes Applied**: 5
+     - **Unresolved Errors**: 1
+     - **Tests Passed**: 245 / 246
+     - **Final Status**: Needs Manual Intervention (1 third-party library compatibility issue)
+     ```
+
+5. **Update the Summary and Status**:
+   - Update the status field at the top of the log file (In Progress → Completed or Blocked)
+   - Update the Summary section with high-level overview of the build/fix loop results
 
 #### 6.7.2 Error Resolution Methodology
 
@@ -946,12 +1146,14 @@ When compilation errors or test failures occur, follow this systematic approach 
    - **Behavioral Change**: API behavior changed in Java 21
    - **Other**: Uncategorized errors
 
+**Log the error information:** Keep a record in the upgrade log file (`/docs/ai-tasks/logs/java-21-upgrade-log.md`) of the extracted error details (file path, line number, error type, category, and full error message). This information will be used to document the error in either the "Fixes Applied" section (if resolved) or the "Unresolved Errors" section (if it cannot be fixed).
+
 ##### Step 2: Search for OpenRewrite Recipes
 
 **Before making manual code changes**, search for existing OpenRewrite recipes that can automatically fix the error:
 
 1. **Search the OpenRewrite recipe catalog:**
-   ```bash
+   ```zsh
    # List all available recipes in the rewrite-migrate-java dependency
    ./gradlew rewriteDiscover
    ```
@@ -984,7 +1186,7 @@ When compilation errors or test failures occur, follow this systematic approach 
 
 4. **If a relevant recipe is found:**
    - Run ONLY the new recipe to fix the specific error (do not re-run the recipes that were already executed in section 6.4):
-     ```bash
+     ```zsh
      ./gradlew rewriteRun \
        -Drewrite.activeRecipes=org.openrewrite.java.migrate.<NewRecipeForTheError>
      ```
@@ -997,11 +1199,15 @@ When compilation errors or test failures occur, follow this systematic approach 
    - OpenRewrite recipes are designed to be independent and can be run individually
 
    - Re-run the build to verify the fix:
-     ```bash
+     ```zsh
      ./gradlew clean build
      ```
    - If the error is resolved, continue to the next error (if any)
    - If the error persists, proceed to Step 3
+
+**Track recipe attempts:** Keep note of which OpenRewrite recipes you searched for and tried in the upgrade log file (`/docs/ai-tasks/logs/java-21-upgrade-log.md`) - you'll need this information for either:
+- The "Fixes Applied" section if the recipe succeeds (document which recipe resolved the error)
+- The "Unresolved Errors" section under "Attempted Solutions" if the recipe fails
 
 ##### Step 3: Search the Internet for Solutions
 
@@ -1035,6 +1241,11 @@ When compilation errors or test failures occur, follow this systematic approach 
    - Check if the solution has been tested and validated by others
 
 4. **Document the source** of the solution for future reference in the upgrade log file (see Documentation section below)
+
+**Track your research:** Keep a record in the upgrade log file (`/docs/ai-tasks/logs/java-21-upgrade-log.md`) of:
+- Search queries you used (you'll need these for "Attempted Solutions" if the fix fails)
+- Sources found and URLs (you'll need these for the "Source" field in "Fixes Applied" if the fix succeeds, or "References" in "Unresolved Errors" if it fails)
+- Potential solutions identified (helps document what was attempted)
 
 ##### Step 4: Apply Automated Code Fixes
 
@@ -1114,11 +1325,20 @@ When compilation errors or test failures occur, follow this systematic approach 
    - Verify the specific error is resolved
    - Ensure no new errors are introduced
 
+**If the fix succeeds:** Immediately document it in the "Fixes Applied" section of the upgrade log file (`/docs/ai-tasks/logs/java-21-upgrade-log.md`) following the format specified in section 6.7.1. Include:
+- File path and line number
+- Error type and root cause
+- Solution applied (the specific code changes made)
+- Source (URL or reference from Step 3)
+- Date
+
+This documentation should be done immediately while the details are fresh.
+
 ##### Step 5: Document Unresolvable Errors
 
 **If the error cannot be resolved** after trying all strategies:
 
-1. **Create a detailed error report** in the upgrade log file including:
+1. **Create a detailed error report** in the upgrade log file (`/docs/ai-tasks/logs/java-21-upgrade-log.md`) including:
    - Complete error message and stack trace
    - File path and line number
    - Error category (from Step 1)
@@ -1132,11 +1352,11 @@ When compilation errors or test failures occur, follow this systematic approach 
 
 3. **Continue to the next error** (if within iteration limits) or exit the loop
 
-##### Step 6: Track Error Resolution Progress
+##### Step 6: Detect Stalled Progress and Prevent Infinite Loops
 
 **To implement stalled progress detection:**
 
-1. **Maintain a record** of errors encountered in each iteration:
+1. **Maintain a record** in the upgrade log file (`/docs/ai-tasks/logs/java-21-upgrade-log.md`) of errors encountered in each iteration:
    - Error signature (file path + line number + error message)
    - Iteration number when the error was first seen
    - Resolution attempts made
@@ -1191,6 +1411,14 @@ When compilation errors or test failures occur, follow this systematic approach 
 ### Step 7: Update Dockerfile (If Present)
 
 If the repository contains a Dockerfile with a Java 17 base image, it needs to be updated to use Java 21.
+
+**Logging for this step:** Create a new "Step 7: Dockerfile Updates" section in the log file (or note "Not Applicable" if no Dockerfiles exist) with:
+- Whether Dockerfile(s) exist in the repository (Yes/No)
+- Number of Dockerfiles found and their paths
+- Java version detected in each Dockerfile (e.g., Java 17, Java 11, or "No Java version found")
+- Changes made to each Dockerfile (list specific updates like base image changes, VARIANT updates)
+- Verification results for each Dockerfile
+- Docker build test results (if performed - Success/Failed/Skipped)
 
 ### 7.1 Check for Dockerfile
 
@@ -1266,7 +1494,7 @@ This should confirm that all Java 17 references have been updated to Java 21.
 
 If Docker is available, test building the image to ensure the Dockerfile changes are valid:
 
-```bash
+```zsh
 docker build -f <path-to-dockerfile> -t test-java21-upgrade .
 ```
 
@@ -1278,11 +1506,18 @@ This verifies that the Dockerfile syntax is correct and the Java 21 base image i
 
 GitHub Actions workflow files may specify Java versions for CI/CD builds. If any workflow files reference Java 17, they need to be updated to Java 21.
 
+**Logging for this step:** Create a new "Step 8: GitHub Actions Workflow Updates" section in the log file (or note "Not Applicable" if no workflows exist) with:
+- Whether GitHub Actions workflows exist in the repository (Yes/No)
+- Number of workflow files found and their paths
+- Java version references found in each workflow file
+- Changes made to each workflow file (list specific updates like java-version, distribution changes)
+- Verification results for each workflow file
+
 ### 8.1 Check for GitHub Actions Workflow Files
 
 Search for workflow files in the repository:
 
-```bash
+```zsh
 find .github/workflows -name "*.yml" -o -name "*.yaml" 2>/dev/null
 ```
 
@@ -1290,7 +1525,7 @@ find .github/workflows -name "*.yml" -o -name "*.yaml" 2>/dev/null
 
 Check all workflow files for Java 17 references:
 
-```bash
+```zsh
 grep -r -i "java.*17\|17.*java\|java-version.*17" .github/workflows/ 2>/dev/null
 ```
 
@@ -1347,7 +1582,7 @@ strategy:
 
 After updating the workflow files, verify the changes:
 
-```bash
+```zsh
 grep -r -i "java.*21\|21.*java\|java-version.*21" .github/workflows/ 2>/dev/null
 ```
 
@@ -1357,7 +1592,7 @@ This should confirm that Java version references have been updated to 21.
 
 If the GitHub CLI (`gh`) is installed, you can validate the workflow syntax:
 
-```bash
+```zsh
 gh workflow list
 ```
 
@@ -1369,11 +1604,18 @@ Or commit the changes and check the Actions tab on GitHub to ensure workflows ru
 
 AWS CodeBuild buildspec.yml files may specify Java runtime versions. If any buildspec files reference Java 17, they need to be updated to Java 21.
 
+**Logging for this step:** Create a new "Step 9: AWS CodeBuild buildspec Updates" section in the log file (or note "Not Applicable" if no buildspec files exist) with:
+- Whether buildspec files exist in the repository (Yes/No)
+- Number of buildspec files found and their paths
+- Java version references found in each buildspec file
+- Changes made to each buildspec file (list specific runtime updates)
+- Verification results for each buildspec file
+
 ### 9.1 Check for AWS CodeBuild buildspec Files
 
 Search for buildspec files in the repository:
 
-```bash
+```zsh
 find . -name "buildspec*.yml" -o -name "buildspec*.yaml" 2>/dev/null
 ```
 
@@ -1381,7 +1623,7 @@ find . -name "buildspec*.yml" -o -name "buildspec*.yaml" 2>/dev/null
 
 Check all buildspec files for Java 17 references:
 
-```bash
+```zsh
 grep -r -i "java.*17\|corretto17\|runtime.*17" buildspec*.yml buildspec*.yaml 2>/dev/null
 ```
 
@@ -1449,22 +1691,7 @@ version: 0.2
 
 **Note:** Ensure you're using Amazon Corretto (`corretto21`) to maintain consistency with the local development environment.
 
-### 9.4 Update CodeBuild Project Configuration
-
-If the CodeBuild project uses a specific image version, you may also need to update the project configuration in AWS Console or via Infrastructure as Code (IaC):
-
-```yaml
-# Terraform example
-resource "aws_codebuild_project" "example" {
-  environment {
-    image = "aws/codebuild/amazonlinux2-x86_64-standard:5.0"  # Supports Java 21
-  }
-}
-```
-
-**Note:** AWS CodeBuild standard images version 5.0 and later include support for Amazon Corretto 21.
-
-### 9.5 Verify buildspec File Changes
+### 9.4 Verify buildspec File Changes
 
 After updating the buildspec files, verify the changes:
 
@@ -1474,7 +1701,7 @@ grep -r -i "java.*21\|corretto21\|runtime.*21" buildspec*.yml buildspec*.yaml 2>
 
 This should confirm that Java version references have been updated to 21.
 
-### 9.6 Test CodeBuild Execution (Optional)
+### 9.5 Test CodeBuild Execution (Optional)
 
 If you have access to AWS CodeBuild, trigger a build to ensure the buildspec changes work correctly with Java 21:
 
@@ -1490,12 +1717,23 @@ Monitor the build logs to verify that Java 21 is being used during the build pro
 
 After completing all the configuration updates and migrations, it's essential to verify that the application builds successfully and all tests pass with Java 21.
 
+**Logging for this step:** Create a new "Step 10: Final Build and Test Verification" section in the log file with:
+- Build execution command used
+- Build result (Success/Failed)
+- Compilation warnings or errors (if any)
+- Number of tests executed
+- Number of tests passed/failed
+- Test execution time
+- Build artifacts generated and their locations
+- JAR/WAR artifact verification results
+- Final upgrade status (Success/Completed with warnings/Failed)
+
 ### 10.1 Clean Build with Tests
 
 Execute a clean build with all test cases to ensure the Java 21 upgrade is successful:
 
-```bash
-./gradlew clean build
+```zsh
+./gradlew clean build -x test
 ```
 
 This command will:
@@ -1536,19 +1774,11 @@ Check the test results in the console output. For detailed test reports, review:
 open build/reports/tests/test/index.html
 ```
 
-### 10.5 Troubleshoot Test Failures
-
-If any tests fail:
-1. Review the test output for specific error messages
-2. Check if failures are related to Java 21 compatibility
-3. Update deprecated APIs or incompatible code patterns
-4. Re-run the tests after fixes
-
-### 10.6 Verify JAR/WAR Artifacts
+### 10.5 Verify JAR/WAR Artifacts
 
 Ensure that the build artifacts are created with Java 21:
 
-```bash
+```zsh
 # Check the build output directory
 ls -lh build/libs/
 
