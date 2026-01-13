@@ -21,3 +21,14 @@ If there are errors that cann't be resolved by AI agent, the build fix loop coul
 There were no instructions on how LLM can identify the reason for compilation error and how it can resolve it.
 
 
+### Writing instructions or script to identify current Java version is complex 
+It may sound simple to find the version of Java from a Gradle configuration.
+However, there are dozens of ways in which Java version can be set.
+
+#### It is very complex to write code to write script to identify the current Java version and skip the upgrade if the version is Java 17
+
+There are Dozens of ways how a Java applications can set Java version.
+Some of them are documented in test-cases.md
+
+Open Rewrite recipe upgradeJavato21
+

@@ -157,7 +157,7 @@ Before using the Java 17 to Java 21 upgrade instruction file, ensure your enviro
 
 1. **Operating System**: macOS 
 2. **Current Java Version**: Must be Java 17 
-3. **Build Tool**: Gradle with Groovy DSL (`build.gradle`) - Maven and Gradle Kotlin DSL require adaptation
+3. **Build Tool**: Gradle with Groovy DSL (`build.gradle`) or Kotlin DSL (`build.gradle.kts`) - Maven requires adaptation
 4. **Required Tools**: `curl` and `git`
 
 ### Scope Limitations
@@ -189,7 +189,7 @@ If your environment does not match these prerequisites, you should:
 It's important to understand the scope boundaries of the upgrade instructions. The following modifications will **NOT** be performed:
 
 ### Maven Project Modifications
-**The instructions will NOT modify Maven-based projects.** The upgrade is designed exclusively for Gradle projects with Groovy DSL. If your project uses Maven, you must adapt the instructions for Maven (modify `pom.xml` instead of `build.gradle`)
+**The instructions will NOT modify Maven-based projects.** The upgrade is designed exclusively for Gradle projects with Groovy DSL or Kotlin DSL. If your project uses Maven, you must adapt the instructions for Maven (modify `pom.xml` instead of `build.gradle` or `build.gradle.kts`)
 
 ### Spring Boot Upgrade
 **The instructions will NOT upgrade Spring Boot version.** The focus is exclusively on upgrading Java from version 17 to version 21. To reduce complexity, Spring Boot upgrades are not part of this instruction file. Additionally, keeping Java upgrade and Spring Boot upgrade in separate instruction files allows them to be used independently.
@@ -212,7 +212,7 @@ The upgrade instructions automatically update Java version references in the fol
 - **GitHub Actions**: `.github/workflows/*.yml`
 - **AWS CodeBuild**: `buildspec*.yml`
 - **Docker**: `Dockerfile`, `Dockerfile.*`
-- **Gradle Build Files**: `build.gradle`, `gradle.properties`, `gradle/wrapper/gradle-wrapper.properties`
+- **Gradle Build Files**: `build.gradle` or `build.gradle.kts`, `gradle.properties`, `gradle/wrapper/gradle-wrapper.properties`
 
 **Updates applied to build.gradle:**
 - sourceCompatibility and targetCompatibility (`'17'` → `'21'`)
