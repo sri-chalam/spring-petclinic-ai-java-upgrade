@@ -1,5 +1,271 @@
 # Java 21 Upgrade Instructions
 
+## Executive Summary
+This document guides AI coding agents through upgrading Java applications from version 17 to 21 using Amazon Corretto JDK on macOS. The process includes:
+- JDK installation and configuration
+- Gradle wrapper upgrades
+- Automated code migration using OpenRewrite
+- Iterative build/test/fix cycles with structured error resolution
+- CI/CD configuration updates (Docker, GitHub Actions, AWS CodeBuild)
+
+**Expected Duration:** Variable (depends on codebase size and errors)
+**Prerequisites:** Java 17 application, Gradle build system
+**Success Criteria:** Clean build with all tests passing on Java 21
+
+---
+
+## Core Execution Rules
+
+If required information is missing or ambiguous:
+- **DO NOT** guess
+- **DO NOT** invent defaults
+- **DO NOT** assume standard configurations
+- Log the uncertainty and stop at the nearest safe boundary
+
+---
+
+## How to Use This Instruction File
+
+- Execute steps strictly in order unless explicitly redirected.
+- Do not infer missing steps or optimize the process.
+- Abort means stop the entire workflow immediately.
+- Skipped steps must be explicitly logged as skipped.
+
+### Keywords and Meanings
+
+- **ABORT**: Stop execution immediately; do not proceed further.
+- **SKIP**: Do not perform this step; continue to the next step.
+- **DO NOT MODIFY**: No file changes are allowed under any circumstances.
+- **CRITICAL PATH**: Failure here aborts the upgrade.
+- **SAME ERROR**: An error is considered the same if:
+  - The exception type is identical AND
+  - The primary error message is identical
+  
+---
+
+## Non-Goals
+
+This upgrade does NOT attempt to:
+- Improve code quality
+- Refactor legacy APIs
+- Introduce Java 21 language features
+- Optimize build performance
+
+---
+
+## Upgrade Process Flow
+
+START
+
+EXECUTION RULES:
+- Follow steps strictly in order.
+- Do not invent steps or tools.
+- "ABORT" means stop the entire upgrade process immediately.
+- "DO NOT MODIFY" means no file changes of any kind.
+- Loops must not exceed stated limits.
+
+Step 1: Detect Java Version
+- If Java 17 → CONTINUE
+- If Java 21 → ABORT (Upgrade already completed; no migration required)
+- If other or not detected → CONTINUE with caution
+
+Step 2: SDKMAN Setup
+- If OS is macOS or Linux AND SDKMAN is not installed → Install SDKMAN
+- Otherwise → SKIP
+
+Step 3: JDK Installation
+- If Java 21 JDK is not installed → Install JDK 21 using SDKMAN
+- Import required certificates if applicable
+- If JDK 21 is already installed → SKIP
+
+Step 4: Configure Environment
+- Set JAVA_HOME to JDK 21
+- Update PATH if required
+
+Step 5: Build Tool Detection
+- If Gradle project:
+    - Detect Gradle Wrapper version
+    - If wrapper < 8.5 → Upgrade wrapper
+    - Else → SKIP
+- If Maven project → SKIP (DO NOT MODIFY Maven files)
+
+Step 6: OpenRewrite Java Upgrade
+[CRITICAL PATH]
+
+Build/Fix Loop:
+- Run build
+- If build fails:
+    - Fix issues
+    - Repeat
+- Maximum 5 iterations
+- If still failing after 5 → ABORT
+
+Test/Fix Loop:
+- Run tests
+- If tests fail:
+    - Fix issues
+    - Track failure signature (exception type + primary message)
+- If same failure signature occurs in 3 iterations → ABORT
+- Maximum 5 iterations
+- If still failing after 5 → ABORT
+
+Step 7–9: CI/CD Updates
+- If Dockerfile exists → Update base image to Java 21
+- If GitHub Actions exists → Update Java version
+- If AWS CodeBuild exists → Update runtime
+- If none exist → SKIP section
+
+Step 10: Final Verification
+
+Verification requires:
+- `java -version` reports 21
+- Build succeeds without warnings related to Java version
+- Test suite passes
+
+END
+
+
+## Common Pitfalls to Avoid
+
+### 🚨 **CRITICAL — AI Agents MUST NOT violate any rule in this section**
+
+Violating any rule below is considered a **critical failure**.  
+If any instruction elsewhere conflicts with this section, **this section takes precedence**.
+
+---
+
+### 1. **Modify Maven-Based Projects**
+- If `pom.xml` exists, the project is Maven-based.
+- **DO NOT**:
+  - Add Gradle files or Gradle wrapper
+  - Add OpenRewrite Gradle plugins
+  - Convert Maven projects to Gradle
+- Maven projects must be **explicitly skipped** unless a separate Maven-specific instruction file is provided.
+
+---
+
+### 2. **Upgrade Spring Boot or Framework Versions**
+- **DO NOT** upgrade:
+  - Spring Boot
+  - Spring Framework
+  - Jakarta EE or other framework versions
+- Java upgrade and framework upgrade are **separate tasks** with **separate instructions**.
+- Framework-related changes are allowed **only if strictly required** to make the Java 21 build compile, and must be clearly documented.
+
+---
+
+### 3. **Assume Single-Module Gradle Structure**
+- **DO NOT** assume:
+  - Plugins live in the root `build.gradle(.kts)`
+  - Dependencies are declared only once
+- Always:
+  - Inspect root and submodule build files
+  - Respect aggregator-only root projects
+  - Modify only the files that actually own the configuration
+
+---
+
+### 4. **Add OpenRewrite Configuration to the Wrong Build File**
+- **DO NOT** blindly add OpenRewrite plugins or dependencies to:
+  - Root build files with no plugins
+  - Aggregator-only builds
+- Add OpenRewrite only where other plugins already exist.
+- In multi-module projects, this may require **multiple targeted updates**.
+
+---
+
+### 5. **Re-run Previously Executed OpenRewrite Recipes**
+- Once a migration recipe has completed:
+  - **DO NOT** re-run it during error resolution
+- During build or test failures:
+  - Only run **new, targeted recipes** that directly address the current error
+  - Never re-run the full migration set
+
+---
+
+### 6. **Batch Multiple Fixes Before Verification**
+- **DO NOT** apply multiple fixes without verification in between.
+- The correct sequence is:
+  1. Apply **one fix**
+  2. Re-run build or tests
+  3. Verify the result
+- This prevents error masking and simplifies rollback.
+
+---
+
+### 7. **Ignore Iteration Limits or Stalled Progress Detection**
+- **DO NOT**:
+  - Exceed maximum iteration counts
+  - Continue looping when the same error appears repeatedly
+- If:
+  - The same error appears in **three consecutive iterations**, or
+  - Maximum iteration limits are reached
+- Then:
+  - **STOP**
+  - Document the issue
+  - Request human intervention
+
+---
+
+### 8. **Skip or Delay Logging**
+- Logging is **mandatory**.
+- Every major action must be logged **immediately**, including:
+  - What was changed
+  - Why it was changed
+  - Result (success or failure)
+- Logs must be written to: `/docs/ai-tasks/logs/java-21-upgrade-log.md`
+
+
+---
+
+### 9. **Mark Tasks or TODOs as Complete Before Verification**
+- **DO NOT** mark:
+- Steps
+- Fixes
+- TODOs
+as complete until:
+- Build succeeds
+- Tests pass
+- Verification steps are executed
+- Completion without verification is considered invalid.
+
+---
+
+### 10. **Introduce Unrequested Optimizations or Refactoring**
+- **DO NOT**:
+- Refactor code for style or readability
+- Introduce new Java 21 features unless strictly required
+- Modify unrelated code
+- All changes must be:
+- Minimal
+- Directly required for Java 21 compatibility
+
+---
+
+### 11. **Assume Tool or Platform Availability**
+- **DO NOT** assume:
+- CI/CD tools exist unless detected
+- Docker is available locally
+- SDKMAN is available on unsupported platforms
+- Always detect tools and platforms before acting.
+- Skip steps cleanly when tools are not present.
+
+---
+
+### 12. **Proceed After an Explicit Abort Condition**
+- **DO NOT** continue execution after:
+- Java 21 is already configured (upgrade must be aborted)
+- Iteration limits are exceeded
+- Critical failures are encountered
+- Abort means **stop immediately and document the reason**.
+
+---
+
+### Final Note to AI Agents
+This upgrade is a **controlled, auditable migration**, not an optimization exercise.  
+Correctness, traceability, and restraint are more important than speed.
+
+
 ## Overview
 These instructions guide an AI coding agent to upgrade a Java application from Java 17 to Java 21 using Amazon Corretto JDK.
 
