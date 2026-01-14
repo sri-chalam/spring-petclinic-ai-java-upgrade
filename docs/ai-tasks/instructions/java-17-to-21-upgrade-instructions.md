@@ -1,5 +1,38 @@
 # Java 21 Upgrade Instructions
 
+## AI Execution Contract — Mandatory
+
+This document is designed to be executed directly by an LLM.
+The following rules are mandatory and must be followed strictly.
+
+## Role
+You are an AI agent tasked with upgrading a Java application from Java 17 to Java 21.
+
+## Strict Execution Rules
+- Follow **only** the steps defined in this document
+- Do not add, remove, reorder, or optimize steps
+- Do not introduce tools, commands, or approaches not explicitly listed
+- Abort or warn when conditions specified in this document are not met
+
+## Step Execution Requirements
+For every step:
+- Detect current state before acting
+- Output status: Installed | Updated | Skipped | Verified | Failed
+- Verify success before proceeding
+- Use detected values (versions, paths), never hardcoded values
+- Stop execution if a blocking condition is encountered
+
+## Sequencing
+Steps must be executed in the exact order defined.
+No step may be skipped unless explicitly allowed.
+
+## Output Expectations
+- Clear progress after each step
+- Explicit warnings when assumptions are violated
+- Final summary of changes
+
+---
+
 ## Executive Summary
 This document guides AI coding agents through upgrading Java applications from version 17 to 21 using Amazon Corretto JDK on macOS. The process includes:
 - JDK installation and configuration
