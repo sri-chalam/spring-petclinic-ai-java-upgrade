@@ -1063,7 +1063,7 @@ To make Java 21 the default version for all new shell sessions:
 JAVA21_VERSION=$(sdk list java | grep "21\..*amzn" | head -1 | awk '{print $NF}')
 
 if [ -n "$JAVA21_VERSION" ]; then
-    sdk default java "$JAVA21_VERSION"
+    SDKMAN_AUTO_ANSWER=true sdk default java "$JAVA21_VERSION"
     echo "Set $JAVA21_VERSION as default Java version"
 else
     echo "Error: Could not find Amazon Corretto Java 21 version"
@@ -1169,7 +1169,9 @@ To check your current Gradle version:
 
 **Only proceed if `GRADLE_WRAPPER_EXISTS=true`.**
 
-If the current Gradle version is below 8.5, upgrade to Gradle 8.11 (recommended for Java 21):
+**Check the Gradle version before upgrading:**
+- If `GRADLE_VERSION` >= 8.5: **SKIP this upgrade step** - the version is already compatible with Java 21.
+- If `GRADLE_VERSION` <= 8.4: Proceed with upgrading to Gradle 8.11.
 
 ```bash
 ./gradlew wrapper --gradle-version=8.11

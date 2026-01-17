@@ -43,3 +43,12 @@ When the first script in bash has to be executed, got the following error:
 The execution stuck there.
 
 Changed all script to be in bash.
+
+### The Java installation asked a question in Terminal
+
+Do you want java 21.0.9-amzn to be set as default? (Y/n)
+
+Change the instruction so that it does not ask for confirmation.
+
+### Gradlew version is 8.5 - It still went ahead to upgrade
+Change the instruction.
