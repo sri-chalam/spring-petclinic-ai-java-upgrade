@@ -63,6 +63,7 @@ If required information is missing or ambiguous:
 - Do not infer missing steps or optimize the process.
 - Abort means stop the entire workflow immediately.
 - Skipped steps must be explicitly logged as skipped.
+- 🔴 **CRITICAL:** All shell scripts must be executed from the project root directory (the directory containing `gradlew`, `build.gradle`, or `pom.xml`). Step 0 establishes this directory at the start of execution.
 
 ### Keywords and Meanings
 
@@ -96,6 +97,12 @@ EXECUTION RULES:
 - "ABORT" means stop the entire upgrade process immediately.
 - "DO NOT MODIFY" means no file changes of any kind.
 - Loops must not exceed stated limits.
+
+Step 0: Set Project Root Directory
+- Prompt user to enter or confirm the project root directory path
+- Validate the directory exists and contains build files (`gradlew`, `build.gradle`)
+- Change to the project root directory
+- All subsequent scripts will execute from this directory
 
 Step 1: Detect Java Version
 - If Java 17 → CONTINUE
@@ -304,7 +311,7 @@ These instructions guide an AI coding agent to upgrade a Java application from J
 
 ## Environment Assumptions
 - Platform: macOS (Macbook)
-- Default shell: zsh
+- Default shell: bash
 - curl is already installed
 - JDK Provider: Amazon Corretto
 - Build tool: Gradle with Groovy DSL (build.gradle) or Kotlin DSL (build.gradle.kts)
@@ -427,7 +434,7 @@ Create and maintain the upgrade log at:
 
 **Before starting Step 1**, create the directory structure and initialize the log file:
 
-```zsh
+```bash
 mkdir -p docs/ai-tasks/logs
 touch docs/ai-tasks/logs/java-21-upgrade-log.md
 ```
@@ -473,92 +480,6 @@ Brief overview of the upgrade process and overall status. Update this section as
 
 ---
 
-## Steps 2-4: JDK Installation and Configuration
-
-**Date**: YYYY-MM-DD
-
-### Installation Details
-- **JDK Version**: Amazon Corretto 21.x.x
-- **Installation Method**: [SDKMAN | Manual Download]
-- **Installation Path**: [path]
-- **JAVA_HOME**: [path]
-- **Default JDK Set**: [Yes/No]
-
-### Certificate Configuration
-- **Organization Certificates**: [Yes/No]
-- **Certificates Imported**: [List certificate file names (e.g., company-root-ca.pem, internal-ca.crt) or "None"]
-
-### Issues Encountered
-- [List any issues or "None"]
-
----
-
-## Step 5: Gradle Wrapper Update
-
-**Date**: YYYY-MM-DD
-
-### Gradle Version Update
-- **Current Version**: [version]
-- **Updated Version**: [version]
-- **Update Method**: [./gradlew wrapper --gradle-version=X.X]
-- **Verification**: [Success/Failed]
-
-### Issues Encountered
-- [List any issues or "None"]
-
----
-
-## Step 6: OpenRewrite Migration
-
-**Date**: YYYY-MM-DD
-
-### Recipes Executed
-- org.openrewrite.java.migrate.UpgradeToJava21
-- org.openrewrite.java.migrate.PatternMatchingInstanceof
-- org.openrewrite.java.migrate.SwitchExpressions
-- org.openrewrite.java.migrate.SwitchPatternMatching
-
-### Changes Applied
-- **Files Modified**: [number]
-- **Key Changes**:
-  - [Brief description of automated refactoring]
-
-### Issues Encountered
-- [List any issues or "None"]
-
----
-
-## Fixes Applied
-
-### Fix #1: [Brief description]
-- **File**: path/to/file.java:line_number
-- **Error Type**: [Compilation Error | Test Failure | Deprecated API | etc.]
-- **Root Cause**: Description of the issue
-- **Solution Applied**: Description of the fix
-- **Source**: [URL or reference to documentation/Stack Overflow]
-- **Date**: YYYY-MM-DD
-
-### Fix #2: [Brief description]
-...
-
----
-
-## Unresolved Errors
-
-### Error #1: [Brief description]
-- **File**: path/to/file.java:line_number
-- **Error Message**: Complete error message
-- **Error Category**: [API Deprecation | Package Migration | etc.]
-- **Attempted Solutions**:
-  1. OpenRewrite recipe attempted: recipe-name (Result: Failed)
-  2. Internet search queries: "query text"
-  3. Manual fix attempted: Description (Result: Failed because...)
-- **References**: Links to documentation, Stack Overflow, etc.
-- **Recommended Next Steps**: Suggestions for manual resolution
-- **Date**: YYYY-MM-DD
-
----
-
 ## Build/Test Summary
 
 - **Total Build Iterations**: X
@@ -586,6 +507,108 @@ At the beginning of each major step, add an entry to the log file. At the end of
 ---
 
 ## Upgrade Steps
+
+### Step 0: Set Project Root Directory
+
+**Purpose:** Establish the working directory for all subsequent commands. All shell scripts in this document must be executed from the project root directory.
+
+**🔴 CRITICAL - REQUIRED LOGGING FOR STEP 0:**
+Update the "Step 0: Project Root Directory" section in the log file with:
+- Project root directory path
+- Validation result (which build files were found)
+- Any issues encountered
+
+### 0.1 Prompt for Project Root Directory
+
+Ask the user to enter the project root directory path:
+
+```bash
+echo "=========================================="
+echo "Step 0: Set Project Root Directory"
+echo "=========================================="
+echo ""
+echo "All scripts in this upgrade process must be executed from the project root directory."
+echo "The project root is the directory containing gradlew, build.gradle, or pom.xml."
+echo ""
+read -p "Enter the project root directory path (or press Enter for current directory): " PROJECT_ROOT
+
+# Use current directory if no input provided
+if [ -z "$PROJECT_ROOT" ]; then
+    PROJECT_ROOT="$(pwd)"
+    echo "Using current directory: $PROJECT_ROOT"
+fi
+
+# Expand ~ to home directory if used
+PROJECT_ROOT="${PROJECT_ROOT/#\~/$HOME}"
+
+# Verify directory exists
+if [ ! -d "$PROJECT_ROOT" ]; then
+    echo ""
+    echo "ERROR: Directory does not exist: $PROJECT_ROOT"
+    echo "ABORT: Cannot proceed without a valid project root directory."
+    exit 1
+fi
+
+echo ""
+echo "Project root set to: $PROJECT_ROOT"
+```
+
+### 0.2 Validate Project Root Directory
+
+Verify the directory contains expected build files:
+
+```bash
+cd "$PROJECT_ROOT" || { echo "ERROR: Cannot change to directory: $PROJECT_ROOT"; exit 1; }
+
+echo ""
+echo "Validating project root directory..."
+echo ""
+
+VALID_PROJECT=false
+
+if [ -f "gradlew" ]; then
+    echo "✓ Found: gradlew"
+    VALID_PROJECT=true
+fi
+
+if [ -f "build.gradle" ]; then
+    echo "✓ Found: build.gradle"
+    VALID_PROJECT=true
+fi
+
+if [ -f "build.gradle.kts" ]; then
+    echo "✓ Found: build.gradle.kts"
+    VALID_PROJECT=true
+fi
+
+if [ -f "pom.xml" ]; then
+    echo "✓ Found: pom.xml"
+    VALID_PROJECT=true
+fi
+
+if [ "$VALID_PROJECT" = false ]; then
+    echo ""
+    echo "WARNING: No build files (gradlew, build.gradle, build.gradle.kts, pom.xml) found in: $PROJECT_ROOT"
+    echo ""
+    read -p "Continue anyway? (y/n): " CONTINUE_ANYWAY
+    if [[ ! "$CONTINUE_ANYWAY" =~ ^[Yy]$ ]]; then
+        echo "ABORT: User chose not to continue without build files."
+        exit 1
+    fi
+    echo "Continuing as requested by user..."
+else
+    echo ""
+    echo "✓ Project root directory validated successfully"
+fi
+
+echo ""
+echo "Current working directory: $(pwd)"
+echo ""
+echo "All subsequent commands will execute from this directory."
+echo ""
+```
+
+---
 
 ### Step 1: Verify Current Java Version (Prerequisite Check)
 
@@ -617,7 +640,7 @@ Skipping the version check is safe because the OpenRewrite plugin will handle th
 
 Check the Java version specified in the project's Gradle configuration files:
 
-```zsh
+```bash
 echo "Checking current Java version in project configuration..."
 echo ""
 
@@ -733,7 +756,7 @@ echo ""
 
 Verify that the detected Java version is 17:
 
-```zsh
+```bash
 if [ -z "$CURRENT_JAVA_VERSION" ]; then
     echo "=========================================="
     echo "WARNING: Java Version Not Detected"
@@ -861,7 +884,7 @@ Update the "Step 3: Install Amazon Corretto Java 21" section in the log file wit
 
 First, check if Amazon Corretto Java 21 is already installed locally:
 
-```zsh
+```bash
 if sdk list java | grep -v "local only" | grep -q "21\..*amzn"; then
     echo "Amazon Corretto Java 21 is already installed"
     JAVA21_ALREADY_INSTALLED=true
@@ -885,7 +908,7 @@ mkdir -p ~/trusted-certs
 
 Then, prompt the developer to prepare certificates:
 
-```zsh
+```bash
 echo ""
 echo "=========================================="
 echo "Organization Trusted Certificates Setup"
@@ -899,7 +922,7 @@ echo "Certificates with other extensions will be ignored during import."
 echo ""
 echo "If you don't have organization-specific certificates, you can skip this step."
 echo ""
-read "cert_response?Have you copied all organization trusted certificates to ~/trusted-certs? (y/n): "
+read -p "Have you copied all organization trusted certificates to ~/trusted-certs? (y/n): " cert_response
 echo ""
 
 if [[ "$cert_response" =~ ^[Yy]$ ]]; then
@@ -918,7 +941,7 @@ echo ""
 
 If Amazon Corretto Java 21 is not installed, find and install the latest version:
 
-```zsh
+```bash
 if [ "$JAVA21_ALREADY_INSTALLED" = false ]; then
     # Find the latest Amazon Corretto Java 21 version
     LATEST_JAVA21=$(sdk list java | grep "21\..*amzn" | grep -v ">>>" | head -1 | awk '{print $NF}')
@@ -945,7 +968,7 @@ This script:
 
 **Only if Amazon Corretto Java 21 was freshly installed in section 3.3**, import any organization trusted certificates into the Java keystore:
 
-```zsh
+```bash
 # Only proceed if Java 21 was installed (not if installation was skipped)
 if [ "$JAVA21_ALREADY_INSTALLED" = false ]; then
     # Get the installed Java 21 version and set JAVA_HOME
@@ -1035,7 +1058,7 @@ This script:
 
 To make Java 21 the default version for all new shell sessions:
 
-```zsh
+```bash
 # Get the installed Java 21 version (either newly installed or already present)
 JAVA21_VERSION=$(sdk list java | grep "21\..*amzn" | head -1 | awk '{print $NF}')
 
@@ -1053,7 +1076,7 @@ This dynamically identifies the installed Java 21 version and sets it as default
 
 Confirm Java 21 is active:
 
-```zsh
+```bash
 java -version
 ```
 
@@ -1076,7 +1099,7 @@ Update the "Step 4: Update Project Configuration" section in the log file with:
 
 Ensure JAVA_HOME points to the correct Java 21 installation:
 
-```zsh
+```bash
 export JAVA_HOME=$(sdk home java 21.0.9-amzn)
 echo $JAVA_HOME
 ```
@@ -1098,7 +1121,7 @@ Update the "Step 5: Gradle Wrapper Update" section in the log file with:
 
 First, verify that the project uses Gradle wrapper:
 
-```zsh
+```bash
 if [[ ! -f "gradlew" ]] || [[ ! -f "gradle/wrapper/gradle-wrapper.properties" ]]; then
     echo "=========================================="
     echo "Gradle wrapper not found"
@@ -1123,7 +1146,7 @@ fi
 
 Check the Gradle version specified in `gradle/wrapper/gradle-wrapper.properties`:
 
-```zsh
+```bash
 grep "distributionUrl" gradle/wrapper/gradle-wrapper.properties
 ```
 
@@ -1138,7 +1161,7 @@ Gradle versions have specific Java compatibility requirements:
 
 To check your current Gradle version:
 
-```zsh
+```bash
 ./gradlew --version
 ```
 
@@ -1148,7 +1171,7 @@ To check your current Gradle version:
 
 If the current Gradle version is below 8.5, upgrade to Gradle 8.11 (recommended for Java 21):
 
-```zsh
+```bash
 ./gradlew wrapper --gradle-version=8.11
 ```
 
@@ -1160,7 +1183,7 @@ This command will update the Gradle wrapper files to use version 8.11.
 
 After upgrading, verify the new Gradle version:
 
-```zsh
+```bash
 ./gradlew --version
 ```
 
@@ -1207,7 +1230,7 @@ First, check if the OpenRewrite plugin is already configured in your build file(
 > **Multi-Module Project Note:** The plugin may be in the root `build.gradle`/`build.gradle.kts` or in submodule build files. Check all build files if needed. See "Gradle Project Structure Patterns" for details.
 
 Check for the plugin:
-```zsh
+```bash
 # Check root build file
 grep -q "org.openrewrite.rewrite" build.gradle && echo "OpenRewrite plugin found in root" || echo "OpenRewrite plugin not found in root"
 
@@ -1256,7 +1279,7 @@ The `rewrite-migrate-java` recipe provides automated refactoring rules for Java 
 
 Execute the OpenRewrite migration to automatically refactor code for Java 21 compatibility. Pass the recipes directly as command line parameters:
 
-```zsh
+```bash
 ./gradlew rewriteRun \
   -Drewrite.activeRecipes=org.openrewrite.java.migrate.UpgradeToJava21,\
 org.openrewrite.java.migrate.PatternMatchingInstanceof,\
@@ -1300,7 +1323,7 @@ OpenRewrite makes changes directly to source files, so use git to review what wa
 
 After reviewing the changes, compile the project to ensure the migration was successful:
 
-```zsh
+```bash
 ./gradlew clean build
 ```
 
@@ -1308,10 +1331,54 @@ If there are any compilation errors, address them before proceeding.
 
 ### 6.7 Build/Fix Loop for Compilation Errors
 
+**🔴 CRITICAL - REQUIRED LOGGING FOR STEP 6.7:**
+Update the "Step 6.7: Build/Fix Loop" section in the log file with:
+
+**Fixes Applied in Build Fix Loop:**
+
+For each fix applied, log the following:
+
+**Fix #1**: [Brief description]
+- **Iteration**: X (of max 10)
+- **File**: path/to/file.java:line_number
+- **Error Type**: [Compilation Error | Test Failure | Deprecated API | etc.]
+- **Root Cause**: Description of the issue
+- **Solution Applied**: Description of the fix
+- **Source**: [URL or reference to documentation] (if applicable)
+
+**Fix #2**: [Brief description]
+- ...
+
+**Unresolved Errors (if any):**
+
+For each unresolved error, log the following:
+
+**Error #1**: [Brief description]
+- **File**: path/to/file.java:line_number
+- **Error Message**: Complete error message
+- **Error Category**: [API Deprecation | Package Migration | etc.]
+- **Attempted Solutions**:
+  1. OpenRewrite recipe attempted: recipe-name (Result: Failed)
+  2. Internet search queries: "query text"
+  3. Manual fix attempted: Description (Result: Failed because...)
+- **References**: Links to documentation, Stack Overflow, etc. (if applicable)
+- **Recommended Next Steps**: Suggestions for manual resolution
+
+**Error #2**: [Brief description]
+- ...
+
+**Build Fix Loop Summary:**
+- Total iterations completed: X
+- Total fixes applied: Y
+- Unresolved errors: Z
+- Final build status: Success/Failed
+
+---
+
 After running the OpenRewrite migration and reviewing changes, iteratively fix any remaining compilation errors:
 
 1. Execute the build command (skip tests for now):
-   ```zsh
+   ```bash
    ./gradlew clean build -x test
    ```
 2. If there are compilation errors:
@@ -1329,7 +1396,7 @@ After running the OpenRewrite migration and reviewing changes, iteratively fix a
    - **Stalled progress detection:** If the same error persists for 3 consecutive iterations, stop and document the issue
    - **Failure exit:** If unable to resolve after maximum iterations, document all remaining errors and request human intervention
 5. Once compilation succeeds, run the test suite:
-   ```zsh
+   ```bash
    ./gradlew test
    ```
 6. If tests fail:
@@ -1450,7 +1517,7 @@ When compilation errors or test failures occur, follow this systematic approach 
 **Before making manual code changes**, search for existing OpenRewrite recipes that can automatically fix the error:
 
 1. **Search the OpenRewrite recipe catalog:**
-   ```zsh
+   ```bash
    # List all available recipes in the rewrite-migrate-java dependency
    ./gradlew rewriteDiscover
    ```
@@ -1483,7 +1550,7 @@ When compilation errors or test failures occur, follow this systematic approach 
 
 4. **If a relevant recipe is found:**
    - Run ONLY the new recipe to fix the specific error (do not re-run the recipes that were already executed in section 6.4):
-     ```zsh
+     ```bash
      ./gradlew rewriteRun \
        -Drewrite.activeRecipes=org.openrewrite.java.migrate.<NewRecipeForTheError>
      ```
@@ -1496,7 +1563,7 @@ When compilation errors or test failures occur, follow this systematic approach 
    - OpenRewrite recipes are designed to be independent and can be run individually
 
    - Re-run the build to verify the fix:
-     ```zsh
+     ```bash
      ./gradlew clean build
      ```
    - If the error is resolved, continue to the next error (if any)
@@ -1792,7 +1859,7 @@ This should confirm that all Java 17 references have been updated to Java 21.
 
 If Docker is available, test building the image to ensure the Dockerfile changes are valid:
 
-```zsh
+```bash
 docker build -f <path-to-dockerfile> -t test-java21-upgrade .
 ```
 
@@ -1816,7 +1883,7 @@ Create a new "Step 8: GitHub Actions Workflow Updates" section in the log file (
 
 Search for workflow files in the repository:
 
-```zsh
+```bash
 find .github/workflows -name "*.yml" -o -name "*.yaml" 2>/dev/null
 ```
 
@@ -1824,7 +1891,7 @@ find .github/workflows -name "*.yml" -o -name "*.yaml" 2>/dev/null
 
 Check all workflow files for Java 17 references:
 
-```zsh
+```bash
 grep -r -i "java.*17\|17.*java\|java-version.*17" .github/workflows/ 2>/dev/null
 ```
 
@@ -1881,7 +1948,7 @@ strategy:
 
 After updating the workflow files, verify the changes:
 
-```zsh
+```bash
 grep -r -i "java.*21\|21.*java\|java-version.*21" .github/workflows/ 2>/dev/null
 ```
 
@@ -1891,7 +1958,7 @@ This should confirm that Java version references have been updated to 21.
 
 If the GitHub CLI (`gh`) is installed, you can validate the workflow syntax:
 
-```zsh
+```bash
 gh workflow list
 ```
 
@@ -1915,7 +1982,7 @@ Create a new "Step 9: AWS CodeBuild buildspec Updates" section in the log file (
 
 Search for buildspec files in the repository:
 
-```zsh
+```bash
 find . -name "buildspec*.yml" -o -name "buildspec*.yaml" 2>/dev/null
 ```
 
@@ -1923,7 +1990,7 @@ find . -name "buildspec*.yml" -o -name "buildspec*.yaml" 2>/dev/null
 
 Check all buildspec files for Java 17 references:
 
-```zsh
+```bash
 grep -r -i "java.*17\|corretto17\|runtime.*17" buildspec*.yml buildspec*.yaml 2>/dev/null
 ```
 
@@ -2033,7 +2100,7 @@ Create a new "Step 10: Final Build and Test Verification" section in the log fil
 
 Execute a clean build with all test cases to ensure the Java 21 upgrade is successful:
 
-```zsh
+```bash
 ./gradlew clean build -x test
 ```
 
@@ -2079,7 +2146,7 @@ open build/reports/tests/test/index.html
 
 Ensure that the build artifacts are created with Java 21:
 
-```zsh
+```bash
 # Check the build output directory
 ls -lh build/libs/
 

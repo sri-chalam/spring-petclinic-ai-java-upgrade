@@ -32,3 +32,14 @@ Some of them are documented in test-cases.md
 
 Open Rewrite recipe upgradeJavato21
 
+### Mix of zsh and bash scripts gave problem
+The instruction file used both bash and zsh scripts.
+The SDKMAN scripts are in bash and the others in zsh.
+
+When the first script in bash has to be executed, got the following error:
+
+"The terminal seems to be in an unusual state. Let me try to check the java version directly."
+
+The execution stuck there.
+
+Changed all script to be in bash.
