@@ -432,21 +432,6 @@ mkdir -p docs/ai-tasks/logs
 touch docs/ai-tasks/logs/java-21-upgrade-log.md
 ```
 
-### When to Log
-
-Log important actions and outcomes at each step of the upgrade process:
-
-- **Step 1:** Java version detection results and decision to proceed
-- **Steps 2-4:** JDK installation, configuration, and certificate imports
-- **Step 5:** Gradle wrapper version updates and verification
-- **Step 6:** OpenRewrite migration results, compilation errors, test failures, fixes applied, and unresolved issues
-- **Step 7:** Dockerfile updates (if applicable)
-- **Step 8:** GitHub Actions workflow updates (if applicable)
-- **Step 9:** AWS CodeBuild buildspec updates (if applicable)
-- **Step 10:** Final build and test verification results
-
-**See each step for specific details on what to log.** Each step section includes detailed logging guidance for that particular step.
-
 ### Log File Structure
 
 Initialize the log file with the following structure:
@@ -814,13 +799,11 @@ This script:
 
 SDKMAN (Software Development Kit Manager) is used to install and manage Java versions.
 
-**Logging for Steps 2-4:** Update the "Steps 2-4: JDK Installation and Configuration" section in the log file with:
-- JDK version being installed (Amazon Corretto 21.x.x)
+**🔴 CRITICAL - REQUIRED LOGGING FOR STEP 2:**
+Update the "Step 2: SDKMAN Installation" section in the log file with:
 - Note if SDKMAN was already installed or newly installed
+- If newly installed, log the SDKMAN version (output of `sdk version` command)
 - Installation path
-- JAVA_HOME configuration
-- Default JDK setting (Yes/No)
-- Certificate imports: List the names of each certificate file imported (or "None")
 - Any installation issues or warnings
 
 ### 2.1 Check if SDKMAN is Already Installed
@@ -865,6 +848,14 @@ This should display the SDKMAN version information.
 ---
 
 ### Step 3: Install Amazon Corretto Java 21
+
+**🔴 CRITICAL - REQUIRED LOGGING FOR STEP 3:**
+Update the "Step 3: Install Amazon Corretto Java 21" section in the log file with:
+- Note if Amazon Corretto Java 21 was already installed or newly installed
+- Log the Java version (output of `java -version` command)
+- Installation path
+- Any installation issues or warnings
+
 
 ### 3.1 Check if Amazon Corretto Java 21 is Already Installed
 
@@ -1077,6 +1068,10 @@ OpenJDK 64-Bit Server VM Corretto-21.0.x.x.x
 
 ### Step 4: Update Project Configuration
 
+**🔴 CRITICAL - REQUIRED LOGGING FOR STEP 4:**
+Update the "Step 4: Update Project Configuration" section in the log file with:
+- Log the JAVA_HOME value after setting it (output of `echo $JAVA_HOME` command)
+
 ### 4.1 Set JAVA_HOME Environment Variable
 
 Ensure JAVA_HOME points to the correct Java 21 installation:
@@ -1090,10 +1085,12 @@ echo $JAVA_HOME
 
 ### Step 5: Upgrade Gradle Wrapper (If Needed)
 
-**Logging for this step:** Update the "Step 5: Gradle Wrapper Update" section in the log file with:
-- Current Gradle version (from gradle-wrapper.properties)
-- Target/Updated Gradle version
-- Update method used (e.g., ./gradlew wrapper --gradle-version=X.X)
+**🔴 CRITICAL - REQUIRED LOGGING FOR STEP 5:**
+Update the "Step 5: Gradle Wrapper Update" section in the log file with:
+- Note if Gradle Wrapper exists in the project or not
+- If Gradle Wrapper exists, log the current Gradle version (from `gradle-wrapper.properties`)
+- If upgraded, log the target Gradle version after the update
+- Update method used (e.g., `./gradlew wrapper --gradle-version=X.X`)
 - Verification results (Success/Failed)
 - Any compatibility issues or warnings encountered
 
@@ -1101,8 +1098,8 @@ echo $JAVA_HOME
 
 First, verify that the project uses Gradle wrapper:
 
-```bash
-if [ ! -f "gradlew" ] || [ ! -f "gradle/wrapper/gradle-wrapper.properties" ]; then
+```zsh
+if [[ ! -f "gradlew" ]] || [[ ! -f "gradle/wrapper/gradle-wrapper.properties" ]]; then
     echo "=========================================="
     echo "Gradle wrapper not found"
     echo "=========================================="
@@ -1191,7 +1188,8 @@ OpenRewrite is an automated refactoring tool that can help migrate Java code fro
 
 **Before proceeding with Step 6:** Review the "Gradle Project Structure Patterns" section to understand where build files may be located in single-module vs. multi-module projects.
 
-**Logging for this step:** Update the "Step 6: OpenRewrite Migration" section and build/fix sections in the log file with:
+**🔴 CRITICAL - REQUIRED LOGGING FOR STEP 6:**
+Update the "Step 6: OpenRewrite Migration" section and build/fix sections in the log file with:
 - OpenRewrite recipes executed (list each recipe name)
 - Number of files modified by OpenRewrite
 - Summary of key automated changes made
@@ -1428,7 +1426,7 @@ Continue using the upgrade log file initialized at the beginning of the process 
 
 When compilation errors or test failures occur, follow this systematic approach to resolve them:
 
-##### Step 1: Extract and Categorize the Error
+##### Error Resolution Step 1: Extract and Categorize the Error
 
 1. **Capture the complete error message** including:
    - File path and line number
@@ -1447,7 +1445,7 @@ When compilation errors or test failures occur, follow this systematic approach 
 
 **Log the error information:** Keep a record in the upgrade log file (`/docs/ai-tasks/logs/java-21-upgrade-log.md`) of the extracted error details (file path, line number, error type, category, and full error message). This information will be used to document the error in either the "Fixes Applied" section (if resolved) or the "Unresolved Errors" section (if it cannot be fixed).
 
-##### Step 2: Search for OpenRewrite Recipes
+##### Error Resolution Step 2: Search for OpenRewrite Recipes
 
 **Before making manual code changes**, search for existing OpenRewrite recipes that can automatically fix the error:
 
@@ -1508,7 +1506,7 @@ When compilation errors or test failures occur, follow this systematic approach 
 - The "Fixes Applied" section if the recipe succeeds (document which recipe resolved the error)
 - The "Unresolved Errors" section under "Attempted Solutions" if the recipe fails
 
-##### Step 3: Search the Internet for Solutions
+##### Error Resolution Step 3: Search the Internet for Solutions
 
 **If no OpenRewrite recipe is found or the recipe didn't resolve the error**, search the Internet for solutions:
 
@@ -1546,7 +1544,7 @@ When compilation errors or test failures occur, follow this systematic approach 
 - Sources found and URLs (you'll need these for the "Source" field in "Fixes Applied" if the fix succeeds, or "References" in "Unresolved Errors" if it fails)
 - Potential solutions identified (helps document what was attempted)
 
-##### Step 4: Apply Automated Code Fixes
+##### Error Resolution Step 4: Apply Automated Code Fixes
 
 **If Internet research provides a solution**, automatically apply the fix and document the changes in the upgrade log file:
 
@@ -1633,7 +1631,7 @@ When compilation errors or test failures occur, follow this systematic approach 
 
 This documentation should be done immediately while the details are fresh.
 
-##### Step 5: Document Unresolvable Errors
+##### Error Resolution Step 5: Document Unresolvable Errors
 
 **If the error cannot be resolved** after trying all strategies:
 
@@ -1651,7 +1649,7 @@ This documentation should be done immediately while the details are fresh.
 
 3. **Continue to the next error** (if within iteration limits) or exit the loop
 
-##### Step 6: Detect Stalled Progress and Prevent Infinite Loops
+##### Error Resolution Step 6: Detect Stalled Progress and Prevent Infinite Loops
 
 **To implement stalled progress detection:**
 
@@ -1711,7 +1709,8 @@ This documentation should be done immediately while the details are fresh.
 
 If the repository contains a Dockerfile with a Java 17 base image, it needs to be updated to use Java 21.
 
-**Logging for this step:** Create a new "Step 7: Dockerfile Updates" section in the log file (or note "Not Applicable" if no Dockerfiles exist) with:
+**🔴 CRITICAL - REQUIRED LOGGING FOR STEP 7:**
+Create a new "Step 7: Dockerfile Updates" section in the log file (or note "Not Applicable" if no Dockerfiles exist) with:
 - Whether Dockerfile(s) exist in the repository (Yes/No)
 - Number of Dockerfiles found and their paths
 - Java version detected in each Dockerfile (e.g., Java 17, Java 11, or "No Java version found")
@@ -1805,7 +1804,8 @@ This verifies that the Dockerfile syntax is correct and the Java 21 base image i
 
 GitHub Actions workflow files may specify Java versions for CI/CD builds. If any workflow files reference Java 17, they need to be updated to Java 21.
 
-**Logging for this step:** Create a new "Step 8: GitHub Actions Workflow Updates" section in the log file (or note "Not Applicable" if no workflows exist) with:
+**🔴 CRITICAL - REQUIRED LOGGING FOR STEP 8:**
+Create a new "Step 8: GitHub Actions Workflow Updates" section in the log file (or note "Not Applicable" if no workflows exist) with:
 - Whether GitHub Actions workflows exist in the repository (Yes/No)
 - Number of workflow files found and their paths
 - Java version references found in each workflow file
@@ -1903,7 +1903,8 @@ Or commit the changes and check the Actions tab on GitHub to ensure workflows ru
 
 AWS CodeBuild buildspec.yml files may specify Java runtime versions. If any buildspec files reference Java 17, they need to be updated to Java 21.
 
-**Logging for this step:** Create a new "Step 9: AWS CodeBuild buildspec Updates" section in the log file (or note "Not Applicable" if no buildspec files exist) with:
+**🔴 CRITICAL - REQUIRED LOGGING FOR STEP 9:**
+Create a new "Step 9: AWS CodeBuild buildspec Updates" section in the log file (or note "Not Applicable" if no buildspec files exist) with:
 - Whether buildspec files exist in the repository (Yes/No)
 - Number of buildspec files found and their paths
 - Java version references found in each buildspec file
@@ -2016,7 +2017,8 @@ Monitor the build logs to verify that Java 21 is being used during the build pro
 
 After completing all the configuration updates and migrations, it's essential to verify that the application builds successfully and all tests pass with Java 21.
 
-**Logging for this step:** Create a new "Step 10: Final Build and Test Verification" section in the log file with:
+**🔴 CRITICAL - REQUIRED LOGGING FOR STEP 10:**
+Create a new "Step 10: Final Build and Test Verification" section in the log file with:
 - Build execution command used
 - Build result (Success/Failed)
 - Compilation warnings or errors (if any)
