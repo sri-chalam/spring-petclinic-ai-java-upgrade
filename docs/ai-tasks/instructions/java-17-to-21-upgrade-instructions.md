@@ -2163,9 +2163,9 @@ unzip -p build/libs/*.jar META-INF/MANIFEST.MF | grep -i "build-jdk"
 
 ---
 
-## Next Steps
+## Post-Upgrade Manual Steps
 
-After completing the above steps, proceed with:
+After the automated upgrade completes, perform these manual steps to ensure a fully functional Java 21 environment:
 1. Running end-to-end tests and any other tests (e.g., performance tests, smoke tests, manual tests) that are not executed as part of the Gradle build to identify compatibility issues
 2. Manually updating any remaining deprecated APIs not handled by OpenRewrite
 3. Building and deploying the application in Dev and Integration environments
@@ -2173,7 +2173,6 @@ After completing the above steps, proceed with:
 ---
 
 ## References
-- [Awesome Github Copilot AI Instructions Repository](https://github.com/github/awesome-copilot/tree/main/instructions)
+- [Github Copilot AI Instruction Files Repository](https://github.com/github/awesome-copilot/tree/main/instructions)
 - [SDKMAN Installation Guide](https://sdkman.io/install/)
 - [Amazon Corretto via SDKMAN](https://sdkman.io/jdks/amzn/)
-- [Amazon Corretto 21 Documentation](https://docs.aws.amazon.com/corretto/latest/corretto-21-ug/)

@@ -128,4 +128,7 @@ Sometimes LLM gives instructions in non-optimal way.
 
 When a step is added between 6 and 7, when LLM was asked to renumber, it misses in some places.
 
+LLM generated a section "Next Steps".
+Developer need to discuss with LLM for better names and tell the purpose of the section. Choose a better name like "Post-Upgrade Manual Steps". 
+
 

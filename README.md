@@ -310,12 +310,9 @@ Once the certificates are in place, proceed with the Java upgrade instructions a
 
 ### Overview
 
-The upgrade process consists of two instruction files that should be copied into any repository that needs to be upgraded from Java 17 to Java 21:
+The upgrade process uses a single instruction file that should be copied into any repository that needs to be upgraded from Java 17 to Java 21. This instruction file contains the detailed step-by-step procedures for the upgrade.
 
-1. **Instruction File** - Contains the detailed step-by-step procedures for the upgrade
-2. **LLM Prompt File** - Contains the prompt that directs an AI agent to execute the instructions
-
-Once these files are in place, the upgrade can be executed by referencing the prompt file in LLM, which will systematically work through all the necessary steps.
+Once the file is in place, the upgrade can be executed by referencing the instruction file in an LLM, which will systematically work through all the necessary steps.
 
 ### Step 1: Download the Instruction File
 
@@ -329,27 +326,16 @@ Save this file in your Git repository that needs to be upgraded from Java 17 to 
 <Git repo root>/docs/ai-tasks/instructions/
 ```
 
-### Step 2: Download the LLM Prompt
+### Step 2: Execute the Upgrade with an LLM
 
-Download the LLM prompt file that executes the upgrade from the following URL:
-```
-https://github.com/sri-chalam/spring-petclinic-ai-java-upgrade/blob/main/docs/ai-tasks/instructions/java-17-to-21-upgrade-llm-prompt.md
-```
+In your LLM chat interface (such as Claude, ChatGPT, Copilot or any AI coding agent), reference the instruction file location to initiate the upgrade process:
 
-Save this file in the same location as the instruction file:
+**LLM Prompt:**
 ```
-<Git repo root>/docs/ai-tasks/instructions/
+Upgrade the application from Java 17 to Java 21 using the instructions in @docs/ai-tasks/instructions/java-17-to-21-upgrade-instructions.md
 ```
 
-### Step 3: Execute the Upgrade with an LLM
-
-In your LLM chat interface (such as Claude, ChatGPT, Copilot or any AI coding agent), reference the prompt file location to initiate the upgrade process:
-
-```
-Follow the instructions in @docs/ai-tasks/instructions/java-17-to-21-upgrade-llm-prompt.md
-```
-
-The AI agent will read the prompt file, which in turn references the detailed instructions file, and execute each step of the upgrade process systematically.
+The AI agent will read the instruction file and execute each step of the upgrade process systematically.
 
 ## Post-Upgrade Validation and Configuration
 
@@ -460,7 +446,9 @@ However, every codebase is unique. Users will likely need to:
 - Add organization-specific requirements not covered here
 - Handle edge cases that arise in their particular context
 
-These instruction files should be treated as collaborative starting points. They work best when treated as living documents, refined based on real-world experiences and shared improvements with the community.
+These instruction files should be treated as **collaborative starting points**. They work best when treated as **living documents, refined based on real-world experiences and shared improvements** with the community.
+
+Consider reviewing the instruction files to understand what they're doing—**relying solely on AI without understanding the underlying steps may gradually erode debugging and troubleshooting skills**.
 
 Additional instructions are being developed for Java 25 upgrades and other migration scenarios. Feedback on what works, what doesn't, and how these instructions have been adapted for different use cases is welcome and appreciated.
 
