@@ -1338,8 +1338,8 @@ If there are any compilation errors, address them before proceeding.
 
 #### 7.7 Build/Fix Loop for Compilation Errors
 
-**🔴 CRITICAL - REQUIRED LOGGING FOR STEP 6.7:**
-Update the "Step 6.7: Build/Fix Loop" section in the log file with:
+**🔴 CRITICAL - REQUIRED LOGGING FOR STEP 7.7:**
+Update the "Step 7.7: Build/Fix Loop" section in the log file with:
 
 **Fixes Applied in Build Fix Loop:**
 
@@ -1390,7 +1390,7 @@ After running the OpenRewrite migration and reviewing changes, iteratively fix a
    ```
 2. If there are compilation errors:
   - Analyze each error message carefully
-  - Fix the errors using the **Error Resolution Methodology** (see section 6.7.2 below)
+  - Fix the errors using the **Error Resolution Methodology** (see section 7.7.1 below)
   - Common issues to address:
     - Deprecated APIs not handled by OpenRewrite
     - Changed method signatures in Java 21
@@ -1408,7 +1408,7 @@ After running the OpenRewrite migration and reviewing changes, iteratively fix a
    ```
 6. If tests fail:
   - Analyze test failure messages carefully
-  - Fix test failures using the **Error Resolution Methodology** (see section 6.7.2 below)
+  - Fix test failures using the **Error Resolution Methodology** (see section 7.7.1 below)
   - Common test issues:
     - Behavior changes in Java 21 APIs
     - Timing or ordering differences
@@ -1426,77 +1426,7 @@ After running the OpenRewrite migration and reviewing changes, iteratively fix a
 - Include relevant error messages and stack traces
 - Stop execution and notify the user for manual review and intervention
 
-##### 7.7.1 Upgrade Log Documentation for Build/Fix Loop
-
-Continue using the upgrade log file initialized at the beginning of the process (see "Logging Requirements" section). The log file should already exist at:
-
-```
-/docs/ai-tasks/logs/java-21-upgrade-log.md
-```
-
-**For the build/fix loop specifically**, ensure you document the following in the appropriate sections of the log:
-
-**Documentation Requirements:**
-
-1. **For each compilation error or test failure encountered**:
-   - Note the error in real-time as you work through fixes
-   - Track which iteration of the build/fix loop you're on
-
-2. **For each successful fix** (Step 4 of Error Resolution Methodology):
-   - Document in the "Fixes Applied" section of the log
-   - Include file path, error type, root cause, solution, and source
-   - Add immediately after applying the fix
-   - Example:
-     ```markdown
-     ### Fix #3: Removed deprecated Thread.stop() usage
-     - **File**: src/main/java/com/example/Worker.java:45
-     - **Error Type**: Compilation Error - Deprecated API
-     - **Root Cause**: Thread.stop() was deprecated and removed in Java 21
-     - **Solution Applied**: Replaced with thread.interrupt() and proper coordination
-     - **Source**: https://docs.oracle.com/en/java/javase/21/docs/api/
-     - **Date**: 2024-01-15
-     ```
-
-3. **For each unresolved error** (Step 5 of Error Resolution Methodology):
-   - Document in the "Unresolved Errors" section
-   - Include complete error details and all attempted solutions
-   - Add when the error cannot be resolved after maximum iterations
-   - Example:
-     ```markdown
-     ### Error #1: Third-party library incompatibility
-     - **File**: src/main/java/com/example/Service.java:120
-     - **Error Message**: cannot find symbol: class OldLibraryClass
-     - **Error Category**: Third-party Library Incompatibility
-     - **Attempted Solutions**:
-       1. Searched for updated library version (Result: No Java 21 compatible version available)
-       2. Searched for alternative libraries (Result: Found potential alternative but requires significant refactoring)
-       3. Attempted manual workaround (Result: Failed due to API changes)
-     - **References**: https://github.com/library/issues/123
-     - **Recommended Next Steps**: Contact library maintainer or migrate to alternative library
-     - **Date**: 2024-01-15
-     ```
-
-4. **Update the Build/Test Summary section**:
-   - Keep track of iteration counts for both build and test loops
-   - Update success/failure metrics
-   - Update final status when complete or blocked
-   - Example:
-     ```markdown
-     ## Build/Test Summary
-
-     - **Total Build Iterations**: 3
-     - **Total Test Iterations**: 2
-     - **Total Fixes Applied**: 5
-     - **Unresolved Errors**: 1
-     - **Tests Passed**: 245 / 246
-     - **Final Status**: Needs Manual Intervention (1 third-party library compatibility issue)
-     ```
-
-5. **Update the Summary and Status**:
-   - Update the status field at the top of the log file (In Progress → Completed or Blocked)
-   - Update the Summary section with high-level overview of the build/fix loop results
-
-##### 7.7.2 Error Resolution Methodology
+##### 7.7.1 Error Resolution Methodology
 
 When compilation errors or test failures occur, follow this systematic approach to resolve them:
 
