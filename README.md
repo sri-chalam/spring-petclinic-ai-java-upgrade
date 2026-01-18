@@ -282,11 +282,9 @@ This log provides full traceability of all changes made during the upgrade and s
 The upgrade instructions use the following OpenRewrite recipes:
 
 1. **`org.openrewrite.java.migrate.UpgradeToJava21`** - Migrates Java code from earlier versions to Java 21 compatibility
-2. **`org.openrewrite.java.migrate.PatternMatchingInstanceof`** - Refactors instanceof checks to use pattern matching (Java 16+ feature)
-3. **`org.openrewrite.java.migrate.SwitchExpressions`** - Converts traditional switch statements to modern switch expressions
-4. **`org.openrewrite.java.migrate.SwitchPatternMatching`** - Applies pattern matching in switch statements (Java 21 feature)
+2. **`org.openrewrite.java.migrate.SwitchPatternMatching`** - Applies pattern matching in switch statements (Java 21 feature)
 
-**Purpose of Additional Recipes:** Migrating to Java 21 alone is not sufficient if the codebase doesn't leverage its new features. The additional recipes (`PatternMatchingInstanceof`, `SwitchExpressions`, `SwitchPatternMatching`) transform the code to actively use modern, simple, and safe Java 21 language features, making the code more concise, readable, and type-safe.
+**Purpose of Additional Recipe:** UpgradeToJava21 handles most modernization, the SwitchPatternMatching recipe adds switch pattern matching support for more readable code.
 
 ## Organization Trusted Certificates
 
