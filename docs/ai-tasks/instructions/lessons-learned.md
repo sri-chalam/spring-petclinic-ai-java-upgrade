@@ -51,4 +51,37 @@ Do you want java 21.0.9-amzn to be set as default? (Y/n)
 Change the instruction so that it does not ask for confirmation.
 
 ### Gradlew version is 8.5 - It still went ahead to upgrade
-Change the instruction.
+Change the instruction to clearly instruct when to install and when not.
+
+### Incorrect version syntax
+The Coding agent incorrectly gave the syntax like the below.
+It did not work. 
+    rewrite(platform("org.openrewrite.recipe:rewrite-recipe-bom:latest.release"))
+
+Then the agent went in a loop to get a version. It got 2.24.0, which does not exist.
+
+rewrite(platform("org.openrewrite.recipe:rewrite-recipe-bom:+"))
+
+Debated between the above syntax and hard coding. Finally chose the version.
+rewrite(platform("org.openrewrite.recipe:rewrite-recipe-bom:3.22.0"))
+
+### Open Rewrite plugin version mismatch with bom version
+
+Got an error 
+org.openrewriteRecipe org.openrewrite.config.Environment.activateRecipes(java.lang.Iterable)
+
+The Internet search indicates that there is a mismatch between plugin and bom versions.
+
+In plugin version was "latest.version".
+Changed it. Hard coded it to the latest version. 7.24.0.
+
+### Removed OpenRewrite Recipes
+The following recipes are removed and not available anymore.
+SwitchExpressions
+PatternMatchingInstanceof
+
+The list of available receipes can be searched using:
+
+./gradlew rewriteDiscover
+
+

@@ -1249,7 +1249,7 @@ If the OpenRewrite plugin is not present, or if a newer version is required for 
 ```groovy
 plugins {
   // ... existing plugins ...
-  id("org.openrewrite.rewrite") version "latest.release"
+  id("org.openrewrite.rewrite") version "7.24.0"
 }
 ```
 
@@ -1266,7 +1266,7 @@ dependencies {
     // ... existing dependencies ...
 
     // Import the BOM to manage versions automatically
-    rewrite(platform("org.openrewrite.recipe:rewrite-recipe-bom:latest.release"))
+    rewrite(platform("org.openrewrite.recipe:rewrite-recipe-bom:3.22.0"))
 
     // Add the specific migration artifact without a version
     rewrite("org.openrewrite.recipe:rewrite-migrate-java")
@@ -1284,15 +1284,11 @@ Execute the OpenRewrite migration to automatically refactor code for Java 21 com
 ```bash
 ./gradlew rewriteRun \
   -Drewrite.activeRecipes=org.openrewrite.java.migrate.UpgradeToJava21,\
-org.openrewrite.java.migrate.PatternMatchingInstanceof,\
-org.openrewrite.java.migrate.SwitchExpressions,\
 org.openrewrite.java.migrate.SwitchPatternMatching
 ```
 
 **Recipe Descriptions:**
 - `UpgradeToJava21` - Core Java 21 upgrade recipe that updates deprecated APIs and patterns
-- `PatternMatchingInstanceof` - Refactors instanceof checks to use pattern matching (Java 16+ feature)
-- `SwitchExpressions` - Converts traditional switch statements to modern switch expressions
 - `SwitchPatternMatching` - Applies pattern matching in switch statements (Java 21 feature)
 
 **Why pass recipes via command line?**
