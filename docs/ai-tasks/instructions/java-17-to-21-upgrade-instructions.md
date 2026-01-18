@@ -98,38 +98,38 @@ EXECUTION RULES:
 - "DO NOT MODIFY" means no file changes of any kind.
 - Loops must not exceed stated limits.
 
-Step 0: Set Project Root Directory
+Step 1: Set Project Root Directory
 - Prompt user to enter or confirm the project root directory path
 - Validate the directory exists and contains build files (`gradlew`, `build.gradle`)
 - Change to the project root directory
 - All subsequent scripts will execute from this directory
 
-Step 1: Detect Java Version
+Step 2: Detect Java Version
 - If Java 17 → CONTINUE
 - If Java 21 → ABORT (Upgrade already completed; no migration required)
 - If other or not detected → CONTINUE with caution
 
-Step 2: SDKMAN Setup
+Step 3: SDKMAN Setup
 - If OS is macOS or Linux AND SDKMAN is not installed → Install SDKMAN
 - Otherwise → SKIP
 
-Step 3: JDK Installation
+Step 4: JDK Installation
 - If Java 21 JDK is not installed → Install JDK 21 using SDKMAN
 - Import required certificates if applicable
 - If JDK 21 is already installed → SKIP
 
-Step 4: Configure Environment
+Step 5: Configure Environment
 - Set JAVA_HOME to JDK 21
 - Update PATH if required
 
-Step 5: Build Tool Detection
+Step 6: Build Tool Detection
 - If Gradle project:
     - Detect Gradle Wrapper version
     - If wrapper < 8.5 → Upgrade wrapper
     - Else → SKIP
 - If Maven project → SKIP (DO NOT MODIFY Maven files)
 
-Step 6: OpenRewrite Java Upgrade
+Step 7: OpenRewrite Java Upgrade
 [CRITICAL PATH]
 
 Build/Fix Loop:
@@ -149,13 +149,13 @@ Test/Fix Loop:
 - Maximum 5 iterations
 - If still failing after 5 → ABORT
 
-Step 7–9: CI/CD Updates
+Step 8–10: CI/CD Updates
 - If Dockerfile exists → Update base image to Java 21
 - If GitHub Actions exists → Update Java version
 - If AWS CodeBuild exists → Update runtime
 - If none exist → SKIP section
 
-Step 10: Final Verification
+Step 11: Final Verification
 
 Verification requires:
 - `java -version` reports 21
@@ -459,7 +459,7 @@ Brief overview of the upgrade process and overall status. Update this section as
 
 ---
 
-## Step 1: Java Version Detection
+## Step 2: Java Version Detection
 
 **Date**: YYYY-MM-DD
 
@@ -508,17 +508,17 @@ At the beginning of each major step, add an entry to the log file. At the end of
 
 ## Upgrade Steps
 
-### Step 0: Set Project Root Directory
+### Step 1: Set Project Root Directory
 
 **Purpose:** Establish the working directory for all subsequent commands. All shell scripts in this document must be executed from the project root directory.
 
-**🔴 CRITICAL - REQUIRED LOGGING FOR STEP 0:**
-Update the "Step 0: Project Root Directory" section in the log file with:
+**🔴 CRITICAL - REQUIRED LOGGING FOR STEP 1:**
+Update the "Step 1: Project Root Directory" section in the log file with:
 - Project root directory path
 - Validation result (which build files were found)
 - Any issues encountered
 
-### 0.1 Prompt for Project Root Directory
+#### 1.1 Prompt for Project Root Directory
 
 Ask the user to enter the project root directory path:
 
@@ -553,7 +553,7 @@ echo ""
 echo "Project root set to: $PROJECT_ROOT"
 ```
 
-### 0.2 Validate Project Root Directory
+#### 1.2 Validate Project Root Directory
 
 Verify the directory contains expected build files:
 
@@ -610,13 +610,13 @@ echo ""
 
 ---
 
-### Step 1: Verify Current Java Version (Prerequisite Check)
+### Step 2: Verify Current Java Version (Prerequisite Check)
 
 **IMPORTANT: These instructions are designed to upgrade Java 17 applications to Java 21 only.** Before proceeding, verify that the application is currently using Java 17.
 
-**Before starting Step 1:** Initialize the upgrade log file as described in the "Logging Requirements" section.
+**Before starting Step 2:** Initialize the upgrade log file as described in the "Logging Requirements" section.
 
-**Logging for this step:** Update the "Step 1: Java Version Detection" section in the log file with:
+**Logging for this step:** Update the "Step 2: Java Version Detection" section in the log file with:
 - Current Java version detected (or "Not detected")
 - Location where version was found (build.gradle, gradle.properties, ext{} block, version catalog)
 - All build files checked (list each file path)
@@ -624,7 +624,7 @@ echo ""
 - Any issues with version detection (e.g., variable resolution failed, edge cases, complex patterns)
 - Decision made (Proceeding with upgrade | Skipping - already Java 21 | Continuing despite detection issues)
 
-### 1.1 Check Java Version in Project Configuration
+#### 2.1 Check Java Version in Project Configuration
 
 <!--
 Important Note: Java version can be configured in Gradle using many different patterns. Variables may be resolved through functions, project properties (e.g., "project.javaVersion"), or external property references. The script below handles common patterns but may not cover all edge cases.
@@ -752,7 +752,7 @@ echo "Current Java version detected: ${CURRENT_JAVA_VERSION:-Not found}"
 echo ""
 ```
 
-### 1.2 Validate Java 17 Requirement
+#### 2.2 Validate Java 17 Requirement
 
 Verify that the detected Java version is 17:
 
@@ -818,18 +818,18 @@ This script:
 
 ---
 
-### Step 2: Check and Install SDKMAN
+### Step 3: Check and Install SDKMAN
 
 SDKMAN (Software Development Kit Manager) is used to install and manage Java versions.
 
-**🔴 CRITICAL - REQUIRED LOGGING FOR STEP 2:**
-Update the "Step 2: SDKMAN Installation" section in the log file with:
+**🔴 CRITICAL - REQUIRED LOGGING FOR STEP 3:**
+Update the "Step 3: SDKMAN Installation" section in the log file with:
 - Note if SDKMAN was already installed or newly installed
 - If newly installed, log the SDKMAN version (output of `sdk version` command)
 - Installation path
 - Any installation issues or warnings
 
-### 2.1 Check if SDKMAN is Already Installed
+#### 3.1 Check if SDKMAN is Already Installed
 
 Check if the SDKMAN initialization script exists:
 
@@ -837,7 +837,7 @@ Check if the SDKMAN initialization script exists:
 [ -f ~/.sdkman/bin/sdkman-init.sh ] && echo "SDKMAN is installed" || echo "SDKMAN is not installed"
 ```
 
-### 2.2 Install SDKMAN (if not present)
+#### 3.2 Install SDKMAN (if not present)
 
 If the file `~/.sdkman/bin/sdkman-init.sh` does not exist, install SDKMAN:
 
@@ -848,7 +848,7 @@ echo "SDKMAN installation complete"
 
 This command downloads and executes the SDKMAN installation script, then confirms completion.
 
-### 2.3 Initialize SDKMAN in Current Shell
+#### 3.3 Initialize SDKMAN in Current Shell
 
 After confirming SDKMAN is installed (either already present or newly installed), initialize it in the current shell session:
 
@@ -858,7 +858,7 @@ source ~/.sdkman/bin/sdkman-init.sh
 
 **Important:** This command adds the `sdk` function to your shell environment, which is the core command for managing Java installations.
 
-### 2.4 Verify SDKMAN Installation
+#### 3.4 Verify SDKMAN Installation
 
 Confirm SDKMAN is working correctly:
 
@@ -870,17 +870,17 @@ This should display the SDKMAN version information.
 
 ---
 
-### Step 3: Install Amazon Corretto Java 21
+### Step 4: Install Amazon Corretto Java 21
 
-**🔴 CRITICAL - REQUIRED LOGGING FOR STEP 3:**
-Update the "Step 3: Install Amazon Corretto Java 21" section in the log file with:
+**🔴 CRITICAL - REQUIRED LOGGING FOR STEP 4:**
+Update the "Step 4: Install Amazon Corretto Java 21" section in the log file with:
 - Note if Amazon Corretto Java 21 was already installed or newly installed
 - Log the Java version (output of `java -version` command)
 - Installation path
 - Any installation issues or warnings
 
 
-### 3.1 Check if Amazon Corretto Java 21 is Already Installed
+#### 4.1 Check if Amazon Corretto Java 21 is Already Installed
 
 First, check if Amazon Corretto Java 21 is already installed locally:
 
@@ -896,7 +896,7 @@ fi
 
 This checks if any Amazon Corretto Java 21 version is installed locally by filtering out the "local only" header and searching for installed versions.
 
-### 3.2 Prepare Organization Trusted Certificates (if applicable)
+#### 4.2 Prepare Organization Trusted Certificates (if applicable)
 
 **Before installing Java**, if your organization uses custom trusted certificates (e.g., for internal Certificate Authorities, SSL inspection, or corporate proxies), prepare them for import.
 
@@ -937,7 +937,7 @@ echo ""
 
 **Note:** The import process in section 2.4 will automatically detect and import any certificates present in `~/trusted-certs`, regardless of the response to this prompt.
 
-### 3.3 Find and Install Latest Amazon Corretto Java 21 (if not present)
+#### 4.3 Find and Install Latest Amazon Corretto Java 21 (if not present)
 
 If Amazon Corretto Java 21 is not installed, find and install the latest version:
 
@@ -964,10 +964,10 @@ This script:
 - Installs it only if not already present
 - Provides clear feedback about what action was taken
 
-### 3.4 Import Organization Trusted Certificates into Java 21 (if applicable)
+#### 4.4 Import Organization Trusted Certificates into Java 21 (if applicable)
 
-**🔴 CRITICAL - REQUIRED LOGGING FOR STEP 3.4:**
-Update the "Step 3.4: Import Organization Trusted Certificates" section in the log file with:
+**🔴 CRITICAL - REQUIRED LOGGING FOR STEP 4.4:**
+Update the "Step 4.4: Import Organization Trusted Certificates" section in the log file with:
 - Whether certificates were imported (yes/no)
 - If skipped, reason for skipping (Java 21 already installed, no certificates found, etc.)
 - Total number of certificates imported
@@ -1063,7 +1063,7 @@ This script:
 - The default cacerts password is `changeit` (this is the standard Java default)
 - If you need to re-import certificates into an existing Java installation, you can manually run the import commands or temporarily set `JAVA21_ALREADY_INSTALLED=false`
 
-### 3.5 Set Java 21 as Default (Optional)
+#### 4.5 Set Java 21 as Default (Optional)
 
 To make Java 21 the default version for all new shell sessions:
 
@@ -1081,7 +1081,7 @@ fi
 
 This dynamically identifies the installed Java 21 version and sets it as default.
 
-### 3.6 Verify Java 21 Installation
+#### 4.6 Verify Java 21 Installation
 
 Confirm Java 21 is active:
 
@@ -1098,13 +1098,13 @@ OpenJDK 64-Bit Server VM Corretto-21.0.x.x.x
 
 ---
 
-### Step 4: Update Project Configuration
+### Step 5: Update Project Configuration
 
-**🔴 CRITICAL - REQUIRED LOGGING FOR STEP 4:**
-Update the "Step 4: Update Project Configuration" section in the log file with:
+**🔴 CRITICAL - REQUIRED LOGGING FOR STEP 5:**
+Update the "Step 5: Update Project Configuration" section in the log file with:
 - Log the JAVA_HOME value after setting it (output of `echo $JAVA_HOME` command)
 
-### 4.1 Set JAVA_HOME Environment Variable
+#### 5.1 Set JAVA_HOME Environment Variable
 
 Ensure JAVA_HOME points to the correct Java 21 installation:
 
@@ -1115,10 +1115,10 @@ echo $JAVA_HOME
 
 ---
 
-### Step 5: Upgrade Gradle Wrapper (If Needed)
+### Step 6: Upgrade Gradle Wrapper (If Needed)
 
-**🔴 CRITICAL - REQUIRED LOGGING FOR STEP 5:**
-Update the "Step 5: Gradle Wrapper Update" section in the log file with:
+**🔴 CRITICAL - REQUIRED LOGGING FOR STEP 6:**
+Update the "Step 6: Gradle Wrapper Update" section in the log file with:
 - Note if Gradle Wrapper exists in the project or not
 - If Gradle Wrapper exists, log the current Gradle version (from `gradle-wrapper.properties`)
 - If upgraded, log the target Gradle version after the update
@@ -1126,7 +1126,7 @@ Update the "Step 5: Gradle Wrapper Update" section in the log file with:
 - Verification results (Success/Failed)
 - Any compatibility issues or warnings encountered
 
-### 5.1 Check if Gradle Wrapper Exists
+#### 6.1 Check if Gradle Wrapper Exists
 
 First, verify that the project uses Gradle wrapper:
 
@@ -1147,9 +1147,9 @@ else
 fi
 ```
 
-**If Gradle wrapper is not found, skip the remaining subsections of Step 5 and proceed to Step 6.**
+**If Gradle wrapper is not found, skip the remaining subsections of Step 6 and proceed to Step 7.**
 
-### 5.2 Check Current Gradle Wrapper Version
+#### 6.2 Check Current Gradle Wrapper Version
 
 **Only proceed if `GRADLE_WRAPPER_EXISTS=true`.**
 
@@ -1161,7 +1161,7 @@ grep "distributionUrl" gradle/wrapper/gradle-wrapper.properties
 
 This will display the current Gradle version being used by the wrapper.
 
-### 5.3 Verify Java 21 Compatibility
+#### 6.3 Verify Java 21 Compatibility
 
 **Only proceed if `GRADLE_WRAPPER_EXISTS=true`.**
 
@@ -1174,7 +1174,7 @@ To check your current Gradle version:
 ./gradlew --version
 ```
 
-### 5.4 Upgrade Gradle Wrapper (If Necessary)
+#### 6.4 Upgrade Gradle Wrapper (If Necessary)
 
 **Only proceed if `GRADLE_WRAPPER_EXISTS=true`.**
 
@@ -1188,7 +1188,7 @@ To check your current Gradle version:
 
 This command will update the Gradle wrapper files to use version 8.11.
 
-### 5.5 Verify Gradle Wrapper Upgrade
+#### 6.5 Verify Gradle Wrapper Upgrade
 
 **Only proceed if `GRADLE_WRAPPER_EXISTS=true`.**
 
@@ -1216,14 +1216,14 @@ OS:           Mac OS X 14.x.x aarch64
 
 ---
 
-### Step 6: Use OpenRewrite to Migrate Java Code
+### Step 7: Use OpenRewrite to Migrate Java Code
 
 OpenRewrite is an automated refactoring tool that can help migrate Java code from Java 17 to Java 21.
 
-**Before proceeding with Step 6:** Review the "Gradle Project Structure Patterns" section to understand where build files may be located in single-module vs. multi-module projects.
+**Before proceeding with Step 7:** Review the "Gradle Project Structure Patterns" section to understand where build files may be located in single-module vs. multi-module projects.
 
-**🔴 CRITICAL - REQUIRED LOGGING FOR STEP 6:**
-Update the "Step 6: OpenRewrite Migration" section and build/fix sections in the log file with:
+**🔴 CRITICAL - REQUIRED LOGGING FOR STEP 7:**
+Update the "Step 7: OpenRewrite Migration" section and build/fix sections in the log file with:
 - OpenRewrite recipes executed (list each recipe name)
 - Number of files modified by OpenRewrite
 - Summary of key automated changes made
@@ -1234,7 +1234,7 @@ Update the "Step 6: OpenRewrite Migration" section and build/fix sections in the
 - Build/test iteration counts
 - Final status (Success, Completed with warnings, or Needs Manual Intervention)
 
-### 6.1 Check if OpenRewrite Plugin is Present
+#### 7.1 Check if OpenRewrite Plugin is Present
 
 First, check if the OpenRewrite plugin is already configured in your build file(s).
 
@@ -1249,7 +1249,7 @@ grep -q "org.openrewrite.rewrite" build.gradle && echo "OpenRewrite plugin found
 find . -type f \( -name "build.gradle" -o -name "build.gradle.kts" \) -exec grep -l "org.openrewrite.rewrite" {} \;
 ```
 
-### 6.2 Add OpenRewrite Plugin (if not present or upgrade needed)
+#### 7.2 Add OpenRewrite Plugin (if not present or upgrade needed)
 
 > **Multi-Module Project Note:** Add the plugin to the build file that contains other plugins. This may be the root build file or a submodule build file. See "Gradle Project Structure Patterns" for guidance.
 
@@ -1264,7 +1264,7 @@ plugins {
 
 **Note:** Version 6.30.3 or later is recommended for Java 21 migration. If an older version is present, update it to the latest version.
 
-### 6.3 Add Rewrite Dependencies (if not present)
+#### 7.3 Add Rewrite Dependencies (if not present)
 
 > **Multi-Module Project Note:** Add dependencies to the build file that already contains other dependencies. Refer to "Gradle Project Structure Patterns" for guidance on locating the correct build file.
 
@@ -1286,7 +1286,7 @@ The `rewrite-migrate-java` recipe provides automated refactoring rules for Java 
 
 **Note:** If these dependencies already exist in the build file, skip this step and proceed to the next section.
 
-### 6.4 Run Rewrite Migration
+#### 7.4 Run Rewrite Migration
 
 Execute the OpenRewrite migration to automatically refactor code for Java 21 compatibility. Pass the recipes directly as command line parameters:
 
@@ -1312,7 +1312,7 @@ This command will:
 - Use a few simple and safe Java 21 features
 - Modify source files
 
-### 6.5 Review Changes
+#### 7.5 Review Changes
 
 After running the migration, review the changes made by OpenRewrite:
 
@@ -1326,7 +1326,7 @@ OpenRewrite makes changes directly to source files, so use git to review what wa
 - Updated language constructs to use Java 21 features
 - Fixed compatibility issues
 
-### 6.6 Verify Migration Success
+#### 7.6 Verify Migration Success
 
 After reviewing the changes, compile the project to ensure the migration was successful:
 
@@ -1336,7 +1336,7 @@ After reviewing the changes, compile the project to ensure the migration was suc
 
 If there are any compilation errors, address them before proceeding.
 
-### 6.7 Build/Fix Loop for Compilation Errors
+#### 7.7 Build/Fix Loop for Compilation Errors
 
 **🔴 CRITICAL - REQUIRED LOGGING FOR STEP 6.7:**
 Update the "Step 6.7: Build/Fix Loop" section in the log file with:
@@ -1426,7 +1426,7 @@ After running the OpenRewrite migration and reviewing changes, iteratively fix a
 - Include relevant error messages and stack traces
 - Stop execution and notify the user for manual review and intervention
 
-#### 6.7.1 Upgrade Log Documentation for Build/Fix Loop
+##### 7.7.1 Upgrade Log Documentation for Build/Fix Loop
 
 Continue using the upgrade log file initialized at the beginning of the process (see "Logging Requirements" section). The log file should already exist at:
 
@@ -1496,11 +1496,11 @@ Continue using the upgrade log file initialized at the beginning of the process 
    - Update the status field at the top of the log file (In Progress → Completed or Blocked)
    - Update the Summary section with high-level overview of the build/fix loop results
 
-#### 6.7.2 Error Resolution Methodology
+##### 7.7.2 Error Resolution Methodology
 
 When compilation errors or test failures occur, follow this systematic approach to resolve them:
 
-##### Error Resolution Step 1: Extract and Categorize the Error
+###### Error Resolution Step 1: Extract and Categorize the Error
 
 1. **Capture the complete error message** including:
    - File path and line number
@@ -1519,7 +1519,7 @@ When compilation errors or test failures occur, follow this systematic approach 
 
 **Log the error information:** Keep a record in the upgrade log file (`/docs/ai-tasks/logs/java-21-upgrade-log.md`) of the extracted error details (file path, line number, error type, category, and full error message). This information will be used to document the error in either the "Fixes Applied" section (if resolved) or the "Unresolved Errors" section (if it cannot be fixed).
 
-##### Error Resolution Step 2: Search for OpenRewrite Recipes
+###### Error Resolution Step 2: Search for OpenRewrite Recipes
 
 **Before making manual code changes**, search for existing OpenRewrite recipes that can automatically fix the error:
 
@@ -1580,7 +1580,7 @@ When compilation errors or test failures occur, follow this systematic approach 
 - The "Fixes Applied" section if the recipe succeeds (document which recipe resolved the error)
 - The "Unresolved Errors" section under "Attempted Solutions" if the recipe fails
 
-##### Error Resolution Step 3: Search the Internet for Solutions
+###### Error Resolution Step 3: Search the Internet for Solutions
 
 **If no OpenRewrite recipe is found or the recipe didn't resolve the error**, search the Internet for solutions:
 
@@ -1618,7 +1618,7 @@ When compilation errors or test failures occur, follow this systematic approach 
 - Sources found and URLs (you'll need these for the "Source" field in "Fixes Applied" if the fix succeeds, or "References" in "Unresolved Errors" if it fails)
 - Potential solutions identified (helps document what was attempted)
 
-##### Error Resolution Step 4: Apply Automated Code Fixes
+###### Error Resolution Step 4: Apply Automated Code Fixes
 
 **If Internet research provides a solution**, automatically apply the fix and document the changes in the upgrade log file:
 
@@ -1705,7 +1705,7 @@ When compilation errors or test failures occur, follow this systematic approach 
 
 This documentation should be done immediately while the details are fresh.
 
-##### Error Resolution Step 5: Document Unresolvable Errors
+###### Error Resolution Step 5: Document Unresolvable Errors
 
 **If the error cannot be resolved** after trying all strategies:
 
@@ -1723,7 +1723,7 @@ This documentation should be done immediately while the details are fresh.
 
 3. **Continue to the next error** (if within iteration limits) or exit the loop
 
-##### Error Resolution Step 6: Detect Stalled Progress and Prevent Infinite Loops
+###### Error Resolution Step 6: Detect Stalled Progress and Prevent Infinite Loops
 
 **To implement stalled progress detection:**
 
@@ -1740,7 +1740,7 @@ This documentation should be done immediately while the details are fresh.
    - If at least one error is fixed in an iteration, continue to the next iteration
    - If no progress is made (same number of errors or same errors), increment the stall counter
 
-##### Example Workflow
+###### Example Workflow
 
 **Example: Fixing a deprecated API error**
 
@@ -1779,12 +1779,12 @@ This documentation should be done immediately while the details are fresh.
 
 ---
 
-### Step 7: Update Dockerfile (If Present)
+### Step 8: Update Dockerfile (If Present)
 
 If the repository contains a Dockerfile with a Java 17 base image, it needs to be updated to use Java 21.
 
-**🔴 CRITICAL - REQUIRED LOGGING FOR STEP 7:**
-Create a new "Step 7: Dockerfile Updates" section in the log file (or note "Not Applicable" if no Dockerfiles exist) with:
+**🔴 CRITICAL - REQUIRED LOGGING FOR STEP 8:**
+Create a new "Step 8: Dockerfile Updates" section in the log file (or note "Not Applicable" if no Dockerfiles exist) with:
 - Whether Dockerfile(s) exist in the repository (Yes/No)
 - Number of Dockerfiles found and their paths
 - Java version detected in each Dockerfile (e.g., Java 17, Java 11, or "No Java version found")
@@ -1792,7 +1792,7 @@ Create a new "Step 7: Dockerfile Updates" section in the log file (or note "Not 
 - Verification results for each Dockerfile
 - Docker build test results (if performed - Success/Failed/Skipped)
 
-### 7.1 Check for Dockerfile
+#### 8.1 Check for Dockerfile
 
 Search for Dockerfile(s) in the repository:
 
@@ -1800,7 +1800,7 @@ Search for Dockerfile(s) in the repository:
 find . -name "Dockerfile*" -type f
 ```
 
-### 7.2 Identify Java Version in Dockerfile
+#### 8.2 Identify Java Version in Dockerfile
 
 For each Dockerfile found, check if it references Java 17:
 
@@ -1808,11 +1808,11 @@ For each Dockerfile found, check if it references Java 17:
 grep -i "java.*17\|17.*java\|VARIANT=17\|JAVA_VERSION=17" <path-to-dockerfile>
 ```
 
-### 7.3 Update Dockerfile to Java 21
+#### 8.3 Update Dockerfile to Java 21
 
 If Java 17 is found in the Dockerfile, update it to Java 21. Common patterns to look for and update:
 
-#### Pattern 1: VARIANT argument
+##### Pattern 1: VARIANT argument
 ```dockerfile
 # Before
 ARG VARIANT=17-bullseye
@@ -1821,7 +1821,7 @@ ARG VARIANT=17-bullseye
 ARG VARIANT=21-bullseye
 ```
 
-#### Pattern 2: JAVA_VERSION argument
+##### Pattern 2: JAVA_VERSION argument
 ```dockerfile
 # Before
 ARG JAVA_VERSION=17.0.7-ms
@@ -1832,7 +1832,7 @@ ARG JAVA_VERSION=21.0.9-amzn
 
 **Note:** Update the specific Java version to the latest available Java 21 version. For Amazon Corretto, use a version like `21.0.9-amzn` or later.
 
-#### Pattern 3: Base image with explicit Java version
+##### Pattern 3: Base image with explicit Java version
 ```dockerfile
 # Before
 FROM [<registry>/]amazoncorretto:17-alpine
@@ -1843,7 +1843,7 @@ FROM [<registry>/]amazoncorretto:21-alpine
 
 **Note:** The `[<registry>/]` prefix is optional and represents container registry paths like `ghcr.io/`, `docker.io/`, etc. If present, preserve the registry prefix and only update the Java version number from 17 to 21.
 
-#### Pattern 4: SDKMAN installation in Dockerfile
+##### Pattern 4: SDKMAN installation in Dockerfile
 ```dockerfile
 # Before
 RUN bash -lc '. /usr/local/sdkman/bin/sdkman-init.sh && sdk install java 17.0.7-ms && sdk use java 17.0.7-ms'
@@ -1852,7 +1852,7 @@ RUN bash -lc '. /usr/local/sdkman/bin/sdkman-init.sh && sdk install java 17.0.7-
 RUN bash -lc '. /usr/local/sdkman/bin/sdkman-init.sh && sdk install java 21.0.9-amzn && sdk use java 21.0.9-amzn'
 ```
 
-### 7.4 Verify Dockerfile Changes
+#### 8.4 Verify Dockerfile Changes
 
 After updating the Dockerfile, verify the changes:
 
@@ -1862,7 +1862,7 @@ grep -i "java.*21\|21.*java\|VARIANT=21\|JAVA_VERSION=21" <path-to-dockerfile>
 
 This should confirm that all Java 17 references have been updated to Java 21.
 
-### 7.5 Test Docker Build (Optional)
+#### 8.5 Test Docker Build (Optional)
 
 If Docker is available, test building the image to ensure the Dockerfile changes are valid:
 
@@ -1874,7 +1874,7 @@ This verifies that the Dockerfile syntax is correct and the Java 21 base image i
 
 ---
 
-### Step 8: Update GitHub Actions Workflow Files (If Present)
+### Step 9: Update GitHub Actions Workflow Files (If Present)
 
 GitHub Actions workflow files may specify Java versions for CI/CD builds. If any workflow files reference Java 17, they need to be updated to Java 21.
 
@@ -1886,7 +1886,7 @@ Create a new "Step 8: GitHub Actions Workflow Updates" section in the log file (
 - Changes made to each workflow file (list specific updates like java-version, distribution changes)
 - Verification results for each workflow file
 
-### 8.1 Check for GitHub Actions Workflow Files
+#### 9.1 Check for GitHub Actions Workflow Files
 
 Search for workflow files in the repository:
 
@@ -1894,7 +1894,7 @@ Search for workflow files in the repository:
 find .github/workflows -name "*.yml" -o -name "*.yaml" 2>/dev/null
 ```
 
-### 8.2 Identify Java 17 References in Workflow Files
+#### 9.2 Identify Java 17 References in Workflow Files
 
 Check all workflow files for Java 17 references:
 
@@ -1902,11 +1902,11 @@ Check all workflow files for Java 17 references:
 grep -r -i "java.*17\|17.*java\|java-version.*17" .github/workflows/ 2>/dev/null
 ```
 
-### 8.3 Update Workflow Files to Java 21
+#### 9.3 Update Workflow Files to Java 21
 
 If Java 17 is found in workflow files, update it to Java 21. Common patterns to look for and update:
 
-#### Pattern 1: Matrix strategy with Java version
+##### Pattern 1: Matrix strategy with Java version
 ```yaml
 # Before
 strategy:
@@ -1919,7 +1919,7 @@ strategy:
     java: [ '21' ]
 ```
 
-#### Pattern 2: Setup Java action with java-version
+##### Pattern 2: Setup Java action with java-version
 ```yaml
 # Before
 - name: Set up JDK 17
@@ -1936,7 +1936,7 @@ strategy:
     distribution: 'corretto'
 ```
 
-#### Pattern 3: Multiple Java versions in matrix (keeping Java 17 for compatibility testing)
+##### Pattern 3: Multiple Java versions in matrix (keeping Java 17 for compatibility testing)
 ```yaml
 # If testing against multiple Java versions and you want to keep Java 17 for compatibility:
 strategy:
@@ -1951,7 +1951,7 @@ strategy:
 
 **Note:** Ensure the `distribution` field is set to `'corretto'` to use Amazon Corretto JDK, consistent with the local development environment.
 
-### 8.4 Verify Workflow File Changes
+#### 9.4 Verify Workflow File Changes
 
 After updating the workflow files, verify the changes:
 
@@ -1961,7 +1961,7 @@ grep -r -i "java.*21\|21.*java\|java-version.*21" .github/workflows/ 2>/dev/null
 
 This should confirm that Java version references have been updated to 21.
 
-### 8.5 Validate Workflow Syntax (Optional)
+#### 9.5 Validate Workflow Syntax (Optional)
 
 If the GitHub CLI (`gh`) is installed, you can validate the workflow syntax:
 
@@ -1973,19 +1973,19 @@ Or commit the changes and check the Actions tab on GitHub to ensure workflows ru
 
 ---
 
-### Step 9: Update AWS CodeBuild buildspec.yml Files (If Present)
+#### Step 10: Update AWS CodeBuild buildspec.yml Files (If Present)
 
 AWS CodeBuild buildspec.yml files may specify Java runtime versions. If any buildspec files reference Java 17, they need to be updated to Java 21.
 
-**🔴 CRITICAL - REQUIRED LOGGING FOR STEP 9:**
-Create a new "Step 9: AWS CodeBuild buildspec Updates" section in the log file (or note "Not Applicable" if no buildspec files exist) with:
+**🔴 CRITICAL - REQUIRED LOGGING FOR STEP 10:**
+Create a new "Step 10: AWS CodeBuild buildspec Updates" section in the log file (or note "Not Applicable" if no buildspec files exist) with:
 - Whether buildspec files exist in the repository (Yes/No)
 - Number of buildspec files found and their paths
 - Java version references found in each buildspec file
 - Changes made to each buildspec file (list specific runtime updates)
 - Verification results for each buildspec file
 
-### 9.1 Check for AWS CodeBuild buildspec Files
+#### 10.1 Check for AWS CodeBuild buildspec Files
 
 Search for buildspec files in the repository:
 
@@ -1993,7 +1993,7 @@ Search for buildspec files in the repository:
 find . -name "buildspec*.yml" -o -name "buildspec*.yaml" 2>/dev/null
 ```
 
-### 9.2 Identify Java 17 References in buildspec Files
+#### 10.2 Identify Java 17 References in buildspec Files
 
 Check all buildspec files for Java 17 references:
 
@@ -2001,11 +2001,11 @@ Check all buildspec files for Java 17 references:
 grep -r -i "java.*17\|corretto17\|runtime.*17" buildspec*.yml buildspec*.yaml 2>/dev/null
 ```
 
-### 9.3 Update buildspec Files to Java 21
+#### 10.3 Update buildspec Files to Java 21
 
 If Java 17 is found in buildspec files, update it to Java 21. Common patterns to look for and update:
 
-#### Pattern 1: Runtime version in install phase
+##### Pattern 1: Runtime version in install phase
 ```yaml
 # Before
 phases:
@@ -2020,7 +2020,7 @@ phases:
       java: corretto21
 ```
 
-#### Pattern 2: Explicit Java version specification
+##### Pattern 2: Explicit Java version specification
 ```yaml
 # Before
 phases:
@@ -2035,7 +2035,7 @@ phases:
       java: 21
 ```
 
-#### Pattern 3: Environment variables for Java version
+##### Pattern 3: Environment variables for Java version
 ```yaml
 # Before
 env:
@@ -2050,7 +2050,7 @@ env:
     JAVA_HOME: "/usr/lib/jvm/java-21-amazon-corretto"
 ```
 
-#### Pattern 4: CodeBuild image with Java version
+##### Pattern 4: CodeBuild image with Java version
 ```yaml
 # Before
 version: 0.2
@@ -2065,7 +2065,7 @@ version: 0.2
 
 **Note:** Ensure you're using Amazon Corretto (`corretto21`) to maintain consistency with the local development environment.
 
-### 9.4 Verify buildspec File Changes
+#### 10.4 Verify buildspec File Changes
 
 After updating the buildspec files, verify the changes:
 
@@ -2075,7 +2075,7 @@ grep -r -i "java.*21\|corretto21\|runtime.*21" buildspec*.yml buildspec*.yaml 2>
 
 This should confirm that Java version references have been updated to 21.
 
-### 9.5 Test CodeBuild Execution (Optional)
+#### 10.5 Test CodeBuild Execution (Optional)
 
 If you have access to AWS CodeBuild, trigger a build to ensure the buildspec changes work correctly with Java 21:
 
@@ -2087,12 +2087,12 @@ Monitor the build logs to verify that Java 21 is being used during the build pro
 
 ---
 
-### Step 10: Execute Gradle Build with Test Cases
+### Step 11: Execute Gradle Build with Test Cases
 
 After completing all the configuration updates and migrations, it's essential to verify that the application builds successfully and all tests pass with Java 21.
 
-**🔴 CRITICAL - REQUIRED LOGGING FOR STEP 10:**
-Create a new "Step 10: Final Build and Test Verification" section in the log file with:
+**🔴 CRITICAL - REQUIRED LOGGING FOR STEP 11:**
+Create a new "Step 11: Final Build and Test Verification" section in the log file with:
 - Build execution command used
 - Build result (Success/Failed)
 - Compilation warnings or errors (if any)
@@ -2103,7 +2103,7 @@ Create a new "Step 10: Final Build and Test Verification" section in the log fil
 - JAR/WAR artifact verification results
 - Final upgrade status (Success/Completed with warnings/Failed)
 
-### 10.1 Clean Build with Tests
+#### 11.1 Clean Build with Tests
 
 Execute a clean build with all test cases to ensure the Java 21 upgrade is successful:
 
@@ -2119,14 +2119,14 @@ This command will:
 - Run all integration tests (if configured)
 - Generate build artifacts
 
-### 10.2 Verify Build Success
+#### 11.2 Verify Build Success
 
 After the build completes, verify that:
 1. The build completed successfully without errors
 2. All tests passed
 3. No deprecation warnings related to Java version compatibility
 
-### 10.3 Run Tests Separately (Optional)
+#### 11.3 Run Tests Separately (Optional)
 
 If you want to run tests separately without building artifacts:
 
@@ -2140,7 +2140,7 @@ For integration tests (if configured separately):
 ./gradlew integrationTest
 ```
 
-### 10.4 Review Test Results
+#### 11.4 Review Test Results
 
 Check the test results in the console output. For detailed test reports, review:
 
@@ -2149,7 +2149,7 @@ Check the test results in the console output. For detailed test reports, review:
 open build/reports/tests/test/index.html
 ```
 
-### 10.5 Verify JAR/WAR Artifacts
+#### 11.5 Verify JAR/WAR Artifacts
 
 Ensure that the build artifacts are created with Java 21:
 
@@ -2168,12 +2168,12 @@ unzip -p build/libs/*.jar META-INF/MANIFEST.MF | grep -i "build-jdk"
 After completing the above steps, proceed with:
 1. Running end-to-end tests and any other tests (e.g., performance tests, smoke tests, manual tests) that are not executed as part of the Gradle build to identify compatibility issues
 2. Manually updating any remaining deprecated APIs not handled by OpenRewrite
-3. Building and deploying the application
+3. Building and deploying the application in Dev and Integration environments
 
 ---
 
 ## References
-
+- [Awesome Github Copilot AI Instructions Repository](https://github.com/github/awesome-copilot/tree/main/instructions)
 - [SDKMAN Installation Guide](https://sdkman.io/install/)
 - [Amazon Corretto via SDKMAN](https://sdkman.io/jdks/amzn/)
 - [Amazon Corretto 21 Documentation](https://docs.aws.amazon.com/corretto/latest/corretto-21-ug/)

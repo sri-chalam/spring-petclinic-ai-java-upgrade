@@ -118,3 +118,14 @@ Some models suggestions are better than others in some cases.
 
 For example ChatGPT model's suggestion on instruction flow ASCII diagram is very good.
 
+### Many mistakes in generating the instructions file
+We need to review the instruction file very thoroughly.
+
+Heading and sub heading are both given h3 - ###
+
+The generated instruction does not clearly convey the needs of a team.
+Sometimes LLM gives instructions in non-optimal way.
+
+When a step is added between 6 and 7, when LLM was asked to renumber, it misses in some places.
+
+
