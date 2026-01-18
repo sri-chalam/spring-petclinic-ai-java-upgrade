@@ -84,4 +84,9 @@ The list of available receipes can be searched using:
 
 ./gradlew rewriteDiscover
 
+### Some steps are skipped - Example import certificates
+The JDK is installed but the certificates are not imported into JDK.
+
+If the certificates are not imported, the openrewrite plugin cannot be executed.
+
 

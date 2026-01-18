@@ -966,7 +966,16 @@ This script:
 
 ### 3.4 Import Organization Trusted Certificates into Java 21 (if applicable)
 
-**Only if Amazon Corretto Java 21 was freshly installed in section 3.3**, import any organization trusted certificates into the Java keystore:
+**🔴 CRITICAL - REQUIRED LOGGING FOR STEP 3.4:**
+Update the "Step 3.4: Import Organization Trusted Certificates" section in the log file with:
+- Whether certificates were imported (yes/no)
+- If skipped, reason for skipping (Java 21 already installed, no certificates found, etc.)
+- Total number of certificates imported
+- Names of each certificate imported (the alias names used)
+- Success/failure status for each certificate import
+- Any import errors or warnings encountered
+
+**Only if Amazon Corretto Java 21 was freshly installed in section 3.3**, it is **CRITICAL** to import any organization trusted certificates into the Java keystore. Without these certificates, the application may fail to connect to internal services or repositories that use organization-specific SSL certificates:
 
 ```bash
 # Only proceed if Java 21 was installed (not if installation was skipped)
