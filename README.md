@@ -227,27 +227,27 @@ The upgrade process is automated through a series of steps that handle both envi
 
 ### Upgrade Steps
 
-1. **OpenRewrite Plugin**: Adds the OpenRewrite Gradle plugin to the project configuration. This is the same underlying tool used by AI-powered upgrade assistants like GitHub Copilot App Modernization and Amazon Q Developer.
+*For detailed step-by-step execution instructions, see [java-17-to-21-upgrade-instructions.md](docs/ai-tasks/instructions/java-17-to-21-upgrade-instructions.md).*
 
-2. **SDKMAN Installation**: Installs SDKMAN if not already present at `~/.sdkman/` for Java version management
+1. **Identify and Set Project Root Directory**: Establish the working directory for all subsequent commands.
 
-3. **Java 21 Installation**: Installs Amazon Corretto JDK 21 via SDKMAN if not already present in `~/.sdkman/candidates/java/`
+2. **Verify Current Java Version**: Identify and log the current Java version. Version detection can be challenging in some cases, but the OpenRewrite plugin handles the upgrade correctly even if the project is already on Java 21. This step primarily serves to document the starting state.
+
+3. **SDKMAN Installation**: Installs SDKMAN if not already present at `~/.sdkman/` for Java version management
+
+4. **Java 21 Installation**: Installs Amazon Corretto JDK 21 via SDKMAN if not already present in `~/.sdkman/candidates/java/`
    - If JDK 21 exists in other locations, the instructions still install it via SDKMAN for consistency
    - Installation is skipped only if Amazon Corretto 21 is already installed through SDKMAN
 
-4. **Trusted Certificates Import**: Automatically imports organization certificates from `~/trusted-certs/` into the Java 21 truststore during fresh installations
+5. **Trusted Certificates Import**: Automatically imports organization certificates from `~/trusted-certs/` into the Java 21 truststore during fresh installations
 
-5. **Project Configuration Updates**: Updates Gradle wrapper, build files, Dockerfiles, CI/CD workflows, and other configuration files to use Java 21
+6. **Upgrade Gradle Wrapper (If Needed)**: Upgrades Gradle wrapper to 8.11 if needed (see Prerequisites for details).
 
-6. **Java 17 Prerequisite Check**: Validates the project uses Java 17 before proceeding (see Prerequisites section)
+7. **OpenRewrite Plugin**: Adds the OpenRewrite Gradle plugin to the project configuration. This is the same underlying tool used by AI-powered upgrade assistants like GitHub Copilot App Modernization and Amazon Q Developer.
 
-7. **Gradle Compatibility Check**: Upgrades Gradle wrapper to 8.11 if needed (see Prerequisites for details).
+8. **Use OpenRewrite to Migrate Java Code**: Executes OpenRewrite plugin to automatically migrate the application to Java 21.
 
-8. **Code Migration**: Executes OpenRewrite plugin to automatically refactor code for Java 21 compatibility
-
-9. **CI/CD Pipeline Updates**: Updates CI/CD configuration files (see "Updated CI/CD and Build Files" section for details)
-
-10. **Iterative Build/Fix Loop**: After OpenRewrite migration, performs an automated build/fix cycle to resolve any remaining compilation errors and test failures that OpenRewrite couldn't handle automatically. The loop executes up to 5 iterations maximum and exits early if the same error persists for 3 consecutive attempts. This loop:
+9. **Iterative Build/Fix Loop**: After OpenRewrite migration, performs an automated build/fix cycle to resolve any remaining compilation errors and test failures that OpenRewrite couldn't handle automatically. The loop executes up to 5 iterations maximum and exits early if the same error persists for 3 consecutive attempts. This loop:
    - Executes `./gradlew clean build` to compile code and run tests
    - Analyzes compilation errors and identifies root causes
    - Applies fixes using a three-tier resolution strategy:
@@ -256,6 +256,10 @@ The upgrade process is automated through a series of steps that handle both envi
      3. **Automated code fixes** - If a solution is found through Internet research, automatically applies targeted code changes and documents the changes
    - Re-runs the build after each fix
    - Documents unresolved errors if maximum iterations are reached
+
+10. **CI/CD Pipeline Updates**: Updates CI/CD configuration files (see "Updated CI/CD and Build Files" section for details)
+
+11. **Verify Upgrade**: Execute a Gradle Build to verify that the upgrade was successful.
 
 ### Upgrade Log Documentation
 

@@ -63,7 +63,7 @@ If required information is missing or ambiguous:
 - Do not infer missing steps or optimize the process.
 - Abort means stop the entire workflow immediately.
 - Skipped steps must be explicitly logged as skipped.
-- 🔴 **CRITICAL:** All shell scripts must be executed from the project root directory (the directory containing `gradlew`, `build.gradle`, or `pom.xml`). Step 0 establishes this directory at the start of execution.
+- 🔴 **CRITICAL:** All shell scripts must be executed from the project root directory (the directory containing `gradlew`, `build.gradle`, or `pom.xml`). Step 1 establishes this directory at the start of execution.
 
 ### Keywords and Meanings
 
@@ -519,6 +519,10 @@ Update the "Step 1: Project Root Directory" section in the log file with:
 - Any issues encountered
 
 #### 1.1 Prompt for Project Root Directory
+
+<!-- In most cases, step 1.1 is not needed.
+  By following the instructions in step 1.2, the LLM can identify the project root directory on its own, without prompting the user to provide it.
+ -->
 
 Ask the user to enter the project root directory path:
 

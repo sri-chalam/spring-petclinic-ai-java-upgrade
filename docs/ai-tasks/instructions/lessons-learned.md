@@ -131,4 +131,5 @@ When a step is added between 6 and 7, when LLM was asked to renumber, it misses 
 LLM generated a section "Next Steps".
 Developer need to discuss with LLM for better names and tell the purpose of the section. Choose a better name like "Post-Upgrade Manual Steps". 
 
-
+### Some instructions refer to other sections
+The other step name changes over time, when new steps are added or removed. Models are not very accurate to fix the references and sometimes.
