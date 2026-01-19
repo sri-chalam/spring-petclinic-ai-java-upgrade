@@ -290,6 +290,8 @@ The upgrade instructions use the following OpenRewrite recipes:
 
 If your organization uses custom trusted certificates (e.g., for internal Certificate Authorities or corporate proxies), these certificates need to be imported into the newly installed Java 21 keystore. To enable this, copy your organization's trusted certificates to a specific directory before executing the Java upgrade instructions. The LLM will then automatically import these certificates into Java 21 during the upgrade process.
 
+> **Note:** This step is important for OpenRewrite recipes to work correctly. The recipes download Gradle artifacts during execution, and missing organization certificates may cause PKIX SSL errors that prevent the upgrade from completing.
+
 ### Certificate Preparation Requirements
 
 1. **Certificate Directory**: All organization trusted certificates need to be copied to `~/trusted-certs/`
@@ -434,6 +436,44 @@ These instructions required refinement through trial and error, adding:
 - Comprehensive logging of all attempts and outcomes
 
 **Takeaway:** Build/fix loops need explicit guardrails, diagnostic procedures, and escalation strategies to prevent infinite loops and ensure transparency.
+
+### Miscellaneous Learnings
+
+**Some Steps May Be Skipped Silently**
+
+During testing, the LLM successfully installed the JDK but silently skipped the step to import trusted certificates. To address this, the instruction was updated to include "it is **CRITICAL** to import..." — emphasizing the word "critical" helps signal to the LLM that this step should not be skipped.
+
+**Use Consistent Shell Scripting**
+
+The instruction file includes shell scripts in multiple sections (SDKMAN setup, JDK installation, Gradle wrapper, etc.). Initially, these scripts mixed zsh and bash, causing the AI coding agent to hang when switching between shells. Using bash consistently across all sections resolved this.
+
+**Use Terminology Precisely and Consistently**
+
+Use terminology precisely and consistently throughout instruction files. Define keywords with specific meanings at the beginning of the document—for example, ABORT (stop immediately), SKIP (continue to next step), and CRITICAL PATH (failure aborts the upgrade). This prevents the LLM from interpreting terms ambiguously. 
+
+**Clear Instructions Prevent Hallucination**
+
+Initial instructions stated "upgrade Gradle wrapper if the current version is below 8.5." However, the AI still attempted to upgrade projects that already had Gradle 8.5. The fix was to specify both conditions explicitly: "if version >= 8.5, SKIP; if version <= 8.4, proceed."
+
+**Log the Outcome of Each Step**
+
+To debug issues such as determining whether a step in the upgrade process was missed, review the log markdown file at `/docs/ai-tasks/logs/java-21-upgrade-log.md`.
+
+**Verify Log Output After Upgrade**
+
+After running the upgrade, review the log file to verify the execution flow, step results, and decisions made. The log includes Java version detection results, SDKMAN and JDK installation status, certificate import outcomes, Gradle wrapper updates, OpenRewrite migration details, build/fix loop iterations, and CI/CD file updates. This provides a complete audit trail for troubleshooting and validation.
+
+**Cacerts Path Differs Between Java Versions**
+
+During an upgrade, the AI agent identified that the application was using an outdated cacerts path in Dockerfile. In Java 8 and earlier, the truststore was located at `$JAVA_HOME/jre/lib/security/cacerts`. Starting with Java 9, the path changed to `$JAVA_HOME/lib/security/cacerts`. The upgrade process detected an existing path bug and corrected this path.
+
+**Leverage Multiple LLMs for Better Results**
+
+Different LLMs produced different suggestions when creating these instructions. Comparing outputs from Claude Sonnet, GPT, and Gemini helped identify the best approaches for important steps. For example, multiple models suggested that LLM-agnostic instruction files benefit from a structured process flow. Multiple models were asked to generate this flow, and the best suggestion was chosen.
+
+**Verify Generated Instructions Thoroughly**
+
+When asked to generate an instruction for adding an OpenRewrite dependency with the latest release version, the LLM produced invalid syntax. Always review generated instructions and code carefully before incorporating them into instruction files.
 
 ## Where to Go From Here
 
