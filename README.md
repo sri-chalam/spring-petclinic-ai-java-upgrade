@@ -437,23 +437,23 @@ These instructions required refinement through trial and error, adding:
 
 **Takeaway:** Build/fix loops need explicit guardrails, diagnostic procedures, and escalation strategies to prevent infinite loops and ensure transparency.
 
-### Miscellaneous Learnings
+### Additional Lessons
 
 **Some Steps May Be Skipped Silently**
 
 During testing, the LLM successfully installed the JDK but silently skipped the step to import trusted certificates. To address this, the instruction was updated to include "it is **CRITICAL** to import..." — emphasizing the word "critical" helps signal to the LLM that this step should not be skipped.
 
-**Use Consistent Shell Scripting**
+**Clear Instructions Prevent Hallucination**
 
-The instruction file includes shell scripts in multiple sections (SDKMAN setup, JDK installation, Gradle wrapper, etc.). Initially, these scripts mixed zsh and bash, causing the AI coding agent to hang when switching between shells. Using bash consistently across all sections resolved this.
+Initial instructions stated "upgrade Gradle wrapper if the current version is below 8.5." However, the AI still attempted to upgrade projects that already had Gradle 8.5. The fix was to specify both conditions explicitly: "if version >= 8.5, SKIP; if version <= 8.4, proceed."
 
 **Use Terminology Precisely and Consistently**
 
 Use terminology precisely and consistently throughout instruction files. Define keywords with specific meanings at the beginning of the document—for example, ABORT (stop immediately), SKIP (continue to next step), and CRITICAL PATH (failure aborts the upgrade). This prevents the LLM from interpreting terms ambiguously. 
 
-**Clear Instructions Prevent Hallucination**
+**Use Consistent Shell Scripting**
 
-Initial instructions stated "upgrade Gradle wrapper if the current version is below 8.5." However, the AI still attempted to upgrade projects that already had Gradle 8.5. The fix was to specify both conditions explicitly: "if version >= 8.5, SKIP; if version <= 8.4, proceed."
+The instruction file includes shell scripts in multiple sections (SDKMAN setup, JDK installation, Gradle wrapper, etc.). Initially, these scripts mixed zsh and bash, causing the AI coding agent to hang when switching between shells. Using bash consistently across all sections resolved this.
 
 **Log the Outcome of Each Step**
 
