@@ -89,4 +89,47 @@ The JDK is installed but the certificates are not imported into JDK.
 
 If the certificates are not imported, the openrewrite plugin cannot be executed.
 
+### When there was a build error - Instruction file is able to loop through build errors
 
+It went through build/fix loop. 
+Tried to fix the problem in multiple ways.
+It was able to identify that Lombok version has some issues and upgraded the version to fix the problem.
+
+When an unknown OpenRewrite receipe is used, it tried multiple ways. It gave an error message.
+
+### The upgrade identified bug in Docker Cert import path
+
+Java changed a cacerts path.
+The Dockerfile has old Java path.
+The upgrade fixed the path issue as a bonus to Java upgrade.
+
+
+### Unambiguous instructions - comes again and again
+
+The prompt "verify the upgrade is successful" is ambiguous for LLM".
+
+It can be interprted in multiple ways.
+
+The instructions have to mention clearly, what is the criteria for successful completion (e.g. builds fine, all test cases pass).
+
+### Use multiple models to review the instructions, create the instructions
+
+Some models suggestions are better than others in some cases.
+
+For example ChatGPT model's suggestion on instruction flow ASCII diagram is very good.
+
+### Many mistakes in generating the instructions file
+We need to review the instruction file very thoroughly.
+
+Heading and sub heading are both given h3 - ###
+
+The generated instruction does not clearly convey the needs of a team.
+Sometimes LLM gives instructions in non-optimal way.
+
+When a step is added between 6 and 7, when LLM was asked to renumber, it misses in some places.
+
+LLM generated a section "Next Steps".
+Developer need to discuss with LLM for better names and tell the purpose of the section. Choose a better name like "Post-Upgrade Manual Steps". 
+
+### Some instructions refer to other sections
+The other step name changes over time, when new steps are added or removed. Models are not very accurate to fix the references and sometimes.
