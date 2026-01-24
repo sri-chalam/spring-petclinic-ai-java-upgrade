@@ -1179,7 +1179,7 @@ This will display the current Gradle version being used by the wrapper.
 **Only proceed if `GRADLE_WRAPPER_EXISTS=true`.**
 
 Gradle versions have specific Java compatibility requirements:
-- **Gradle 8.14.3+**: Preferred for executing OpenRewrite recipes with the latest Gradle 8.x version.
+- **Gradle 8.14.4+**: Preferred for executing OpenRewrite recipes with the latest Gradle 8.x version.
 
 To check your current Gradle version:
 
@@ -1193,13 +1193,13 @@ To check your current Gradle version:
 
 **Check the Gradle version before upgrading:**
 - If `GRADLE_VERSION` >= 8.14: **SKIP this upgrade step** 
-- If `GRADLE_VERSION` <= 8.13: Proceed with upgrading to Gradle 8.14.3.
+- If `GRADLE_VERSION` <= 8.13: Proceed with upgrading to Gradle 8.14.4.
 
 ```bash
-./gradlew wrapper --gradle-version=8.14.3
+./gradlew wrapper --gradle-version=8.14.4
 ```
 
-This command will update the Gradle wrapper files to use version 8.14.3.
+This command will update the Gradle wrapper files to use version 8.14.4.
 
 #### 6.5 Verify Gradle Wrapper Upgrade
 
@@ -1211,10 +1211,10 @@ After upgrading, verify the new Gradle version:
 ./gradlew --version
 ```
 
-Expected output should show Gradle 8.14.3 and Java 21:
+Expected output should show Gradle 8.14.4 and Java 21:
 ```
 ------------------------------------------------------------
-Gradle 8.14.3
+Gradle 8.14.4
 ------------------------------------------------------------
 
 Build time:   2024-xx-xx xx:xx:xx UTC
