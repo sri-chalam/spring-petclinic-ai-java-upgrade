@@ -496,11 +496,12 @@ Brief overview of the upgrade process and overall status. Update this section as
 
 1. **Log immediately** after completing each major action or step
 2. **Be specific** about file paths, line numbers, and versions
-3. **Include timestamps** in the Date fields (use YYYY-MM-DD format)
-4. **Document both successes and failures**
-5. **Keep entries concise but informative** - focus on what was done and why
-6. **Update the Summary section** as you progress through the upgrade
-7. **Update Status field** at the top of the log file as the upgrade progresses
+3. **Include timestamps** in the Date fields (use YYYY-MM-DDTHH:MM:SS format)
+4. **Capture timestamps at execution time** - Do NOT pre-generate or estimate timestamps. At the START of each step (after user approval), run `date -Iseconds` to get the real current time. This ensures accurate timing even when there are pauses between steps.
+5. **Document both successes and failures**
+6. **Keep entries concise but informative** - focus on what was done and why
+7. **Update the Summary section** as you progress through the upgrade
+8. **Update Status field** at the top of the log file as the upgrade progresses
 
 ### Integration with Steps
 
