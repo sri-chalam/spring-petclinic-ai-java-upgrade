@@ -277,6 +277,10 @@ The log file contains:
 
 This log provides full traceability of all changes made during the upgrade and serves as a reference for any manual interventions needed.
 
+Just as good logging is essential for any production application, comprehensive logging is equally important for AI-assisted upgrades—it provides transparency into the decisions made at each step and their outcomes.
+
+**Example Log:** [java-17-to-21-upgrade-log-1.md](https://github.com/sri-chalam/ai-tech-notes/blob/main/articles/ai-assisted-java-upgrade/sample-logs/java-17-to-21-upgrade-log-1.md) — generated after upgrading a sample application from Java 17 to Java 21.
+
 ## OpenRewrite and Recipes Used
 
 **OpenRewrite** is an automated refactoring tool that applies code transformations through reusable security fixes, migrations, and code quality improvement recipes.
