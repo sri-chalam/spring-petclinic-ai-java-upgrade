@@ -471,6 +471,17 @@ These instructions required refinement through trial and error, adding:
 
 **Takeaway:** Build/fix loops need explicit guardrails, diagnostic procedures, and escalation strategies to prevent infinite loops and ensure transparency.
 
+### Provide Explicit Instructions for Common Library Upgrades
+
+While the build/fix loop can identify and upgrade necessary libraries, relying on it for common scenarios wastes iterations. Certain libraries—such as Lombok—typically require version upgrades with every Java upgrade. Rather than depending on the AI agent to discover this through internet searches and multiple build failures, provide explicit instructions to upgrade these common libraries and plugins before entering the build/fix loop.
+
+For this upgrade, the instructions were modified to explicitly handle (only if already used in the project—skipped otherwise):
+- **Lombok**: Upgrade to the latest version, which is backwards compatible, has fewer vulnerabilities, and includes more features
+- **MapStruct**: Upgrade to the latest version, which is backwards compatible
+- **Spotless**: Replace the deprecated/unmaintained Google Java Format plugin. Spotless is the community-preferred tool for enforcing Google’s style guide across major tech organizations.
+
+**Takeaway:** Identify libraries and plugins that commonly require upgrades during Java version migrations and add explicit upgrade instructions for them. Reserve the build/fix loop for unexpected issues rather than predictable compatibility updates.
+
 ### Additional Lessons
 
 **Some Steps May Be Skipped Silently**
