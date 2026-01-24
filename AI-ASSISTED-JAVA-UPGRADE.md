@@ -140,6 +140,22 @@ Both OpenRewrite and GitHub Copilot App Modernization have **limitations** for t
 
 **Recommendation:** Organizations should evaluate both approaches with pilot projects to determine which option better aligns with their specific requirements, codebase complexity, and migration scale.
 
+## Benefits and Trade-offs of a Hybrid Approach
+
+Rather than choosing one tool exclusively, a hybrid approach uses OpenRewrite for deterministic transformations first, then leverages an LLM (guided by instruction files) to handle remaining issues. This combines the reliability of recipe-based migrations with the flexibility of AI-driven problem-solving.
+
+**Benefits**
+
+1. **Broader Coverage**: OpenRewrite handles known patterns with predefined recipes; the LLM, guided by the instruction file, addresses edge cases, deprecated APIs, and third-party libraries lacking recipes.
+
+2. **Iterative Problem Resolution**: When compilation errors or test failures remain after OpenRewrite, the LLM iteratively analyzes errors, researches solutions, and applies fixes—repeating until the build succeeds or a maximum iteration limit is reached.
+
+**Trade-offs**
+
+1. **Extended Execution Time**: The iterative build/fix cycle typically requires 20-30 minutes or more, depending on the number of issues to resolve.
+
+2. **Skill Atrophy Risk**: Over-reliance on automation may reduce familiarity with migration details. Reviewing upgrade logs helps mitigate this.
+
 ## AI Instruction Files - Limitations and Expectations
 
 When using AI instruction files (the approach demonstrated in this repository) for Java upgrades, it's important to understand the nature and limitations:
