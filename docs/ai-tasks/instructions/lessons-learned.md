@@ -163,7 +163,38 @@ plugins {
 
 
 
+### Open Rewrite and Instruction Benefits
+Agent tries in multiple ways to solve a problem.
+If it encounters a problem with OpenRewrite, it tries to upagrade without Open rewrite. 
+It takes long time to upgrade. One problem is attempted to be solved at a time.
 
 
-## What else can be done?
-Do not 
+### Many times not the fault of LLM
+It is the lack of clear instructions.
+Humans may understand. LLMs clear instructions
+
+
+### Give Clear Instructions on the commonly needed Version Upgrades - Lombok, MapStruct
+
+Lombok, mapstruct are commonly used libraries.
+
+Lombok needs upgrade for each Java upgrade. Rather than AI agent figures out to identify which version to use, added instructions to use the latest lombok and mapstruct versions.
+
+The latest versions of these libraries are backward compatible, has less vulnerabilities.
+
+### The step number confusion
+When we ask AI to generate a new step, it creates a new step. It also creates the sub section under the new step. 
+Sometimes AI agent creates a new step say Step 2. under it it creates sub sctions as Step 1, Ste 2. It confuses.
+We need to gude AI Agent to use differene naming conventions to the sub sections.
+
+### When instruction was given to use the latest Splotless Gradle plugin - LLM got old version
+
+The instructions have to be given multiple iterations to get the latest version of Gradle.
+
+We should not believe LLM completely.
+
+### Replaced google-java-format plugin with Spotless
+In case if the google-java-format plugin is present replace it with Spotless.
+This is organization specific. Some companies use Google Java format which is deprecated.
+
+

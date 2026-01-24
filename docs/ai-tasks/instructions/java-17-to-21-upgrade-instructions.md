@@ -129,6 +129,12 @@ Step 6: Build Tool Detection
     - Else → SKIP
 - If Maven project → SKIP (DO NOT MODIFY Maven files)
 
+Step 6a: Upgrade Known Java 21 Incompatible Libraries and Plugins
+- If Lombok present AND version < 1.18.30 → Upgrade to latest version
+- If MapStruct present AND version < 1.5.5 → Upgrade to latest version
+- If google-java-format plugin present → Comment out and add Spotless plugin
+- Verify upgraded dependencies resolve successfully
+
 Step 7: OpenRewrite Java Upgrade
 [CRITICAL PATH]
 
@@ -1219,6 +1225,306 @@ Groovy:       3.0.x
 Ant:          Apache Ant(TM) version 1.10.x compiled on <date>
 JVM:          21.0.x (Amazon.com Inc. 21.0.x+xx-LTS)
 OS:           Mac OS X 14.x.x aarch64
+```
+
+---
+
+### Step 6a: Upgrade Known Java 21 Incompatible Libraries and Plugins
+
+Certain libraries and plugins are known to require version upgrades or replacement for Java 21 compatibility. Proactively addressing these **before** running OpenRewrite and the build avoids unnecessary iteration cycles where the AI agent discovers and fixes these issues through trial and error.
+
+**🔴 CRITICAL - REQUIRED LOGGING FOR STEP 6a:**
+Update the "Step 6a: Library Upgrades" section in the log file with:
+- Libraries/plugins checked and their current versions
+- Libraries upgraded and their new versions
+- Plugins commented out and replacements added
+- Libraries/plugins skipped (not present in project or already compatible)
+- Any issues encountered during upgrade
+
+> **Multi-Module Project Note:** Dependencies and plugins may be declared in root or submodule build files, or in version catalog files (`gradle/libs.versions.toml`). Refer to "Gradle Project Structure Patterns" to locate the correct file.
+
+#### 6a.1 Check and Upgrade Lombok to Latest Version (If Present)
+
+Lombok is a common library that generates boilerplate code at compile time. If present, upgrade to the latest version for fewer vulnerabilities and better stability (Lombok library latest versions are backwards compatible).
+
+**🔴 Logging for this step:**
+- If Lombok is not found: Log "Lombok not present - skipped"
+- If Lombok is found and upgraded: Log "Lombok upgraded from [previous_version] to latest version [new_version]"
+
+**Check if Lombok is present:**
+
+```bash
+# Search for Lombok in build files
+grep -r "lombok" --include="build.gradle*" --include="*.toml" .
+
+# Check gradle.properties for Lombok version variables
+grep -i "lombok" gradle.properties 2>/dev/null
+```
+
+**If Lombok is found, check the version:**
+
+```bash
+# Extract Lombok version from build.gradle
+grep -E "lombok.*[0-9]+\.[0-9]+\.[0-9]+" build.gradle
+
+# Or from gradle.properties (any variable containing "lombok")
+grep -i "lombok" gradle.properties 2>/dev/null
+
+# Or from version catalog
+grep -A1 "lombok" gradle/libs.versions.toml 2>/dev/null
+```
+
+<!-- for Java 21 the lombok version 1.18.30 is sufficient. However, there is
+no harm in using the latest lombok release version.
+As of writing the article, the latest version is 1.18.42 -->
+**Upgrade Lombok to the latest version (minimum 1.18.42 required):**
+
+First, find the latest Lombok version from Maven Central:
+```bash
+# Search for latest Lombok release version on Maven Central
+curl -s "https://search.maven.org/solrsearch/select?q=g:org.projectlombok+AND+a:lombok&rows=1&wt=json" | grep -o '"latestVersion":"[^"]*"' | cut -d'"' -f4
+```
+
+Alternatively, check the Lombok releases page: https://projectlombok.org/changelog
+
+Use the latest version retrieved above. If the Maven Central query fails, use the fallback version specified in the section heading:
+
+For `build.gradle` (Groovy DSL):
+```groovy
+// Before
+compileOnly 'org.projectlombok:lombok:1.18.30'
+annotationProcessor 'org.projectlombok:lombok:1.18.30'
+
+// After - use latest version (1.18.42 or higher)
+compileOnly 'org.projectlombok:lombok:<LATEST_VERSION>'
+annotationProcessor 'org.projectlombok:lombok:<LATEST_VERSION>'
+```
+
+For `build.gradle.kts` (Kotlin DSL):
+```kotlin
+// Before
+compileOnly("org.projectlombok:lombok:1.18.30")
+annotationProcessor("org.projectlombok:lombok:1.18.30")
+
+// After - use latest version (1.18.42 or higher)
+compileOnly("org.projectlombok:lombok:<LATEST_VERSION>")
+annotationProcessor("org.projectlombok:lombok:<LATEST_VERSION>")
+```
+
+For `gradle/libs.versions.toml` (Version Catalog):
+```toml
+[versions]
+# Before
+lombok = "1.18.30"
+
+# After - use latest version (1.18.42 or higher)
+lombok = "<LATEST_VERSION>"
+```
+
+#### 6a.2 Check and Upgrade MapStruct to Latest Version of 1.x (If Present)
+
+MapStruct is an annotation processor for generating type-safe bean mappers. If present, upgrade to the latest version for fewer vulnerabilities and better stability (MapStruct library latest versions are backwards compatible).
+
+**🔴 Logging for this step:**
+- If MapStruct is not found: Log "MapStruct not present - skipped"
+- If MapStruct is found and upgraded: Log "MapStruct upgraded from [previous_version] to latest version of 1.x [new_version]"
+
+**Check if MapStruct is present:**
+
+```bash
+# Search for MapStruct in build files
+grep -r "mapstruct" --include="build.gradle*" --include="*.toml" .
+
+# Check gradle.properties for MapStruct version variables
+grep -i "mapstruct" gradle.properties 2>/dev/null
+```
+
+**If MapStruct is found, check the version:**
+
+```bash
+# Extract MapStruct version from build.gradle
+grep -E "mapstruct.*[0-9]+\.[0-9]+\.[0-9]+" build.gradle
+
+# Or from gradle.properties (any variable containing "mapstruct")
+grep -i "mapstruct" gradle.properties 2>/dev/null
+
+# Or from version catalog
+grep -A1 "mapstruct" gradle/libs.versions.toml 2>/dev/null
+```
+
+**Upgrade MapStruct to the latest version of 1.x (minimum 1.6.3 required):**
+
+First, find the latest MapStruct 1.x version from Maven Central:
+```bash
+# Search for latest MapStruct version on Maven Central
+curl -s "https://search.maven.org/solrsearch/select?q=g:org.mapstruct+AND+a:mapstruct&rows=1&wt=json" | grep -o '"latestVersion":"[^"]*"' | cut -d'"' -f4
+```
+
+Alternatively, check the MapStruct releases page: https://mapstruct.org/news/
+
+**Important:** If the returned version is 2.x or higher, do NOT use it. Use the latest 1.x version instead (fallback: 1.6.3). Major version upgrades may introduce breaking changes.
+
+Use the latest 1.x version retrieved above. If the Maven Central query fails or returns a 2.x version, use the fallback version 1.6.3:
+
+For `build.gradle` (Groovy DSL):
+```groovy
+// Before
+implementation 'org.mapstruct:mapstruct:1.5.3.Final'
+annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
+
+// After - use latest version (1.5.5 or higher)
+implementation 'org.mapstruct:mapstruct:<LATEST_VERSION>'
+annotationProcessor 'org.mapstruct:mapstruct-processor:<LATEST_VERSION>'
+```
+
+For `build.gradle.kts` (Kotlin DSL):
+```kotlin
+// Before
+implementation("org.mapstruct:mapstruct:1.5.3.Final")
+kapt("org.mapstruct:mapstruct-processor:1.5.3.Final")
+
+// After - use latest version (1.6.3 or higher)
+implementation("org.mapstruct:mapstruct:<LATEST_VERSION>")
+kapt("org.mapstruct:mapstruct-processor:<LATEST_VERSION>")
+```
+
+For `gradle/libs.versions.toml` (Version Catalog):
+```toml
+[versions]
+# Before
+mapstruct = "1.5.3.Final"
+
+# After - use latest version (1.6.3 or higher)
+mapstruct = "<LATEST_VERSION>"
+```
+
+#### 6a.3 Replace google-java-format Plugin with Spotless (If Present)
+
+The `google-java-format` plugin does not work with Java 21. If this plugin is present, comment it out and add the Spotless plugin as a replacement.
+
+**Logging for this step:**
+- If google-java-format is not found: Log "google-java-format not present - skipped"
+- If google-java-format is found and replaced: Log "google-java-format plugin commented out, Spotless plugin added with version [spotless_version]"
+
+**Check if google-java-format plugin is present:**
+
+```bash
+# Search for google-java-format in build files
+grep -r "google-java-format\|googleJavaFormat" --include="build.gradle*" .
+```
+
+**If google-java-format is found, perform the following steps:**
+
+##### Action A: Comment out the google-java-format plugin
+
+For `build.gradle` (Groovy DSL):
+```groovy
+plugins {
+    // ... other plugins ...
+    // Commented out due to Java 21 incompatibility - replaced with Spotless
+    // id 'com.github.sherter.google-java-format' version 'x.x.x'
+}
+```
+
+Also comment out any related configuration blocks:
+```groovy
+// Commented out due to Java 21 incompatibility - replaced with Spotless
+// googleJavaFormat {
+//     toolVersion = 'x.x.x'
+//     options style: 'GOOGLE'
+// }
+```
+
+For `build.gradle.kts` (Kotlin DSL):
+```kotlin
+plugins {
+    // ... other plugins ...
+    // Commented out due to Java 21 incompatibility - replaced with Spotless
+    // id("com.github.sherter.google-java-format") version "x.x.x"
+}
+```
+
+##### Action B: Add the Spotless plugin
+
+Add the Spotless plugin to the `plugins` block.
+
+First, find the latest Spotless plugin version from the Gradle Plugin Portal: https://plugins.gradle.org/plugin/com.diffplug.spotless
+
+**Note:** The Gradle Plugin Portal is the authoritative source for Gradle plugin versions. Maven Central may show older versions as Gradle plugins are published separately to the plugin portal.
+
+Use the latest version from the Gradle Plugin Portal. If unable to check, use version 8.2.0 or higher:
+
+For `build.gradle` (Groovy DSL):
+```groovy
+plugins {
+    // ... other plugins ...
+    id 'com.diffplug.spotless' version '<LATEST_VERSION>'
+}
+```
+
+For `build.gradle.kts` (Kotlin DSL):
+```kotlin
+plugins {
+    // ... other plugins ...
+    id("com.diffplug.spotless") version "<LATEST_VERSION>"
+}
+```
+
+##### Action C: Configure Spotless to use Google Java Format
+
+Add the Spotless configuration block.
+
+For `build.gradle` (Groovy DSL):
+```groovy
+spotless {
+    java {
+        target 'src/*/java/**/*.java'
+        googleJavaFormat()
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+}
+```
+
+For `build.gradle.kts` (Kotlin DSL):
+```kotlin
+spotless {
+    java {
+        target("src/*/java/**/*.java")
+        googleJavaFormat()
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+}
+```
+
+**Note:** Spotless uses its bundled google-java-format version by default, which is compatible with Java 21. No explicit version is needed.
+
+##### Action D: Update any task dependencies (if applicable)
+
+If the build file has tasks that depended on google-java-format tasks, update them to use Spotless equivalents:
+
+| Old Task (google-java-format) | New Task (Spotless) |
+|------------------------------|---------------------|
+| `googleJavaFormat` | `spotlessApply` |
+| `verifyGoogleJavaFormat` | `spotlessCheck` |
+
+#### 6a.4 Verify Library and Plugin Upgrades
+
+After upgrading libraries and plugins, verify the changes compile successfully:
+
+```bash
+./gradlew compileJava --dry-run
+```
+
+This validates that the upgraded dependencies can be resolved without running the full build.
+
+If Spotless was added, also verify the plugin is configured correctly:
+
+```bash
+./gradlew spotlessCheck --dry-run
 ```
 
 ---
