@@ -133,3 +133,37 @@ Developer need to discuss with LLM for better names and tell the purpose of the 
 
 ### Some instructions refer to other sections
 The other step name changes over time, when new steps are added or removed. Models are not very accurate to fix the references and sometimes.
+
+### Mismatch in OpenRewrite Gradle Plugin and Dependency bom version
+
+While creating the instruction file using the LLM, the model generated the following instructions.
+
+Two different versions are used in the code snippet and "note". When the instructions were used to upgrade Java version, the old version 6.30.3 was used. 
+The version 6.30.3 was old does not seem to be compatble with the new version used for rewrite recipe bom. It seems the version 6.30.3 was used because it was mentioned in the bolded note.
+
+```groovy
+plugins {
+  // ... existing plugins ...
+  id("org.openrewrite.rewrite") version "7.24.0"
+}
+```
+
+**Note:** Version 6.30.3 or later is recommended for Java 21 migration. If an older version is present, update it to the latest version.
+
+
+Changed the above block to the below:
+```groovy
+plugins {
+  // ... existing plugins ...
+  id("org.openrewrite.rewrite") version "7.24.0"
+}
+```
+
+**Note:** Use the latest version of the OpenRewrite Gradle plugin. Version 7.25.0 has known compatibility issues with Java 21 migration recipes.
+
+
+
+
+
+## What else can be done?
+Do not 

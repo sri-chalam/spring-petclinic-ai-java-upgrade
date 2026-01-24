@@ -172,12 +172,12 @@ Before using the Java 17 to Java 21 upgrade instruction file, ensure your enviro
 
 ### Gradle Wrapper Version Compatibility
 
-For Java 21 compatibility, your Gradle version must meet these requirements:
-- **Gradle 8.5+**: Full support for Java 21 (recommended)
+For Java 21 compatibility, Gradle 8.5+ is sufficient. However, to use OpenRewrite recipes, the latest Gradle 8.x version is preferred:
+- **Gradle 8.14.3+**: Preferred for using the latest OpenRewrite version
 
-The upgrade instructions will automatically upgrade Gradle wrapper to version 8.11 if your current version is below 8.5.
+The upgrade instructions will automatically upgrade Gradle wrapper to version 8.14.3 if your current version is below 8.14.
 
-**Note:** The instructions will only upgrade Gradle wrapper if the current wrapper version is below 8.5. If your project already uses Gradle 8.5 or higher (including 9.x), the Gradle wrapper will not be modified. If your project does not contain a Gradle wrapper, one will not be installed.
+**Note:** The instructions will only upgrade Gradle wrapper if the current wrapper version is below 8.14. If your project already uses Gradle 8.14 or higher (including 9.x), the Gradle wrapper will not be modified. If your project does not contain a Gradle wrapper, one will not be installed.
 
 ### Compatibility Note
 
@@ -219,9 +219,9 @@ The upgrade instructions automatically update Java version references in the fol
 **Updates applied to build.gradle:**
 - sourceCompatibility and targetCompatibility (`'17'` → `'21'`)
 - JavaVersion enum references (`JavaVersion.VERSION_17` → `JavaVersion.VERSION_21`)
-- OpenRewrite plugin addition/update (version 6.30.3+)
+- OpenRewrite plugin addition/update (version 7.25.0+)
 - OpenRewrite dependencies and recipe configuration
-- Gradle wrapper upgrade to 8.11 (if current version < 8.5)
+- Gradle wrapper upgrade to 8.14.3 (if current version < 8.14)
 
 ## How the Upgrade Instructions Work
 
@@ -243,7 +243,7 @@ The upgrade process is automated through a series of steps that handle both envi
 
 5. **Trusted Certificates Import**: Automatically imports organization certificates from `~/trusted-certs/` into the Java 21 truststore during fresh installations
 
-6. **Upgrade Gradle Wrapper (If Needed)**: Upgrades Gradle wrapper to 8.11 if needed (see Prerequisites for details).
+6. **Upgrade Gradle Wrapper (If Needed)**: Upgrades Gradle wrapper to 8.14.3 if needed (see Prerequisites for details).
 
 7. **OpenRewrite Plugin**: Adds the OpenRewrite Gradle plugin to the project configuration. This is the same underlying tool used by AI-powered upgrade assistants like GitHub Copilot App Modernization and Amazon Q Developer.
 
@@ -431,6 +431,8 @@ When first creating these instructions with AI assistance, it's easy to trust th
 
 While this worked functionally, OpenRewrite's documentation indicates this isn't best practice. Since Java upgrades are one-time migrations, these recipes don't need to be committed to the build file. Additionally, teams often want to run specific recipes (like static code analysis) separately and more frequently.
 
+Another critical example: the initial instructions specified an outdated Gradle OpenRewrite plugin version that was incompatible with the OpenRewrite recipe bom version. This version mismatch caused cryptic build failures that were difficult to diagnose, highlighting how AI models may reference older documentation or outdated version combinations.
+
 **Takeaway:** Always review AI-generated instructions critically and consult official documentation. Question the approach, discuss alternatives with the AI agent, and refine the instructions iteratively.
 
 ### The Build/Fix Loop Required Multiple Iterations
@@ -499,6 +501,8 @@ However, every codebase is unique. Users will likely need to:
 - Handle edge cases that arise in their particular context
 
 These instruction files should be treated as **collaborative starting points**. They work best when treated as **living documents, refined based on real-world experiences and shared improvements** with the community.
+
+One area for future improvement: the instructions currently hardcode version numbers for Gradle dependencies, plugins, and recipe boms. A future iteration could parameterize these values—defining them in a single section—making updates easier and reducing the risk of version incompatibilities.
 
 Consider reviewing the instruction files to understand what they're doing—**relying solely on AI without understanding the underlying steps may gradually erode debugging and troubleshooting skills**.
 

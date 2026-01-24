@@ -1172,7 +1172,7 @@ This will display the current Gradle version being used by the wrapper.
 **Only proceed if `GRADLE_WRAPPER_EXISTS=true`.**
 
 Gradle versions have specific Java compatibility requirements:
-- **Gradle 8.5+**: Full support for Java 21
+- **Gradle 8.14.3+**: Preferred for executing OpenRewrite recipes with the latest Gradle 8.x version.
 
 To check your current Gradle version:
 
@@ -1185,14 +1185,14 @@ To check your current Gradle version:
 **Only proceed if `GRADLE_WRAPPER_EXISTS=true`.**
 
 **Check the Gradle version before upgrading:**
-- If `GRADLE_VERSION` >= 8.5: **SKIP this upgrade step** - the version is already compatible with Java 21.
-- If `GRADLE_VERSION` <= 8.4: Proceed with upgrading to Gradle 8.11.
+- If `GRADLE_VERSION` >= 8.14: **SKIP this upgrade step** 
+- If `GRADLE_VERSION` <= 8.13: Proceed with upgrading to Gradle 8.14.3.
 
 ```bash
-./gradlew wrapper --gradle-version=8.11
+./gradlew wrapper --gradle-version=8.14.3
 ```
 
-This command will update the Gradle wrapper files to use version 8.11.
+This command will update the Gradle wrapper files to use version 8.14.3.
 
 #### 6.5 Verify Gradle Wrapper Upgrade
 
@@ -1204,10 +1204,10 @@ After upgrading, verify the new Gradle version:
 ./gradlew --version
 ```
 
-Expected output should show Gradle 8.11 and Java 21:
+Expected output should show Gradle 8.14.3 and Java 21:
 ```
 ------------------------------------------------------------
-Gradle 8.11
+Gradle 8.14.3
 ------------------------------------------------------------
 
 Build time:   2024-xx-xx xx:xx:xx UTC
@@ -1264,11 +1264,11 @@ If the OpenRewrite plugin is not present, or if a newer version is required for 
 ```groovy
 plugins {
   // ... existing plugins ...
-  id("org.openrewrite.rewrite") version "7.24.0"
+  id("org.openrewrite.rewrite") version "7.25.0"
 }
 ```
 
-**Note:** Version 6.30.3 or later is recommended for Java 21 migration. If an older version is present, update it to the latest version.
+**Note:** Use the latest version of the OpenRewrite Gradle plugin. Version 7.25.0 has known compatibility issues with Java 21 migration recipes.
 
 #### 7.3 Add Rewrite Dependencies (if not present)
 
@@ -1281,7 +1281,7 @@ dependencies {
     // ... existing dependencies ...
 
     // Import the BOM to manage versions automatically
-    rewrite(platform("org.openrewrite.recipe:rewrite-recipe-bom:3.22.0"))
+    rewrite(platform("org.openrewrite.recipe:rewrite-recipe-bom:3.23.0"))
 
     // Add the specific migration artifact without a version
     rewrite("org.openrewrite.recipe:rewrite-migrate-java")
