@@ -1,5 +1,5 @@
  
-# AI-Assisted Java Upgrades: A Hybrid Approach with Custom Instructions and OpenRewrite
+# AI-Assisted Java Upgrades: A Hybrid Approach with AI Instructions and OpenRewrite
 
 ## Introduction
 
