@@ -7,7 +7,7 @@ AI coding agents have become remarkably powerful tools, capable of implementing 
 
 To effectively leverage AI coding agents, detailed instructions are needed to communicate these organization-specific conventions and guide the agent toward the desired implementation approach. **Even as AI agents continue to mature and become more sophisticated, the need for clear and unambiguous instructions that follow team and organization-specific conventions will remain essential**.
 
-This article presents an approach to automating Java version upgrades using custom AI instruction files, along with a set of reusable instructions and best practices.
+This article presents an approach to automating Java version upgrades using custom AI instruction files, along with a set of reusable instructions and best practices. **This article explains the approach using a Java 17 to 21 upgrade as the primary example, but instruction files are available for both Java 17 to 21 and Java 21 to 25 upgrades**.
 
 What might seem like a straightforward task—such as upgrading a Java version—often involves numerous organization-specific decisions that AI agents need guidance to navigate effectively.
 
@@ -541,10 +541,15 @@ One area for future improvement: the instructions currently hardcode version num
 
 Consider reviewing the instruction files to understand what they're doing—**relying solely on AI without understanding the underlying steps may gradually erode debugging and troubleshooting skills**.
 
-Additional instructions are being developed for Java 25 upgrades and other migration scenarios. Feedback on what works, what doesn't, and how these instructions have been adapted for different use cases is welcome and appreciated.
+An instruction file is also available for Java 21 to 25 upgrades. Feedback on what works, what doesn't, and how these instructions have been adapted for different use cases is welcome and appreciated.
 
 ## References
+
+- [Java 17 to 21 Upgrade Instructions](https://github.com/sri-chalam/ai-tech-notes/blob/main/articles/ai-assisted-java-upgrade/java-17-to-21/instructions/java-17-to-21-upgrade-instructions.md) - AI instruction file for upgrading Java applications from version 17 to 21
+
+- [Java 21 to 25 Upgrade Instructions](https://github.com/sri-chalam/ai-tech-notes/blob/main/articles/ai-assisted-java-upgrade/java-21-to-25/instructions/java-21-to-25-upgrade-instructions.md) - AI instruction file for upgrading Java applications from version 21 to 25
 
 - [GitHub Awesome Copilot - Instructions](https://github.com/github/awesome-copilot/tree/main/instructions) - A community-contributed collection of instruction files for GitHub Copilot and AI coding agents
 
 - [OpenRewrite Java Recipes Catalog](https://docs.openrewrite.org/recipes/java)
+
