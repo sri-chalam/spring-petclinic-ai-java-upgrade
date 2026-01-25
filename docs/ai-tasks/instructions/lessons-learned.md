@@ -133,3 +133,68 @@ Developer need to discuss with LLM for better names and tell the purpose of the 
 
 ### Some instructions refer to other sections
 The other step name changes over time, when new steps are added or removed. Models are not very accurate to fix the references and sometimes.
+
+### Mismatch in OpenRewrite Gradle Plugin and Dependency bom version
+
+While creating the instruction file using the LLM, the model generated the following instructions.
+
+Two different versions are used in the code snippet and "note". When the instructions were used to upgrade Java version, the old version 6.30.3 was used. 
+The version 6.30.3 was old does not seem to be compatble with the new version used for rewrite recipe bom. It seems the version 6.30.3 was used because it was mentioned in the bolded note.
+
+```groovy
+plugins {
+  // ... existing plugins ...
+  id("org.openrewrite.rewrite") version "7.24.0"
+}
+```
+
+**Note:** Version 6.30.3 or later is recommended for Java 21 migration. If an older version is present, update it to the latest version.
+
+
+Changed the above block to the below:
+```groovy
+plugins {
+  // ... existing plugins ...
+  id("org.openrewrite.rewrite") version "7.24.0"
+}
+```
+
+**Note:** Use the latest version of the OpenRewrite Gradle plugin. Version 7.25.0 has known compatibility issues with Java 21 migration recipes.
+
+
+
+### Open Rewrite and Instruction Benefits
+Agent tries in multiple ways to solve a problem.
+If it encounters a problem with OpenRewrite, it tries to upagrade without Open rewrite. 
+It takes long time to upgrade. One problem is attempted to be solved at a time.
+
+
+### Many times not the fault of LLM
+It is the lack of clear instructions.
+Humans may understand. LLMs clear instructions
+
+
+### Give Clear Instructions on the commonly needed Version Upgrades - Lombok, MapStruct
+
+Lombok, mapstruct are commonly used libraries.
+
+Lombok needs upgrade for each Java upgrade. Rather than AI agent figures out to identify which version to use, added instructions to use the latest lombok and mapstruct versions.
+
+The latest versions of these libraries are backward compatible, has less vulnerabilities.
+
+### The step number confusion
+When we ask AI to generate a new step, it creates a new step. It also creates the sub section under the new step. 
+Sometimes AI agent creates a new step say Step 2. under it it creates sub sctions as Step 1, Ste 2. It confuses.
+We need to gude AI Agent to use differene naming conventions to the sub sections.
+
+### When instruction was given to use the latest Splotless Gradle plugin - LLM got old version
+
+The instructions have to be given multiple iterations to get the latest version of Gradle.
+
+We should not believe LLM completely.
+
+### Replaced google-java-format plugin with Spotless
+In case if the google-java-format plugin is present replace it with Spotless.
+This is organization specific. Some companies use Google Java format which is deprecated.
+
+
