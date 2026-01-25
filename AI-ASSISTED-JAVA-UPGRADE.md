@@ -1,5 +1,5 @@
  
-# Automating Java Upgrades with Custom AI Instructions: Lessons Learned
+# AI-Assisted Java Upgrades: A Hybrid Approach with Custom Instructions and OpenRewrite
 
 ## Introduction
 
