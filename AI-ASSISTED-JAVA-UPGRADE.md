@@ -245,7 +245,7 @@ The upgrade process is automated through a series of steps that handle both envi
 
 ### Upgrade Steps
 
-*For detailed step-by-step execution instructions, see [java-17-to-21-upgrade-instructions.md](https://github.com/sri-chalam/ai-tech-notes/blob/main/articles/ai-assisted-java-upgrade/java-17-to-21-upgrade-instructions.md)
+*For detailed step-by-step execution instructions, see [java-17-to-21-upgrade-instructions.md](https://github.com/sri-chalam/ai-tech-notes/blob/main/articles/ai-assisted-java-upgrade/java-17-to-21/instructions/java-17-to-21-upgrade-instructions.md)
 
 1. **Identify and Set Project Root Directory**: Establish the working directory for all subsequent commands.
 
@@ -295,7 +295,7 @@ This log provides full traceability of all changes made during the upgrade and s
 
 Just as good logging is essential for any production application, comprehensive logging is equally important for AI-assisted upgrades—it provides transparency into the decisions made at each step and their outcomes.
 
-**Example Log:** [java-17-to-21-upgrade-log-1.md](https://github.com/sri-chalam/ai-tech-notes/blob/main/articles/ai-assisted-java-upgrade/sample-logs/java-17-to-21-upgrade-log-1.md) — generated after upgrading a sample application from Java 17 to Java 21.
+**Example Log:** [java-17-to-21-upgrade-log-1.md](https://github.com/sri-chalam/ai-tech-notes/blob/main/articles/ai-assisted-java-upgrade/sample-logs/java-17-to-21/java-17-to-21-upgrade-log-1.md) — generated after upgrading a sample application from Java 17 to Java 21.
 
 ## OpenRewrite and Recipes Used
 
@@ -346,7 +346,7 @@ Once the file is in place, the upgrade can be executed by referencing the instru
 
 Download the instruction file from the following URL:
 ```
-https://github.com/sri-chalam/ai-tech-notes/blob/main/articles/ai-assisted-java-upgrade/java-17-to-21-upgrade-instructions.md
+https://github.com/sri-chalam/ai-tech-notes/blob/main/articles/ai-assisted-java-upgrade/java-17-to-21/instructions/java-17-to-21-upgrade-instructions.md
 ```
 
 Save this file in your Git repository that needs to be upgraded from Java 17 to Java 21. The suggested location is:
