@@ -1211,7 +1211,7 @@ After upgrading, verify the new Gradle version:
 ./gradlew --version
 ```
 
-Expected output should show Gradle 8.14.4 and Java 21:
+Expected output should show Gradle 8.14.4:
 ```
 ------------------------------------------------------------
 Gradle 8.14.4
@@ -2067,7 +2067,7 @@ ARG VARIANT=21-bullseye
 ##### Pattern 2: JAVA_VERSION argument
 ```dockerfile
 # Before
-ARG JAVA_VERSION=17.0.7-ms
+ARG JAVA_VERSION=17.0.7-amzn
 
 # After
 ARG JAVA_VERSION=21.0.9-amzn
@@ -2089,7 +2089,7 @@ FROM [<registry>/]amazoncorretto:21-alpine
 ##### Pattern 4: SDKMAN installation in Dockerfile
 ```dockerfile
 # Before
-RUN bash -lc '. /usr/local/sdkman/bin/sdkman-init.sh && sdk install java 17.0.7-ms && sdk use java 17.0.7-ms'
+RUN bash -lc '. /usr/local/sdkman/bin/sdkman-init.sh && sdk install java 17.0.7-amzn && sdk use java 17.0.7-amzn'
 
 # After
 RUN bash -lc '. /usr/local/sdkman/bin/sdkman-init.sh && sdk install java 21.0.9-amzn && sdk use java 21.0.9-amzn'
