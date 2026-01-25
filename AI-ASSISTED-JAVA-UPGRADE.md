@@ -486,7 +486,6 @@ For this upgrade, the instructions were modified to explicitly handle (only if a
 
 Organizations using TLS interception (SSL forward proxy) must ensure certificates are available before executing the upgrade. In one test environment, the AI coding agent was unable to download the Gradle wrapper because the organization's TLS interception certificates had not been imported after installing the new JDK. Copying these certificates to `~/trusted-certs/` prior to running the upgrade resolved the issue.
 
-
 ### Additional Lessons
 
 **Some Steps May Be Skipped Silently**
@@ -543,7 +542,6 @@ One area for future improvement: the instructions currently hardcode version num
 Consider reviewing the instruction files to understand what they're doing—**relying solely on AI without understanding the underlying steps may gradually erode debugging and troubleshooting skills**.
 
 Additional instructions are being developed for Java 25 upgrades and other migration scenarios. Feedback on what works, what doesn't, and how these instructions have been adapted for different use cases is welcome and appreciated.
-
 
 ## References
 
