@@ -189,9 +189,9 @@ Before using the Java 17 to Java 21 upgrade instruction file, ensure your enviro
 ### Gradle Wrapper Version Compatibility
 
 For Java 21 compatibility, Gradle 8.5+ is sufficient. However, to use OpenRewrite recipes, the latest Gradle 8.x version is preferred:
-- **Gradle 8.14.3+**: Preferred for using the latest OpenRewrite version
+- **Gradle 8.14.4+**: Preferred for using the latest OpenRewrite version
 
-The upgrade instructions will automatically upgrade Gradle wrapper to version 8.14.3 if your current version is below 8.14.
+The upgrade instructions will automatically upgrade Gradle wrapper to version 8.14.4 if your current version is below 8.14.
 
 **Note:** The instructions will only upgrade Gradle wrapper if the current wrapper version is below 8.14. If your project already uses Gradle 8.14 or higher (including 9.x), the Gradle wrapper will not be modified. If your project does not contain a Gradle wrapper, one will not be installed.
 
@@ -237,7 +237,7 @@ The upgrade instructions automatically update Java version references in the fol
 - JavaVersion enum references (`JavaVersion.VERSION_17` → `JavaVersion.VERSION_21`)
 - OpenRewrite plugin addition/update (version 7.25.0+)
 - OpenRewrite dependencies and recipe configuration
-- Gradle wrapper upgrade to 8.14.3 (if current version < 8.14)
+- Gradle wrapper upgrade to 8.14.4 (if current version < 8.14)
 
 ## How the Upgrade Instructions Work
 
@@ -259,7 +259,7 @@ The upgrade process is automated through a series of steps that handle both envi
 
 5. **Trusted Certificates Import**: Automatically imports organization certificates from `~/trusted-certs/` into the Java 21 truststore during fresh installations
 
-6. **Upgrade Gradle Wrapper (If Needed)**: Upgrades Gradle wrapper to 8.14.3 if needed (see Prerequisites for details).
+6. **Upgrade Gradle Wrapper (If Needed)**: Upgrades Gradle wrapper to 8.14.4 if needed (see Prerequisites for details).
 
 7. **OpenRewrite Plugin**: Adds the OpenRewrite Gradle plugin to the project configuration. This is the same underlying tool used by AI-powered upgrade assistants like GitHub Copilot App Modernization and Amazon Q Developer.
 
