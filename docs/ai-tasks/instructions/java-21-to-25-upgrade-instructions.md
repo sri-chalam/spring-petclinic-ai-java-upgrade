@@ -1,4 +1,4 @@
-# Java 21 Upgrade Instructions
+# Java 25 Upgrade Instructions
 
 ## AI Execution Contract — Mandatory
 
@@ -6,7 +6,7 @@ This document is designed to be executed directly by an LLM.
 The following rules are mandatory and must be followed strictly.
 
 ## Role
-You are an AI agent tasked with upgrading a Java application from Java 17 to Java 21.
+You are an AI agent tasked with upgrading a Java application from Java 21 to Java 25.
 
 ## Strict Execution Rules
 - Follow **only** the steps defined in this document
@@ -34,7 +34,7 @@ No step may be skipped unless explicitly allowed.
 ---
 
 ## Executive Summary
-This document guides AI coding agents through upgrading Java applications from version 17 to 21 using Amazon Corretto JDK on macOS. The process includes:
+This document guides AI coding agents through upgrading Java applications from version 21 to 25 using Amazon Corretto JDK on macOS. The process includes:
 - JDK installation and configuration
 - Gradle wrapper upgrades
 - Automated code migration using OpenRewrite
@@ -42,8 +42,8 @@ This document guides AI coding agents through upgrading Java applications from v
 - CI/CD configuration updates (Docker, GitHub Actions, AWS CodeBuild)
 
 **Expected Duration:** Variable (depends on codebase size and errors)
-**Prerequisites:** Java 17 application, Gradle build system
-**Success Criteria:** Clean build with all tests passing on Java 21
+**Prerequisites:** Java 21 application, Gradle build system
+**Success Criteria:** Clean build with all tests passing on Java 25
 
 ---
 
@@ -82,7 +82,7 @@ If required information is missing or ambiguous:
 This upgrade does NOT attempt to:
 - Improve code quality
 - Refactor legacy APIs
-- Introduce Java 21 language features
+- Introduce Java 25 language features
 - Optimize build performance
 
 ---
@@ -105,8 +105,8 @@ Step 1: Set Project Root Directory
 - All subsequent scripts will execute from this directory
 
 Step 2: Detect Java Version
-- If Java 17 → CONTINUE
-- If Java 21 → ABORT (Upgrade already completed; no migration required)
+- If Java 21 → CONTINUE
+- If Java 25 → ABORT (Upgrade already completed; no migration required)
 - If other or not detected → CONTINUE with caution
 
 Step 3: SDKMAN Setup
@@ -114,22 +114,22 @@ Step 3: SDKMAN Setup
 - Otherwise → SKIP
 
 Step 4: JDK Installation
-- If Java 21 JDK is not installed → Install JDK 21 using SDKMAN
+- If Java 25 JDK is not installed → Install JDK 25 using SDKMAN
 - Import required certificates if applicable
-- If JDK 21 is already installed → SKIP
+- If JDK 25 is already installed → SKIP
 
 Step 5: Configure Environment
-- Set JAVA_HOME to JDK 21
+- Set JAVA_HOME to JDK 25
 - Update PATH if required
 
 Step 6: Build Tool Detection
 - If Gradle project:
     - Detect Gradle Wrapper version
-    - If wrapper < 8.14 → Upgrade wrapper
+    - If wrapper < 9.3 → Upgrade wrapper
     - Else → SKIP
 - If Maven project → SKIP (DO NOT MODIFY Maven files)
 
-Step 6a: Upgrade Known Java 21 Incompatible Libraries and Plugins
+Step 6a: Upgrade Known Java 25 Incompatible Libraries and Plugins
 - If Lombok present AND version < 1.18.30 → Upgrade to latest version
 - If MapStruct present AND version < 1.5.5 → Upgrade to latest version
 - If google-java-format plugin present → Comment out and add Spotless plugin
@@ -156,7 +156,7 @@ Test/Fix Loop:
 - If still failing after 5 → ABORT
 
 Step 8–10: CI/CD Updates
-- If Dockerfile exists → Update base image to Java 21
+- If Dockerfile exists → Update base image to Java 25
 - If GitHub Actions exists → Update Java version
 - If AWS CodeBuild exists → Update runtime
 - If none exist → SKIP section
@@ -164,7 +164,7 @@ Step 8–10: CI/CD Updates
 Step 11: Final Verification
 
 Verification requires:
-- `java -version` reports 21
+- `java -version` reports 25
 - Build succeeds without warnings related to Java version
 - Test suite passes
 
@@ -196,7 +196,7 @@ If any instruction elsewhere conflicts with this section, **this section takes p
   - Spring Framework
   - Jakarta EE or other framework versions
 - Java upgrade and framework upgrade are **separate tasks** with **separate instructions**.
-- Framework-related changes are allowed **only if strictly required** to make the Java 21 build compile, and must be clearly documented.
+- Framework-related changes are allowed **only if strictly required** to make the Java 25 build compile, and must be clearly documented.
 
 ---
 
@@ -259,7 +259,7 @@ If any instruction elsewhere conflicts with this section, **this section takes p
   - What was changed
   - Why it was changed
   - Result (success or failure)
-- Logs must be written to: `/docs/ai-tasks/logs/java-17-to-21-upgrade-log.md`
+- Logs must be written to: `/docs/ai-tasks/logs/java-21-to-25-upgrade-log.md`
 
 
 ---
@@ -280,11 +280,11 @@ as complete until:
 ### 10. **Introduce Unrequested Optimizations or Refactoring**
 - **DO NOT**:
 - Refactor code for style or readability
-- Introduce new Java 21 features unless strictly required
+- Introduce new Java 25 features unless strictly required
 - Modify unrelated code
 - All changes must be:
 - Minimal
-- Directly required for Java 21 compatibility
+- Directly required for Java 25 compatibility
 
 ---
 
@@ -300,7 +300,7 @@ as complete until:
 
 ### 12. **Proceed After an Explicit Abort Condition**
 - **DO NOT** continue execution after:
-- Java 21 is already configured (upgrade must be aborted)
+- Java 25 is already configured (upgrade must be aborted)
 - Iteration limits are exceeded
 - Critical failures are encountered
 - Abort means **stop immediately and document the reason**.
@@ -312,7 +312,7 @@ This upgrade is a **controlled, auditable migration**, not an optimization exerc
 Correctness, traceability, and restraint are more important than speed.
 
 ## Overview
-These instructions guide an AI coding agent to upgrade a Java application from Java 17 to Java 21 using Amazon Corretto JDK.
+These instructions guide an AI coding agent to upgrade a Java application from Java 21 to Java 25 using Amazon Corretto JDK.
 
 ## Environment Assumptions
 - Platform: macOS (Macbook)
@@ -337,7 +337,7 @@ These instructions guide an AI coding agent to upgrade a Java application from J
 
 If the project uses Maven instead of Gradle, skip all Gradle-specific steps (Steps 5 and 6).
 
-**IMPORTANT: DO NOT upgrade Spring Boot version during the Java upgrade.** Spring Boot will be upgraded in a separate task using a separate instruction file. This instruction file is focused solely on upgrading Java from version 17 to version 21.
+**IMPORTANT: DO NOT upgrade Spring Boot version during the Java upgrade.** Spring Boot will be upgraded in a separate task using a separate instruction file. This instruction file is focused solely on upgrading Java from version 21 to version 25.
 
 ## Gradle Project Structure Patterns
 
@@ -370,11 +370,11 @@ Dependencies can be declared in multiple locations:
 ### Variable Declaration Locations
 
 Version numbers and other values may be referenced as variables defined in:
-- **gradle.properties:** Simple key-value pairs (e.g., `javaVersion=17`)
+- **gradle.properties:** Simple key-value pairs (e.g., `javaVersion=21`)
 - **ext {} block:** Extra properties in `build.gradle` or `build.gradle.kts` (commonly used in multi-module projects to define shared values in the root build file)
   ```groovy
   ext {
-      javaVersion = '17'
+      javaVersion = '21'
       springBootVersion = '3.1.0'
   }
   ```
@@ -419,7 +419,7 @@ When executing these instructions, the AI agent should:
 
 6. **Use Dynamic Values**: Prefer dynamically detecting versions and paths over hardcoded values to ensure the instructions work at the time of execution
 
-7. **Document All Changes**: Maintain an upgrade log file at `/docs/ai-tasks/logs/java-17-to-21-upgrade-log.md` to track all actions, decisions, and outcomes throughout the entire upgrade process (see "Logging Requirements" section below for detailed instructions)
+7. **Document All Changes**: Maintain an upgrade log file at `/docs/ai-tasks/logs/java-21-to-25-upgrade-log.md` to track all actions, decisions, and outcomes throughout the entire upgrade process (see "Logging Requirements" section below for detailed instructions)
 
 8. **Multi-Module Project Awareness**: Always refer to the "Gradle Project Structure Patterns" section when locating and modifying build files. Do not assume all projects have a single root `build.gradle` file.
 
@@ -434,14 +434,14 @@ When executing these instructions, the AI agent should:
 Create and maintain the upgrade log at:
 
 ```
-/docs/ai-tasks/logs/java-17-to-21-upgrade-log.md
+/docs/ai-tasks/logs/java-21-to-25-upgrade-log.md
 ```
 
 **Before starting Step 1**, create the directory structure and initialize the log file:
 
 ```bash
 mkdir -p docs/ai-tasks/logs
-touch docs/ai-tasks/logs/java-17-to-21-upgrade-log.md
+touch docs/ai-tasks/logs/java-21-to-25-upgrade-log.md
 ```
 
 ### Log File Structure
@@ -449,12 +449,12 @@ touch docs/ai-tasks/logs/java-17-to-21-upgrade-log.md
 Initialize the log file with the following structure:
 
 ```markdown
-# Java 21 Upgrade Log
+# Java 25 Upgrade Log
 
 **Timestamp**: YYYY-MM-DDTHH:MM:SS
 **Execution Time**: X seconds
 **Project**: [Project Name]
-**Upgrade**: Java 17 to Java 21
+**Upgrade**: Java 21 to Java 25
 **Status**: In Progress | Completed | Blocked
 **Total Execution Time**: X minutes Y seconds
 
@@ -484,7 +484,7 @@ Brief overview of the upgrade process and overall status. Update this section as
 - [List any issues or "None"]
 
 ### Decision
-- [Proceeding with upgrade | Skipping - already Java 21 | Continuing despite detection issues]
+- [Proceeding with upgrade | Skipping - already Java 25 | Continuing despite detection issues]
 
 ---
 
@@ -625,7 +625,7 @@ echo ""
 
 ### Step 2: Verify Current Java Version (Prerequisite Check)
 
-**IMPORTANT: These instructions are designed to upgrade Java 17 applications to Java 21 only.** Before proceeding, verify that the application is currently using Java 17.
+**IMPORTANT: These instructions are designed to upgrade Java 21 applications to Java 25 only.** Before proceeding, verify that the application is currently using Java 21.
 
 **Before starting Step 2:** Initialize the upgrade log file as described in the "Logging Requirements" section.
 
@@ -635,7 +635,7 @@ echo ""
 - All build files checked (list each file path)
 - Any variables resolved and their values
 - Any issues with version detection (e.g., variable resolution failed, edge cases, complex patterns)
-- Decision made (Proceeding with upgrade | Skipping - already Java 21 | Continuing despite detection issues)
+- Decision made (Proceeding with upgrade | Skipping - already Java 25 | Continuing despite detection issues)
 
 #### 2.1 Check Java Version in Project Configuration
 
@@ -647,7 +647,7 @@ If the script cannot detect the Java version due to edge cases, there are two op
 2. Skip the Java version check step entirely
 
 Skipping the version check is safe because the OpenRewrite plugin will handle the upgrade intelligently:
-- If the Java version is already 21, the Rewrite recipe will not make any changes
+- If the Java version is already 25, the Rewrite recipe will not make any changes
 - If the Java version cannot be identified, the remaining upgrade instructions will still execute successfully
 -->
 
@@ -713,7 +713,7 @@ if [ -n "$BUILD_FILES" ]; then
         # Check for JavaVersion.VERSION_XX enum syntax
         VERSION_ENUM=$(grep -E "JavaVersion\.VERSION_" "$build_file" | grep -oE "VERSION_[0-9]+" | grep -o "[0-9]\+" | head -1)
 
-        # Check for Java toolchain syntax: languageVersion = JavaLanguageVersion.of(17)
+        # Check for Java toolchain syntax: languageVersion = JavaLanguageVersion.of(21)
         VERSION_TOOLCHAIN=$(grep -E "languageVersion\s*=\s*JavaLanguageVersion\.of\(" "$build_file" | grep -o "[0-9]\+" | head -1)
 
         # Check if toolchain uses a variable reference
