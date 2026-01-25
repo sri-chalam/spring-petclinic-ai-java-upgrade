@@ -955,7 +955,12 @@ echo ""
 If Amazon Corretto Java 25 is not installed, find and install the latest version:
 
 ```bash
-if [ "$JAVA25_ALREADY_INSTALLED" = false ]; then
+# Check if Amazon Corretto Java 25 is already installed using directory check
+if [ -n "$(find "$HOME/.sdkman/candidates/java" -maxdepth 1 -type d -name '25*-amzn' 2>/dev/null)" ]; then
+    echo "Skipping installation - Amazon Corretto Java 25 is already present"
+    JAVA25_ALREADY_INSTALLED=true
+else
+    JAVA25_ALREADY_INSTALLED=false
     # Find the latest Amazon Corretto Java 25 version
     LATEST_JAVA25=$(sdk list java | grep "25\..*amzn" | grep -v ">>>" | head -1 | awk '{print $NF}')
 
@@ -967,8 +972,6 @@ if [ "$JAVA25_ALREADY_INSTALLED" = false ]; then
     echo "Installing Amazon Corretto Java 25: $LATEST_JAVA25"
     sdk install java "$LATEST_JAVA25"
     echo "Amazon Corretto Java 25 installation complete"
-else
-    echo "Skipping installation - Amazon Corretto Java 25 is already present"
 fi
 ```
 

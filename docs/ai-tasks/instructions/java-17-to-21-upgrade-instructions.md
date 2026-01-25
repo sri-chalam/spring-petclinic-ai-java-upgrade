@@ -955,7 +955,12 @@ echo ""
 If Amazon Corretto Java 21 is not installed, find and install the latest version:
 
 ```bash
-if [ "$JAVA21_ALREADY_INSTALLED" = false ]; then
+# Check if Amazon Corretto Java 21 is already installed using directory check
+if [ -n "$(find "$HOME/.sdkman/candidates/java" -maxdepth 1 -type d -name '21*-amzn' 2>/dev/null)" ]; then
+    echo "Skipping installation - Amazon Corretto Java 21 is already present"
+    JAVA21_ALREADY_INSTALLED=true
+else
+    JAVA21_ALREADY_INSTALLED=false
     # Find the latest Amazon Corretto Java 21 version
     LATEST_JAVA21=$(sdk list java | grep "21\..*amzn" | grep -v ">>>" | head -1 | awk '{print $NF}')
 
@@ -967,8 +972,6 @@ if [ "$JAVA21_ALREADY_INSTALLED" = false ]; then
     echo "Installing Amazon Corretto Java 21: $LATEST_JAVA21"
     sdk install java "$LATEST_JAVA21"
     echo "Amazon Corretto Java 21 installation complete"
-else
-    echo "Skipping installation - Amazon Corretto Java 21 is already present"
 fi
 ```
 
