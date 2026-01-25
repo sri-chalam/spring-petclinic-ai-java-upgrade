@@ -314,7 +314,7 @@ The upgrade instructions use the following OpenRewrite recipes:
 
 ## Organization Trusted Certificates
 
-If your organization uses custom trusted certificates (e.g., for internal Certificate Authorities or corporate proxies), these certificates need to be imported into the newly installed Java 21 keystore. To enable this, copy your organization's trusted certificates to a specific directory before executing the Java upgrade instructions. The LLM will then automatically import these certificates into Java 21 during the upgrade process.
+If your organization uses custom trusted certificates (e.g., for internal Certificate Authorities, or for TLS-inspecting proxies—also known as TLS interception, SSL forward proxy), these certificates need to be imported into the newly installed Java 21 keystore. To enable this, copy your organization's trusted certificates to a specific directory before executing the Java upgrade instructions. The LLM will then automatically import these certificates into Java 21 during the upgrade process.
 
 > **Note:** This step is important for OpenRewrite recipes to work correctly. The recipes download Gradle artifacts during execution, and missing organization certificates may cause PKIX SSL errors that prevent the upgrade from completing.
 
@@ -481,6 +481,11 @@ For this upgrade, the instructions were modified to explicitly handle (only if a
 - **Spotless**: Replace the deprecated/unmaintained Google Java Format plugin. Spotless is the community-preferred tool for enforcing Google’s style guide across major tech organizations.
 
 **Takeaway:** Identify libraries and plugins that commonly require upgrades during Java version migrations and add explicit upgrade instructions for them. Reserve the build/fix loop for unexpected issues rather than predictable compatibility updates.
+
+### TLS Interception Certificates Must Be Imported Before Upgrade
+
+Organizations using TLS interception (SSL forward proxy) must ensure certificates are available before executing the upgrade. In one test environment, the AI coding agent was unable to download the Gradle wrapper because the organization's TLS interception certificates had not been imported after installing the new JDK. Copying these certificates to `~/trusted-certs/` prior to running the upgrade resolved the issue.
+
 
 ### Additional Lessons
 
