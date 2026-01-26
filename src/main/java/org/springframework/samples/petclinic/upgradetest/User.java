@@ -1,4 +1,4 @@
-package org.springframework.samples.petclinic.java.upgrade.test;
+package org.springframework.samples.petclinic.upgradetest;
 
 import java.util.Objects;
 

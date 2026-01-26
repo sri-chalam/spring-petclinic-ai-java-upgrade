@@ -1,4 +1,4 @@
-package org.springframework.samples.petclinic.java.upgrade.test;
+package org.springframework.samples.petclinic.upgradetest;
 
 /**
  * Multi-line string concatenation Java 21: Could use text blocks (already available in
