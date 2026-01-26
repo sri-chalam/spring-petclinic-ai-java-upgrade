@@ -6,8 +6,33 @@ This repository demonstrates how to use an AI coding assistant to upgrade a popu
 
 This repository serves as a test bed for validating the AI-assisted Java upgrade instructions described in the accompanying article. The source code is a snapshot taken from the [Spring PetClinic](https://github.com/spring-projects/spring-petclinic) project, which currently uses Java 17. The primary objective is to leverage an AI coding assistant to upgrade the codebase to newer Java versions.
 
+## How to Upgrade This Project Using AI Instructions
+
+### Prerequisites
+- Visual Studio Code (VS Code) installed
+- An AI coding assistant extension installed and configured in VS Code (e.g., [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot) or [Claude Code](https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code))
+
+### Steps
+1. Clone this Git repository and open it in Visual Studio Code (VS Code).
+2. Open the AI chat window of your choice (e.g., Github Copilot, Claude Code).
+3. Download the AI instructions file from:
+   [Java 17 to 21 Upgrade Instructions](https://github.com/sri-chalam/ai-tech-notes/blob/main/articles/ai-assisted-java-upgrade/java-17-to-21/instructions/java-17-to-21-upgrade-instructions.md)
+4. Create the directory `docs/ai-tasks/instructions/` and save the downloaded file as `java-17-to-21-upgrade-instructions.md` in that directory.
+5. Open the downloaded file in VS Code.
+6. Execute the following prompt in the AI chat window:
+```
+Upgrade the application from Java 17 to Java 21 using the instructions in docs/ai-tasks/instructions/java-17-to-21-upgrade-instructions.md.
+If you cannot access this file, stop and ask me to provide its contents.
+Do not infer or invent upgrade steps.
+```
+
+**After executing the prompt:**
+7. Monitor the messages in the chat window as the AI processes the instructions.
+8. Observe the commands being executed in the terminal.
+9. Review the logs generated in `/docs/ai-tasks/logs/java-17-to-21-upgrade-log.md`.
+
 ## Related Resources
 
 - **Article**: [AI-Assisted Java Upgrade](https://github.com/sri-chalam/ai-tech-notes/blob/main/articles/ai-assisted-java-upgrade/ai-assisted-java-upgrade.md) - A comprehensive guide on using AI to upgrade Java projects.
 - **AI Instructions File**: [Java 17 to 21 Upgrade Instructions](https://github.com/sri-chalam/ai-tech-notes/blob/main/articles/ai-assisted-java-upgrade/java-17-to-21/instructions/java-17-to-21-upgrade-instructions.md) - Step-by-step instructions for an AI assistant to perform the upgrade.
-- **Original Project README**: [petclinic-readme.md](https://github.com/sri-chalam/spring-petclinic-ai-java-upgrade/blob/main/petclinic-readme.md) - The original Spring PetClinic documentation.
+- **Original Project README**: [README-ORIGINAL.md](./README-ORIGINAL.md) - The original Spring PetClinic documentation.
