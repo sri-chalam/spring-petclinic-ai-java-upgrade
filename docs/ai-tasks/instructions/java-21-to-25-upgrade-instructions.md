@@ -1079,7 +1079,7 @@ To make Java 25 the default version for all new shell sessions:
 JAVA25_VERSION=$(sdk list java | grep "25\..*amzn" | head -1 | awk '{print $NF}')
 
 if [ -n "$JAVA25_VERSION" ]; then
-    SDKMAN_AUTO_ANSWER=true sdk default java "$JAVA25_VERSION"
+    yes | sdk default java "$JAVA25_VERSION"
     echo "Set $JAVA25_VERSION as default Java version"
 else
     echo "Error: Could not find Amazon Corretto Java 25 version"

@@ -1079,7 +1079,7 @@ To make Java 21 the default version for all new shell sessions:
 JAVA21_VERSION=$(sdk list java | grep "21\..*amzn" | head -1 | awk '{print $NF}')
 
 if [ -n "$JAVA21_VERSION" ]; then
-    SDKMAN_AUTO_ANSWER=true sdk default java "$JAVA21_VERSION"
+    yes | sdk default java "$JAVA21_VERSION"
     echo "Set $JAVA21_VERSION as default Java version"
 else
     echo "Error: Could not find Amazon Corretto Java 21 version"
@@ -1318,7 +1318,8 @@ lombok = "<LATEST_VERSION>"
 
 #### 6a.2 Check and Upgrade MapStruct to Latest Version of 1.x (If Present)
 
-MapStruct is an annotation processor for generating type-safe bean mappers. If present, upgrade to the latest version for fewer vulnerabilities and better stability (MapStruct library latest versions are backwards compatible).
+MapStruct is an an
+notation processor for generating type-safe bean mappers. If present, upgrade to the latest version for fewer vulnerabilities and better stability (MapStruct library latest versions are backwards compatible).
 
 **🔴 Logging for this step:**
 - If MapStruct is not found: Log "MapStruct not present - skipped"
