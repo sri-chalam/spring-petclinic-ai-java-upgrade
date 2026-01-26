@@ -10,4 +10,4 @@ This repository serves as a test bed for validating the AI-assisted Java upgrade
 
 - **Article**: [AI-Assisted Java Upgrade](https://github.com/sri-chalam/ai-tech-notes/blob/main/articles/ai-assisted-java-upgrade/ai-assisted-java-upgrade.md) - A comprehensive guide on using AI to upgrade Java projects.
 - **AI Instructions File**: [Java 17 to 21 Upgrade Instructions](https://github.com/sri-chalam/ai-tech-notes/blob/main/articles/ai-assisted-java-upgrade/java-17-to-21/instructions/java-17-to-21-upgrade-instructions.md) - Step-by-step instructions for an AI assistant to perform the upgrade.
-- **Original Project README**: [petclinic-readme.md](https://github.com/sri-chalam/spring-petclinic-ai-java-upgrade/blob/main/petclinic-readme.md) - The original Spring PetClinic documentation.
+- **Original Project README**: [README-ORIGINAL.md](./README-ORIGINAL.md) - The original Spring PetClinic documentation.
