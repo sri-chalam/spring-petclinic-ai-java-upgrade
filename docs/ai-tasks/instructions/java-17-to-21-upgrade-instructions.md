@@ -1276,7 +1276,8 @@ As of writing the article, the latest version is 1.18.42 -->
 First, find the latest Lombok version from Maven Central:
 ```bash
 # Search for latest Lombok release version on Maven Central
-curl -s "https://search.maven.org/solrsearch/select?q=g:org.projectlombok+AND+a:lombok&rows=1&wt=json" | grep -o '"latestVersion":"[^"]*"' | cut -d'"' -f4
+curl -s https://repo1.maven.org/maven2/org/projectlombok/lombok/maven-metadata.xml \
+  | xmllint --xpath "string(//versioning/latest)" -
 ```
 
 Alternatively, check the Lombok releases page: https://projectlombok.org/changelog
