@@ -543,6 +543,21 @@ Consider reviewing the instruction files to understand what they're doing—**re
 
 An instruction file is also available for Java 21 to 25 upgrades. Feedback on what works, what doesn't, and how these instructions have been adapted for different use cases is welcome and appreciated.
 
+## Example Repositories
+
+The instructions discussed in this article were tested on a couple of popular Java Spring Boot projects. The Github Copilot and Claude Code were used to test the upgrade.
+
+### Example Repository of Java 17 to 21 Upgrade
+[Java 17 to 21 Upgrade Example - Spring PetClinic](https://github.com/sri-chalam/spring-petclinic-ai-java-upgrade?tab=readme-ov-file#how-to-upgrade-this-project-using-ai-instructions) 
+
+The `main` branch contains the source code before the upgrade. The branch `java-21-upgrade` has code after the upgrade.
+
+### Example Repository of Java 21 to 25 Upgrade
+
+[Java 21 to 25 Upgrade Example - Realworld Java21 Spring Boot3](https://github.com/sri-chalam/realworld-java21-ai-assisted-upgrade?tab=readme-ov-file#how-to-upgrade-this-project-using-ai-instructions)
+
+The `main` branch contains the source code before the upgrade. The branch `java-25-upgrade` has code after the upgrade.
+
 ## References
 
 - [Java 17 to 21 Upgrade Instructions](https://github.com/sri-chalam/ai-tech-notes/blob/main/articles/ai-assisted-java-upgrade/java-17-to-21/instructions/java-17-to-21-upgrade-instructions.md) - AI instruction file for upgrading Java applications from version 17 to 21
