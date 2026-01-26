@@ -442,6 +442,10 @@ Create and maintain the upgrade log at:
 ```bash
 mkdir -p docs/ai-tasks/logs
 touch docs/ai-tasks/logs/java-21-to-25-upgrade-log.md
+
+# Capture timestamp for log initialization
+TIMESTAMP=$(date '+%Y-%m-%dT%H:%M:%S')
+echo "Log initialized at: $TIMESTAMP"
 ```
 
 ### Log File Structure
@@ -466,7 +470,7 @@ Brief overview of the upgrade process and overall status. Update this section as
 
 ---
 
-## Step 2: Java Version Detection
+## Step N: [Step Name]
 
 **Timestamp**: YYYY-MM-DDTHH:MM:SS
 **Execution Time**: X seconds
@@ -502,8 +506,12 @@ Brief overview of the upgrade process and overall status. Update this section as
 
 1. **Log immediately** after completing each major action or step
 2. **Be specific** about file paths, line numbers, and versions
-3. **Include timestamps** in the Date fields (use YYYY-MM-DDTHH:MM:SS format)
-4. **Capture timestamps at execution time** - Do NOT pre-generate or estimate timestamps. At the START of each step (after user approval), run `date -Iseconds` to get the real current time. This ensures accurate timing even when there are pauses between steps.
+3. **Include timestamps** in the Date fields (use YYYY-MM-DDTHH:MM:SS format) - see item 4 for how to capture timestamps correctly
+4. **Capture timestamps at execution time** - Do NOT pre-generate or estimate timestamps. At the START of each step (after user approval), capture the real current time:
+   ```bash
+   TIMESTAMP=$(date '+%Y-%m-%dT%H:%M:%S')
+   ```
+   This ensures accurate timing even when there are pauses between steps.
 5. **Document both successes and failures**
 6. **Keep entries concise but informative** - focus on what was done and why
 7. **Update the Summary section** as you progress through the upgrade
@@ -885,31 +893,7 @@ This should display the SDKMAN version information.
 
 ### Step 4: Install Amazon Corretto Java 25
 
-**🔴 CRITICAL - REQUIRED LOGGING FOR STEP 4:**
-Update the "Step 4: Install Amazon Corretto Java 25" section in the log file with:
-- Note if Amazon Corretto Java 25 was already installed or newly installed
-- Log the Java version (output of `java -version` command)
-- Installation path
-- Any installation issues or warnings
-
-
-#### 4.1 Check if Amazon Corretto Java 25 is Already Installed
-
-First, check if Amazon Corretto Java 25 is already installed locally:
-
-```bash
-if sdk list java | grep -v "local only" | grep -q "25\..*amzn"; then
-    echo "Amazon Corretto Java 25 is already installed"
-    JAVA25_ALREADY_INSTALLED=true
-else
-    echo "Amazon Corretto Java 25 is not installed"
-    JAVA25_ALREADY_INSTALLED=false
-fi
-```
-
-This checks if any Amazon Corretto Java 25 version is installed locally by filtering out the "local only" header and searching for installed versions.
-
-#### 4.2 Prepare Organization Trusted Certificates (if applicable)
+#### 4.1 Prepare Organization Trusted Certificates (if applicable)
 
 **Before installing Java**, if your organization uses custom trusted certificates (e.g., for internal Certificate Authorities, SSL inspection, or corporate proxies), prepare them for import.
 
@@ -950,7 +934,14 @@ echo ""
 
 **Note:** The import process in section 2.4 will automatically detect and import any certificates present in `~/trusted-certs`, regardless of the response to this prompt.
 
-#### 4.3 Find and Install Latest Amazon Corretto Java 25 (if not present)
+#### 4.2 Find and Install Latest Amazon Corretto Java 25 (if not present)
+
+**🔴 CRITICAL - REQUIRED LOGGING FOR STEP 4.2:**
+Update the "Step 4.2: Install Amazon Corretto Java 21" section in the log file with:
+- Whether Java 25 was already installed or newly installed
+- The specific Java version installed (e.g., `25.0.1-amzn`)
+- Installation path (JAVA_HOME location)
+- Any installation errors or warnings encountered
 
 If Amazon Corretto Java 25 is not installed, find and install the latest version:
 
@@ -980,10 +971,10 @@ This script:
 - Installs it only if not already present
 - Provides clear feedback about what action was taken
 
-#### 4.4 Import Organization Trusted Certificates into Java 25 (if applicable)
+#### 4.3 Import Organization Trusted Certificates into Java 25 (if applicable)
 
-**🔴 CRITICAL - REQUIRED LOGGING FOR STEP 4.4:**
-Update the "Step 4.4: Import Organization Trusted Certificates" section in the log file with:
+**🔴 CRITICAL - REQUIRED LOGGING FOR STEP 4.3:**
+Update the "Step 4.3: Import Organization Trusted Certificates" section in the log file with:
 - Whether certificates were imported (yes/no)
 - If skipped, reason for skipping (Java 25 already installed, no certificates found, etc.)
 - Total number of certificates imported
@@ -1079,7 +1070,7 @@ This script:
 - The default cacerts password is `changeit` (this is the standard Java default)
 - If you need to re-import certificates into an existing Java installation, you can manually run the import commands or temporarily set `JAVA25_ALREADY_INSTALLED=false`
 
-#### 4.5 Set Java 25 as Default (Optional)
+#### 4.4 Set Java 25 as Default (Optional)
 
 To make Java 25 the default version for all new shell sessions:
 
@@ -1088,7 +1079,7 @@ To make Java 25 the default version for all new shell sessions:
 JAVA25_VERSION=$(sdk list java | grep "25\..*amzn" | head -1 | awk '{print $NF}')
 
 if [ -n "$JAVA25_VERSION" ]; then
-    SDKMAN_AUTO_ANSWER=true sdk default java "$JAVA25_VERSION"
+    yes | sdk default java "$JAVA25_VERSION"
     echo "Set $JAVA25_VERSION as default Java version"
 else
     echo "Error: Could not find Amazon Corretto Java 25 version"
@@ -1097,7 +1088,7 @@ fi
 
 This dynamically identifies the installed Java 25 version and sets it as default.
 
-#### 4.6 Verify Java 25 Installation
+#### 4.5 Verify Java 25 Installation
 
 Confirm Java 25 is active:
 
@@ -1285,7 +1276,8 @@ As of writing the article, the latest version is 1.18.42 -->
 First, find the latest Lombok version from Maven Central:
 ```bash
 # Search for latest Lombok release version on Maven Central
-curl -s "https://search.maven.org/solrsearch/select?q=g:org.projectlombok+AND+a:lombok&rows=1&wt=json" | grep -o '"latestVersion":"[^"]*"' | cut -d'"' -f4
+curl -s https://repo1.maven.org/maven2/org/projectlombok/lombok/maven-metadata.xml \
+  | xmllint --xpath "string(//versioning/latest)" -
 ```
 
 Alternatively, check the Lombok releases page: https://projectlombok.org/changelog
@@ -1871,76 +1863,12 @@ When compilation errors or test failures occur, follow this systematic approach 
 
 **If Internet research provides a solution**, automatically apply the fix and document the changes in the upgrade log file:
 
-1. **Common fix patterns for Java 25 migration:**
-
-   **A. Deprecated API Replacement:**
-   ```java
-   // Before (Java 17)
-   Integer.parseInt("123", 10);
-
-   // After (Java 21) - if the API was removed or changed
-   // Use the recommended replacement from documentation
-   ```
-
-   **B. Package Migration (javax → jakarta):**
-   ```java
-   // Before
-   import javax.servlet.http.HttpServlet;
-
-   // After
-   import jakarta.servlet.http.HttpServlet;
-   ```
-
-   **C. SecurityManager Removal:**
-   ```java
-   // Before
-   SecurityManager sm = System.getSecurityManager();
-
-   // After
-   // Remove SecurityManager usage or use alternative security mechanisms
-   ```
-
-   **D. Thread Method Changes:**
-   ```java
-   // Before
-   Thread.stop();  // Removed in Java 21
-
-   // After
-   // Use interrupt() and proper thread coordination
-   thread.interrupt();
-   ```
-
-   **E. Third-party Library Updates:**
-
-   > **Multi-Module Project Note:** Dependencies may be in root or submodule build files, or in version catalog files. Refer to "Gradle Project Structure Patterns" to locate the correct file.
-
-   - Check if a newer version of the library supports Java 25
-   - Update the dependency version in your dependency configuration file:
-     - [build.gradle](build.gradle) or [build.gradle.kts](build.gradle.kts) for traditional dependency declarations (check root and submodule directories)
-     - [gradle/libs.versions.toml](gradle/libs.versions.toml) if using Gradle version catalogs
-
-     Example for build.gradle:
-     ```groovy
-     dependencies {
-       implementation 'group:artifact:new-version'  // Updated version
-     }
-     ```
-
-     Example for gradle/libs.versions.toml:
-     ```toml
-     [versions]
-     library = "new-version"
-
-     [libraries]
-     library-name = { group = "group", name = "artifact", version.ref = "library" }
-     ```
-
-2. **Make targeted, minimal changes:**
+1. **Make targeted, minimal changes:**
    - Only modify the code necessary to fix the error
    - Avoid refactoring or restructuring beyond what's needed
    - Preserve existing functionality and behavior
 
-3. **Test the fix:**
+2. **Test the fix:**
    - Re-run the build after each fix
    - Verify the specific error is resolved
    - Ensure no new errors are introduced
