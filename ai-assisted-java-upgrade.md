@@ -577,12 +577,7 @@ An instruction file is also available for Java 21 to 25 upgrades. Feedback on wh
 
 ## Example Repositories
 
-The instructions discussed in this article were tested on a couple of popular Java Spring Boot projects. The Github Copilot and Claude Code were used to test the upgrade.
-
-### Example Repository of Java 17 to 21 Upgrade
-[Java 17 to 21 Upgrade Example - Spring PetClinic](https://github.com/sri-chalam/spring-petclinic-ai-java-upgrade?tab=readme-ov-file#how-to-upgrade-this-project-using-ai-instructions) 
-
-The `main` branch contains the source code before the upgrade. The branch `java-21-upgrade` has code after the upgrade.
+The instructions discussed in this article were tested on a couple of popular Java Spring Boot projects. The Java 21 to 25 example is presented first as it better demonstrates the broader capabilities of AI-assisted upgrades, including a detailed upgrade log.
 
 ### Example Repository of Java 21 to 25 Upgrade
 
@@ -590,8 +585,16 @@ The `main` branch contains the source code before the upgrade. The branch `java-
 
 The `main` branch contains the source code before the upgrade. The branch `java-25-upgrade` has code after the upgrade.
 
-You can view the detailed AI-assisted upgrade log showing all the changes made during the upgrade process:
+A detailed AI-assisted upgrade log showing all the changes made during the upgrade process can be viewed at:
 [Java 21 to 25 Sample Upgrade Log](https://github.com/sri-chalam/realworld-java21-ai-assisted-upgrade/blob/java-25-upgrade/docs/ai-tasks/logs/java-21-to-25-upgrade-log.md)
+
+### Example Repository of Java 17 to 21 Upgrade
+[Java 17 to 21 Upgrade Example - Spring PetClinic](https://github.com/sri-chalam/spring-petclinic-ai-java-upgrade?tab=readme-ov-file#how-to-upgrade-this-project-using-ai-instructions) 
+
+The `main` branch contains the source code before the upgrade. The branch `java-21-upgrade` has code after the upgrade.
+
+A detailed AI-assisted upgrade log showing all the changes made during the upgrade process can be viewed at:
+[Java 17 to 21 Sample Upgrade Log](https://github.com/sri-chalam/spring-petclinic-ai-java-upgrade/blob/java-21-upgrade/docs/ai-tasks/logs/java-17-to-21-upgrade-log.md)
 
 ## References
 
