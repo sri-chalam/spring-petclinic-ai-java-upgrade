@@ -6,6 +6,12 @@ This repository demonstrates how to use an AI coding assistant to upgrade a popu
 
 This repository serves as a test bed for validating the AI-assisted Java upgrade instructions described in the accompanying article. The source code is a snapshot taken from the [Spring PetClinic](https://github.com/spring-projects/spring-petclinic) project, which currently uses Java 17. The primary objective is to leverage an AI coding assistant to upgrade the codebase to newer Java versions.
 
+## Repository Structure
+
+1. The **main** branch contains the original codebase before the upgrade (Java 17).
+2. The **java-21-upgrade** branch contains the codebase after the upgrade (Java 21).
+3. The [upgrade logs](https://github.com/sri-chalam/spring-petclinic-ai-java-upgrade/blob/java-21-upgrade/docs/ai-tasks/logs/java-17-to-21-upgrade-log.md) document which libraries were upgraded, the status of each step, what files were updated, what decisions were made, and other details of the upgrade process.
+
 ## How to Upgrade This Project Using AI Instructions
 
 ### Prerequisites
