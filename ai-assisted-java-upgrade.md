@@ -11,7 +11,7 @@ This article presents an approach to automating Java version upgrades using cust
 
 What might seem like a straightforward task—such as upgrading a Java version—often involves numerous organization-specific decisions that AI agents need guidance to navigate effectively.
 
-**The Approach:** While AI agents like GitHub Copilot App Modernization and Amazon Q Developer can perform Java upgrades, they don't know your organization's conventions out of the box. This article presents a hybrid approach that combines: (1) custom AI instruction files that encode organization-specific requirements, (2) OpenRewrite—a popular, community-driven tool that performs deterministic code transformations using predefined recipes, and (3) AI-assisted problem-solving for issues that OpenRewrite can't handle automatically. This approach is LLM-agnostic (works with Claude, ChatGPT, Gemini, or any AI coding agent) and requires no additional subscriptions beyond your chosen LLM.
+**The Approach:** While AI agents like GitHub Copilot App Modernization and Amazon Q Developer can perform Java upgrades, they don't know your organization's conventions out of the box. This article presents a hybrid approach that combines: (1) custom AI instruction files that encode organization-specific requirements, (2) OpenRewrite—a popular, community-driven tool that performs deterministic code transformations using predefined recipes, (3) AI-assisted problem-solving for issues that OpenRewrite can't handle automatically, and (4) pre-emptive guidance for known patterns—explicitly providing instructions for common scenarios (like library upgrades) that would otherwise require the AI to discover through trial-and-error. This approach is LLM-agnostic (works with Claude, ChatGPT, Gemini, or any AI coding agent) and requires no additional subscriptions beyond your chosen LLM.
 
 **Recommended Editor:** Visual Studio Code. This guide was tested using VS Code with GitHub Copilot and Claude Code plugins.
 
@@ -149,6 +149,8 @@ Rather than choosing one tool exclusively, a hybrid approach uses OpenRewrite fo
 1. **Broader Coverage**: OpenRewrite handles known patterns with predefined recipes; the LLM, guided by the instruction file, addresses edge cases, deprecated APIs, and third-party libraries lacking recipes.
 
 2. **Iterative Problem Resolution**: When compilation errors or test failures remain after OpenRewrite, the LLM iteratively analyzes errors, researches solutions, and applies fixes—repeating until the build succeeds or a maximum iteration limit is reached.
+
+3. **Pre-emptive Guidance for Known Patterns**: Certain libraries—such as Lombok and Spotless—typically require version upgrades with every Java upgrade. Rather than relying on the AI to discover this through internet searches and multiple build failures, the instructions explicitly handle these common scenarios upfront. **This reduces wasted iterations, prevents incorrect decisions from AI guesswork, and encodes institutional knowledge directly into the instructions**. For this upgrade, pre-emptive guidance covers Lombok, MapStruct, and Spotless —applied only if already used in the project.
 
 **Trade-offs**
 
