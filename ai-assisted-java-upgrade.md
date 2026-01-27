@@ -562,6 +562,9 @@ The `main` branch contains the source code before the upgrade. The branch `java-
 
 The `main` branch contains the source code before the upgrade. The branch `java-25-upgrade` has code after the upgrade.
 
+You can view the detailed AI-assisted upgrade log showing all the changes made during the upgrade process:
+[Java 21 to 25 Sample Upgrade Log](https://github.com/sri-chalam/realworld-java21-ai-assisted-upgrade/blob/java-25-upgrade/docs/ai-tasks/logs/java-21-to-25-upgrade-log.md)
+
 ## References
 
 - [Java 17 to 21 Upgrade Instructions](https://github.com/sri-chalam/ai-tech-notes/blob/main/articles/ai-assisted-java-upgrade/java-17-to-21/instructions/java-17-to-21-upgrade-instructions.md) - AI instruction file for upgrading Java applications from version 17 to 21
