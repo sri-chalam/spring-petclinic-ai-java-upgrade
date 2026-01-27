@@ -490,6 +490,18 @@ Organizations using TLS interception (SSL forward proxy) must ensure certificate
 
 During an AI-assisted Java upgrade, Spotless format verification failed due to plugin version incompatibility. Rather than upgrading the Spotless version, the AI agent resolved the issue by changing the formatting style configuration—which reformatted many files unnecessarily. Explicit instructions were added to upgrade the Spotless plugin version, rather than altering the formatting style. This prevents unintended widespread code changes.
 
+### Monitor the Upgrade Process Actively
+
+When the AI coding assistant is executing the upgrade, keep watching the logs in the chat window. Some AI coding agents, such as GitHub Copilot, also execute shell scripts and commands in a separate terminal window—monitor both the chat window and the terminal to track progress. Other agents, such as Anthropic Claude Code, execute commands within the chat window itself. These logs indicate whether the upgrade is proceeding correctly and help catch issues early.
+
+If the logs in the chat window or terminal indicate that the upgrade is going in a completely wrong direction, or if the AI appears stuck, stop the execution immediately. Revert all changes and start over rather than allowing the AI to continue down an incorrect path.
+
+### Know When to Stop and Restart
+
+In some cases, the AI coding assistant may encounter a state where it cannot proceed correctly. In one instance, the AI reported that the terminal was in a "bad state" and could not execute commands. Rather than waiting for the terminal issue to be resolved, the AI set aside the instruction file and attempted to perform the upgrade using its own knowledge—without executing the prescribed commands. This resulted in an upgrade that bypassed the carefully crafted instructions.
+
+When the AI deviates significantly from the instruction file or encounters persistent execution issues, it's better to stop the session, fix the underlying problem (such as terminal state or environment issues), and restart the upgrade from the beginning.
+
 ### Additional Lessons
 
 **Some Steps May Be Skipped Silently**
@@ -527,6 +539,22 @@ Different LLMs produced different suggestions when creating these instructions. 
 **Verify Generated Instructions Thoroughly**
 
 When asked to generate an instruction for adding an OpenRewrite dependency with the latest release version, the LLM produced invalid syntax. Always review generated instructions and code carefully before incorporating them into instruction files.
+
+**Respond to Terminal Prompts During Execution**
+
+Some commands executed by the AI may prompt for user input in the terminal—for example, "Do you want to make this Java the default? (y/n)". If these prompts are not answered, the upgrade will stall. Keep an eye on the terminal for any interactive prompts that require a response.
+
+**Click "Keep" and "Allow" Buttons Promptly**
+
+As the AI assistant executes instructions and logs information to the log markdown file, it periodically asks for confirmation to keep changes. Click the "Keep" button when prompted. Similarly, the AI chat may wait for permission before making certain changes—click "Allow" to let it proceed. If you don't respond, the upgrade will pause indefinitely.
+
+**Scroll the Chat Window to Check for Waiting Prompts**
+
+In GitHub Copilot, the AI chat window sometimes does not auto-scroll to show new messages. If the upgrade appears stalled, manually scroll down in the chat window. You may find that the AI assistant is waiting for input or confirmation that wasn't visible. Anthropic Claude Code does not have this issue—its chat window auto-scrolls correctly.
+
+**Timestamp Logging May Not Be Followed Correctly**
+
+The instruction to log timestamps for each step is not always followed correctly in Github Copilot. In some cases, multiple steps—or all steps—may show the same timestamp in the log file. Be aware of this limitation when reviewing logs for timing information.
 
 ## Where to Go From Here
 
