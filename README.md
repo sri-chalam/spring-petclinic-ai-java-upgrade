@@ -17,6 +17,11 @@ This repository serves as a test bed for validating the AI-assisted Java upgrade
 ### Prerequisites
 - Visual Studio Code (VS Code) installed
 - An AI coding assistant extension installed and configured in VS Code (e.g., [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot) or [Claude Code](https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code))
+- (Optional) **Organization Trusted Certificates**: If your organization uses custom certificates (e.g., internal CAs, TLS-inspecting proxies), prepare them before the upgrade:
+  - Copy certificates to `~/trusted-certs/`
+  - Supported formats: `.pem`, `.cer`, `.crt`
+  - If the AI installs Java 21, it will automatically import these certificates into the keystore. If Java 21 is already installed, certificates are assumed to be pre-configured.
+  - *Note: Required for OpenRewrite recipes to avoid PKIX SSL errors when downloading Gradle artifacts.*
 
 ### Steps
 1. Clone this Git repository and open it in Visual Studio Code (VS Code).
