@@ -150,7 +150,7 @@ Rather than choosing one tool exclusively, a hybrid approach uses OpenRewrite fo
 
 2. **Iterative Problem Resolution**: When compilation errors or test failures remain after OpenRewrite, the LLM iteratively analyzes errors, researches solutions, and applies fixes—repeating until the build succeeds or a maximum iteration limit is reached.
 
-3. **Pre-emptive Guidance for Known Patterns**: Certain libraries—such as Lombok and Spotless—typically require version upgrades with every Java upgrade. Rather than relying on the AI to discover this through internet searches and multiple build failures, the instructions explicitly handle these common scenarios upfront. **This reduces wasted iterations, prevents incorrect decisions from AI guesswork, and encodes institutional knowledge directly into the instructions**. For this upgrade, pre-emptive guidance covers Lombok, MapStruct, and Spotless —applied only if already used in the project.
+3. **Pre-emptive Guidance for Known Patterns**: Certain libraries—such as Lombok and Spotless—typically require version upgrades with every Java upgrade. Rather than relying on the AI to discover this through internet searches and multiple build failures, the instructions explicitly handle these common scenarios upfront. **This reduces wasted iterations, prevents incorrect decisions from AI guesswork, and encodes institutional knowledge directly into the instructions**. For this upgrade, pre-emptive guidance covers Lombok, and Spotless —applied only if already used in the project.
 
 **Trade-offs**
 
@@ -265,7 +265,7 @@ The upgrade process is automated through a series of steps that handle both envi
 
 7. **OpenRewrite Plugin**: Adds the OpenRewrite Gradle plugin to the project configuration. This is the same underlying tool used by AI-powered upgrade assistants like GitHub Copilot App Modernization and Amazon Q Developer.
 
-8. **Common Library Upgrades**: Proactively upgrades libraries that commonly require updates during Java migrations—Lombok, MapStruct, and Spotless—to avoid unnecessary build/fix loop iterations.
+8. **Common Library Upgrades**: Proactively upgrades libraries that commonly require updates during Java migrations—Lombok, and Spotless—to avoid unnecessary build/fix loop iterations.
 
 9. **Use OpenRewrite to Migrate Java Code**: Executes OpenRewrite plugin to automatically migrate the application to Java 21.
 
