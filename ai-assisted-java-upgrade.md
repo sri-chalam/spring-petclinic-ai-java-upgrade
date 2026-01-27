@@ -486,6 +486,10 @@ For this upgrade, the instructions were modified to explicitly handle (only if a
 
 Organizations using TLS interception (SSL forward proxy) must ensure certificates are available before executing the upgrade. In one test environment, the AI coding agent was unable to download the Gradle wrapper because the organization's TLS interception certificates had not been imported after installing the new JDK. Copying these certificates to `~/trusted-certs/` prior to running the upgrade resolved the issue.
 
+### Upgrade Spotless Gradle Plugin Version, Not Formatting Styles
+
+During an AI-assisted Java upgrade, Spotless format verification failed due to plugin version incompatibility. Rather than upgrading the Spotless version, the AI agent resolved the issue by changing the formatting style configuration—which reformatted many files unnecessarily. Explicit instructions were added to upgrade the Spotless plugin version, rather than altering the formatting style. This prevents unintended widespread code changes.
+
 ### Additional Lessons
 
 **Some Steps May Be Skipped Silently**
