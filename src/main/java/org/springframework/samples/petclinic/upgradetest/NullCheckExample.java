@@ -1,4 +1,4 @@
-package org.springframework.samples.petclinic.java.upgrade.test;
+package org.springframework.samples.petclinic.upgradetest;
 
 /**
  * Traditional null checking Java 21: May suggest Objects.requireNonNull or enhanced
