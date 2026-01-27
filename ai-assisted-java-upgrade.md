@@ -263,9 +263,11 @@ The upgrade process is automated through a series of steps that handle both envi
 
 7. **OpenRewrite Plugin**: Adds the OpenRewrite Gradle plugin to the project configuration. This is the same underlying tool used by AI-powered upgrade assistants like GitHub Copilot App Modernization and Amazon Q Developer.
 
-8. **Use OpenRewrite to Migrate Java Code**: Executes OpenRewrite plugin to automatically migrate the application to Java 21.
+8. **Common Library Upgrades**: Proactively upgrades libraries that commonly require updates during Java migrations—Lombok, MapStruct, and Spotless—to avoid unnecessary build/fix loop iterations.
 
-9. **Iterative Build/Fix Loop**: After OpenRewrite migration, performs an automated build/fix cycle to resolve any remaining compilation errors and test failures that OpenRewrite couldn't handle automatically. The loop executes up to 5 iterations maximum and exits early if the same error persists for 3 consecutive attempts. This loop:
+9. **Use OpenRewrite to Migrate Java Code**: Executes OpenRewrite plugin to automatically migrate the application to Java 21.
+
+10. **Iterative Build/Fix Loop**: After OpenRewrite migration, performs an automated build/fix cycle to resolve any remaining compilation errors and test failures that OpenRewrite couldn't handle automatically. The loop executes up to 5 iterations maximum and exits early if the same error persists for 3 consecutive attempts. This loop:
    - Executes `./gradlew clean build` to compile code and run tests
    - Analyzes compilation errors and identifies root causes
    - Applies fixes using a three-tier resolution strategy:
@@ -275,9 +277,9 @@ The upgrade process is automated through a series of steps that handle both envi
    - Re-runs the build after each fix
    - Documents unresolved errors if maximum iterations are reached
 
-10. **CI/CD Pipeline Updates**: Updates CI/CD configuration files (see "Updated CI/CD and Build Files" section for details)
+11. **CI/CD Pipeline Updates**: Updates CI/CD configuration files (see "Updated CI/CD and Build Files" section for details)
 
-11. **Verify Upgrade**: Execute a Gradle Build to verify that the upgrade was successful.
+12. **Verify Upgrade**: Execute a Gradle Build to verify that the upgrade was successful.
 
 ### Upgrade Log Documentation
 
