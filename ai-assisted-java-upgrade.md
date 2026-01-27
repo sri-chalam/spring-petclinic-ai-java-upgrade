@@ -7,11 +7,11 @@ AI coding agents have become remarkably powerful tools, capable of implementing 
 
 To effectively leverage AI coding agents, detailed instructions are needed to communicate these organization-specific conventions and guide the agent toward the desired implementation approach. **Even as AI agents continue to mature and become more sophisticated, the need for clear and unambiguous instructions that follow team and organization-specific conventions will remain essential**.
 
-This article presents an approach to automating Java version upgrades using custom AI instruction files, along with a set of reusable instructions and best practices. **This article explains the approach using a Java 17 to 21 upgrade as the primary example, but instruction files are available for both Java 17 to 21 and Java 21 to 25 upgrades**.
+This article presents an approach to automating Java version upgrades using custom AI instruction files, along with a set of reusable instructions and best practices. **This article explains the approach using a Java 17 to 21 upgrade as the primary example, but AI instruction files are available for both Java 17 to 21 and Java 21 to 25 upgrades**.
 
 What might seem like a straightforward task—such as upgrading a Java version—often involves numerous organization-specific decisions that AI agents need guidance to navigate effectively.
 
-The approach demonstrated here provides key advantages: LLM-agnostic flexibility, cost control, transparency, and customization for organizational conventions.
+**The Approach:** While AI agents like GitHub Copilot App Modernization and Amazon Q Developer can perform Java upgrades, they don't know your organization's conventions out of the box. This article presents a hybrid approach that combines: (1) custom AI instruction files that encode organization-specific requirements, (2) OpenRewrite—a popular, community-driven tool that performs deterministic code transformations using predefined recipes, and (3) AI-assisted problem-solving for issues that OpenRewrite can't handle automatically. This approach is LLM-agnostic (works with Claude, ChatGPT, Gemini, or any AI coding agent) and requires no additional subscriptions beyond your chosen LLM.
 
 **Recommended Editor:** Visual Studio Code. This guide was tested using VS Code with GitHub Copilot and Claude Code plugins.
 
