@@ -11,8 +11,11 @@ public class TextBlockExample {
 	}
 
 	public String getSqlQuery() {
-		return "SELECT u.id, u.name, u.email\n" + "FROM users u\n" + "WHERE u.active = true\n"
-				+ "ORDER BY u.created_at DESC";
+		return """
+				SELECT u.id, u.name, u.email
+				FROM users u
+				WHERE u.active = true
+				ORDER BY u.created_at DESC""";
 	}
 
 }
