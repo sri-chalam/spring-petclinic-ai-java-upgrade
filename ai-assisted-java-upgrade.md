@@ -155,6 +155,21 @@ Rather than choosing one tool exclusively, a hybrid approach uses OpenRewrite fo
 
 2. **Skill Atrophy Risk**: Over-reliance on automation may reduce familiarity with migration details. Reviewing upgrade logs helps mitigate this.
 
+## OpenRewrite and Recipes Used
+
+**OpenRewrite** is an automated refactoring tool that applies code transformations through reusable security fixes, migrations, and code quality improvement recipes.
+
+**Recipes** are predefined transformation patterns that transform code to adopt new language features, fix deprecated APIs, patch security vulnerabilities, or improve code quality. In addition to built-in recipes, there are community-provided recipes available, and teams can create custom recipes to implement organization-specific transformations.
+
+### Recipes Applied in This Upgrade
+
+The upgrade instructions use the following OpenRewrite recipes:
+
+1. **`org.openrewrite.java.migrate.UpgradeToJava21`** - Migrates Java code from earlier versions to Java 21 compatibility
+2. **`org.openrewrite.java.migrate.SwitchPatternMatching`** - Applies pattern matching in switch statements (Java 21 feature)
+
+**Purpose of Additional Recipe:** UpgradeToJava21 migrates code to Java 21 compatibility; the SwitchPatternMatching recipe adds switch pattern matching support for more readable code.
+
 ## AI Instruction Files - Limitations and Expectations
 
 When using AI instruction files (the approach demonstrated in this repository) for Java upgrades, it's important to understand the nature and limitations:
@@ -202,6 +217,28 @@ If the environment does not match these prerequisites, the following actions are
 - Consult with your organization's development standards and tooling requirements
 - Consider creating a customized version of the instruction file for your use case
 
+## Organization Trusted Certificates
+
+If custom trusted certificates are used by the organization (e.g., for internal Certificate Authorities, or for TLS-inspecting proxies—also known as TLS interception, SSL forward proxy), these certificates need to be imported into the newly installed Java 21 keystore. To enable this, organization's trusted certificates should be copied to a specific directory before executing the Java upgrade instructions. The LLM will then automatically import these certificates into Java 21 during the upgrade process.
+
+> **Note:** This step is important for OpenRewrite recipes to work correctly. The recipes download Gradle artifacts during execution, and missing organization certificates may cause PKIX SSL errors that prevent the upgrade from completing.
+
+### Certificate Preparation Requirements
+
+1. **Certificate Directory**: All organization trusted certificates need to be copied to `~/trusted-certs/`
+
+2. **Supported Certificate Formats**: Only certificates with `.pem`, `.cer`, or `.crt` file extensions will be imported. Files with other extensions will be ignored during the import process.
+
+3. **Certificate Import Process**:
+   - The upgrade instructions will automatically detect and import all certificate files with supported extensions from `~/trusted-certs/`
+   - Each certificate will be imported into the Java cacerts truststore with a unique alias
+   - The import only occurs when Java 21 is freshly installed (not if it's already present)
+   - Note: The process imports files based on extension only; it does not validate certificate authenticity or format
+
+4. **Optional Step**: If your organization does not use custom trusted certificates, this step can be skipped. The upgrade continues normally if no certificates are found.
+
+Once the certificates are in place, proceed with the Java upgrade instructions as documented below.
+
 ## What the Upgrade Instructions Will NOT Do
 
 It's important to understand the scope boundaries of the upgrade instructions. The following modifications will **NOT** be performed:
@@ -222,22 +259,6 @@ While GitHub Copilot App Modernization includes CVE vulnerability scanning as pa
 - Keeping CVE scanning separate allows it to be **reused independently** across different workflows
 
 For this reason, CVE scanning and remediation can be handled with a separate instruction file.
-
-## Updated CI/CD and Build Files
-
-The upgrade instructions automatically update Java version references in the following files:
-
-- **GitHub Actions**: `.github/workflows/*.yml`
-- **AWS CodeBuild**: `buildspec*.yml`
-- **Docker**: `Dockerfile`, `Dockerfile.*`
-- **Gradle Build Files**: `build.gradle` or `build.gradle.kts`, `gradle.properties`, `gradle/wrapper/gradle-wrapper.properties`
-
-**Updates applied to build.gradle:**
-- sourceCompatibility and targetCompatibility (`'17'` → `'21'`)
-- JavaVersion enum references (`JavaVersion.VERSION_17` → `JavaVersion.VERSION_21`)
-- OpenRewrite plugin addition/update (version 7.25.0+)
-- OpenRewrite dependencies and recipe configuration
-- Gradle wrapper upgrade to 8.14.4 (if current version < 8.14)
 
 ## How the Upgrade Instructions Work
 
@@ -281,6 +302,22 @@ For detailed step-by-step execution instructions, see [java-17-to-21-upgrade-ins
 
 12. **Verify Upgrade**: Execute a Gradle Build to verify that the upgrade was successful.
 
+### Updated CI/CD and Build Files
+
+The upgrade instructions automatically update Java version references in the following files:
+
+- **GitHub Actions**: `.github/workflows/*.yml`
+- **AWS CodeBuild**: `buildspec*.yml`
+- **Docker**: `Dockerfile`, `Dockerfile.*`
+- **Gradle Build Files**: `build.gradle` or `build.gradle.kts`, `gradle.properties`, `gradle/wrapper/gradle-wrapper.properties`
+
+**Updates applied to build.gradle:**
+- sourceCompatibility and targetCompatibility (`'17'` → `'21'`)
+- JavaVersion enum references (`JavaVersion.VERSION_17` → `JavaVersion.VERSION_21`)
+- OpenRewrite plugin addition/update (version 7.25.0+)
+- OpenRewrite dependencies and recipe configuration
+- Gradle wrapper upgrade to 8.14.4 (if current version < 8.14)
+
 ### Upgrade Log Documentation
 
 All fixes, changes, and unresolved errors are documented during the upgrade process in:
@@ -298,43 +335,6 @@ This log provides full traceability of all changes made during the upgrade and s
 Just as good logging is essential for any production application, comprehensive logging is equally important for AI-assisted upgrades—it provides transparency into the decisions made at each step and their outcomes.
 
 **Example Log:** [java-17-to-21-upgrade-log-1.md](https://github.com/sri-chalam/ai-tech-notes/blob/main/articles/ai-assisted-java-upgrade/java-17-to-21/sample-logs/java-17-to-21-upgrade-log-1.md) — generated after upgrading a sample application from Java 17 to Java 21.
-
-## OpenRewrite and Recipes Used
-
-**OpenRewrite** is an automated refactoring tool that applies code transformations through reusable security fixes, migrations, and code quality improvement recipes.
-
-**Recipes** are predefined transformation patterns that transform code to adopt new language features, fix deprecated APIs, patch security vulnerabilities, or improve code quality. In addition to built-in recipes, there are community-provided recipes available, and teams can create custom recipes to implement organization-specific transformations.
-
-### Recipes Applied in This Upgrade
-
-The upgrade instructions use the following OpenRewrite recipes:
-
-1. **`org.openrewrite.java.migrate.UpgradeToJava21`** - Migrates Java code from earlier versions to Java 21 compatibility
-2. **`org.openrewrite.java.migrate.SwitchPatternMatching`** - Applies pattern matching in switch statements (Java 21 feature)
-
-**Purpose of Additional Recipe:** UpgradeToJava21 migrates code to Java 21 compatibility; the SwitchPatternMatching recipe adds switch pattern matching support for more readable code.
-
-## Organization Trusted Certificates
-
-If custom trusted certificates are used by the organization (e.g., for internal Certificate Authorities, or for TLS-inspecting proxies—also known as TLS interception, SSL forward proxy), these certificates need to be imported into the newly installed Java 21 keystore. To enable this, organization's trusted certificates should be copied to a specific directory before executing the Java upgrade instructions. The LLM will then automatically import these certificates into Java 21 during the upgrade process.
-
-> **Note:** This step is important for OpenRewrite recipes to work correctly. The recipes download Gradle artifacts during execution, and missing organization certificates may cause PKIX SSL errors that prevent the upgrade from completing.
-
-### Certificate Preparation Requirements
-
-1. **Certificate Directory**: All organization trusted certificates need to be copied to `~/trusted-certs/`
-
-2. **Supported Certificate Formats**: Only certificates with `.pem`, `.cer`, or `.crt` file extensions will be imported. Files with other extensions will be ignored during the import process.
-
-3. **Certificate Import Process**:
-   - The upgrade instructions will automatically detect and import all certificate files with supported extensions from `~/trusted-certs/`
-   - Each certificate will be imported into the Java cacerts truststore with a unique alias
-   - The import only occurs when Java 21 is freshly installed (not if it's already present)
-   - Note: The process imports files based on extension only; it does not validate certificate authenticity or format
-
-4. **Optional Step**: If your organization does not use custom trusted certificates, this step can be skipped. The upgrade continues normally if no certificates are found.
-
-Once the certificates are in place, proceed with the Java upgrade instructions as documented below.
 
 ## How to Execute the Java 17 to Java 21 Upgrade Instructions
 
