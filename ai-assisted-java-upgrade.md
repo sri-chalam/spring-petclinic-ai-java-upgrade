@@ -291,7 +291,7 @@ For detailed step-by-step execution instructions, see [java-17-to-21-upgrade-ins
 
 7. **OpenRewrite Plugin**: Adds the OpenRewrite Gradle plugin to the project configuration. This is the same underlying tool used by AI-powered upgrade assistants like GitHub Copilot App Modernization and Amazon Q Developer.
 
-8. **Common Library Upgrades**: Proactively upgrades libraries that commonly require updates during Java migrations—Lombok, and Spotless—to avoid unnecessary build/fix loop iterations.
+8. **Common Library Upgrades**: Proactively upgrades libraries that commonly require updates during Java migrations—Lombok and Spotless—to avoid unnecessary build/fix loop iterations.
 
 9. **Use OpenRewrite to Migrate Java Code**: Executes OpenRewrite plugin to automatically migrate the application to Java 21.
 
@@ -558,7 +558,7 @@ As the AI assistant executes instructions and logs information to the log markdo
 
 **Scroll the Chat Window to Check for Waiting Prompts**
 
-In GitHub Copilot, the AI chat window sometimes does not auto-scroll to show new messages. If the upgrade appears stalled, manually scroll down in the chat window. manual scrolling may reveal that the AI assistant is waiting for input or confirmation that wasn't visible. Anthropic Claude Code does not have this issue—its chat window auto-scrolls correctly.
+In GitHub Copilot, the AI chat window sometimes does not auto-scroll to show new messages. If the upgrade appears stalled, manually scroll down in the chat window. Manual scrolling may reveal that the AI assistant is waiting for input or confirmation that wasn't visible. Anthropic Claude Code does not have this issue—its chat window auto-scrolls correctly.
 
 **Timestamp Logging May Not Be Followed Correctly**
 
