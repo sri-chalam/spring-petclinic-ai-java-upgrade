@@ -11,7 +11,7 @@ This article presents an approach to automating Java version upgrades using cust
 
 What might seem like a straightforward task—such as upgrading a Java version—often involves numerous organization-specific decisions that AI agents need guidance to navigate effectively.
 
-**The Approach:** While AI agents like GitHub Copilot App Modernization and Amazon Q Developer can perform Java upgrades, they don't know your organization's conventions out of the box. This article presents a hybrid approach that combines: (1) custom AI instruction files that encode organization-specific requirements, (2) OpenRewrite—a popular, community-driven tool that not only upgrades dependencies and fixes deprecated APIs but also modernizes code with safe new Java language features through predefined recipes, (3) AI-assisted problem-solving for issues that OpenRewrite can't handle automatically, and (4) pre-emptive guidance for known patterns—explicitly providing instructions for common scenarios (like library upgrades) that would otherwise require the AI to discover through trial-and-error. This approach is LLM-agnostic (works with Claude, ChatGPT, Gemini, or any AI coding agent) and requires no additional subscriptions beyond your chosen LLM.
+**The Approach:** While AI agents like GitHub Copilot App Modernization and Amazon Q Developer can perform Java upgrades, they lack awareness of organization-specific conventions out of the box. This article presents a hybrid approach that combines: (1) custom AI instruction files that encode organization-specific requirements, (2) OpenRewrite—a popular, community-driven tool that not only upgrades dependencies and fixes deprecated APIs but also modernizes code with safe new Java language features through predefined recipes, (3) AI-assisted problem-solving for issues that OpenRewrite can't handle automatically, and (4) pre-emptive guidance for known patterns—explicitly providing instructions for common scenarios (like library upgrades) that would otherwise require the AI to discover through trial-and-error. This approach is LLM-agnostic (works with Claude, ChatGPT, Gemini, or any AI coding agent) and requires no additional subscriptions beyond your chosen LLM.
 
 **Recommended Editor:** Visual Studio Code. This guide was tested using VS Code with GitHub Copilot and Claude Code plugins.
 
@@ -46,7 +46,7 @@ An AI agent is a dynamic system—it combines instructions with reasoning capabi
 
 For specialized tasks like Java upgrades with organization-specific requirements, instruction files often provide better cost-effectiveness than full agent systems, as they deliver targeted guidance without the computational overhead of autonomous decision-making.
 
-However, if using AI agent platforms (such as Copilot App Modernization), organization-specific instruction files should still be provided to customize the agent's behavior for your context.
+However, if using AI agent platforms (such as Copilot App Modernization), organization-specific instruction files should still be provided to customize the agent's behavior for the specific context.
 
 ## Why Are Java Upgrades Not Simple?
 
@@ -199,7 +199,7 @@ The upgrade instructions will automatically upgrade Gradle wrapper to version 8.
 
 ### Compatibility Note
 
-If your environment does not match these prerequisites, you should:
+If the environment does not match these prerequisites, the following actions are recommended:
 - Review the instruction file and adapt it to your specific environment
 - Consult with your organization's development standards and tooling requirements
 - Consider creating a customized version of the instruction file for your use case
@@ -318,7 +318,7 @@ The upgrade instructions use the following OpenRewrite recipes:
 
 ## Organization Trusted Certificates
 
-If your organization uses custom trusted certificates (e.g., for internal Certificate Authorities, or for TLS-inspecting proxies—also known as TLS interception, SSL forward proxy), these certificates need to be imported into the newly installed Java 21 keystore. To enable this, copy your organization's trusted certificates to a specific directory before executing the Java upgrade instructions. The LLM will then automatically import these certificates into Java 21 during the upgrade process.
+If custom trusted certificates are used by the organization (e.g., for internal Certificate Authorities, or for TLS-inspecting proxies—also known as TLS interception, SSL forward proxy), these certificates need to be imported into the newly installed Java 21 keystore. To enable this, organization's trusted certificates should be copied to a specific directory before executing the Java upgrade instructions. The LLM will then automatically import these certificates into Java 21 during the upgrade process.
 
 > **Note:** This step is important for OpenRewrite recipes to work correctly. The recipes download Gradle artifacts during execution, and missing organization certificates may cause PKIX SSL errors that prevent the upgrade from completing.
 
@@ -371,7 +371,7 @@ If you cannot access this file, stop and ask me to provide its contents.
 Do not infer or invent upgrade steps.
 ```
 
-**Note:** If the above prompt doesn't work with your AI coding agent, some agents support direct file reference syntax that may work as an alternative. For example, Claude Code uses `@docs/ai-tasks/...` and GitHub Copilot uses `#file:docs/ai-tasks/...` to reference files.
+**Note:** If the above prompt doesn't work with the AI coding agent being used, some agents support direct file reference syntax that may work as an alternative. For example, Claude Code uses `@docs/ai-tasks/...` and GitHub Copilot uses `#file:docs/ai-tasks/...` to reference files.
 
 The AI agent will read the instruction file and execute each step of the upgrade process systematically.
 
@@ -383,11 +383,11 @@ After the upgrade instructions have been executed, it's important to validate th
 
 #### 1.1 Execute End-to-End Tests
 
-Run your application's end-to-end test suite to verify that the system works correctly as a whole. Ensure that all critical user workflows and integrations are functioning correctly with Java 21.
+The application's end-to-end test suite should be executed to verify that the system works correctly as a whole. Ensure that all critical user workflows and integrations are functioning correctly with Java 21.
 
 #### 1.2 Execute Integration Tests (if available)
 
-If your project has integration tests, run them using your project's specific test command. For example:
+If the project has integration tests, they should be executed using the project's specific test command. For example:
 
 ```zsh
 # Example for Gradle projects
@@ -424,7 +424,7 @@ After making these changes, rebuild the project in your IDE to ensure everything
 
 ### Step 3: Future Upgrade Path to Java 25 (Optional)
 
-If you need to upgrade to Java 25 in the future, separate upgrade instructions are available.
+If an upgrade to Java 25 is needed in the future, separate upgrade instructions are available.
 
 **For Java 21 to Java 25 Upgrades:**
 
@@ -553,7 +553,7 @@ As the AI assistant executes instructions and logs information to the log markdo
 
 **Scroll the Chat Window to Check for Waiting Prompts**
 
-In GitHub Copilot, the AI chat window sometimes does not auto-scroll to show new messages. If the upgrade appears stalled, manually scroll down in the chat window. You may find that the AI assistant is waiting for input or confirmation that wasn't visible. Anthropic Claude Code does not have this issue—its chat window auto-scrolls correctly.
+In GitHub Copilot, the AI chat window sometimes does not auto-scroll to show new messages. If the upgrade appears stalled, manually scroll down in the chat window. manual scrolling may reveal that the AI assistant is waiting for input or confirmation that wasn't visible. Anthropic Claude Code does not have this issue—its chat window auto-scrolls correctly.
 
 **Timestamp Logging May Not Be Followed Correctly**
 
