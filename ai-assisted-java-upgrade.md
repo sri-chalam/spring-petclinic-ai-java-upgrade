@@ -147,7 +147,7 @@ Rather than choosing one tool exclusively, a hybrid approach uses OpenRewrite fo
 
 2. **Iterative Problem Resolution**: When compilation errors or test failures remain after OpenRewrite, the LLM iteratively analyzes errors, researches solutions, and applies fixes—repeating until the build succeeds or a maximum iteration limit is reached.
 
-3. **Pre-emptive Guidance for Known Patterns**: Certain libraries—such as Lombok and Spotless—typically require version upgrades with every Java upgrade. Rather than relying on the AI to discover this through internet searches and multiple build failures, the instructions explicitly handle these common scenarios upfront. **This reduces wasted iterations, prevents incorrect decisions from AI guesswork, and encodes institutional knowledge directly into the instructions**. For this upgrade, pre-emptive guidance covers Lombok, and Spotless —applied only if already used in the project.
+3. **Pre-emptive Guidance for Known Patterns**: Certain libraries—such as Lombok and Spotless—typically require version upgrades with every Java upgrade. Rather than relying on the AI to discover this through internet searches and multiple build failures, the instructions explicitly handle these common scenarios upfront. **This reduces wasted iterations, prevents incorrect decisions from AI guesswork, and encodes institutional knowledge directly into the instructions**. For this upgrade, pre-emptive guidance covers Lombok and Spotless —applied only if already used in the project.
 
 **Trade-offs**
 
@@ -161,7 +161,7 @@ When using AI instruction files (the approach demonstrated in this repository) f
 
 ### Instruction Coverage Limitations
 
-The Git repository in which the instructions are executed may have unique scenarios that the instructions do not provide guidance for. Every codebase is different, and the instruction set cannot anticipate every possible edge case, custom configuration. Users should be prepared to:
+The Git repository in which the instructions are executed may have unique scenarios that the instructions do not provide guidance for. Every codebase is different, and the instruction set cannot anticipate every possible edge case or custom configuration. Users should be prepared to:
 - Review the AI's changes carefully
 - Handle scenarios not covered by the instructions
 - Adapt or supplement the instructions for their specific use case
@@ -245,7 +245,7 @@ The upgrade process is automated through a series of steps that handle both envi
 
 ### Upgrade Steps
 
-*For detailed step-by-step execution instructions, see [java-17-to-21-upgrade-instructions.md](https://github.com/sri-chalam/ai-tech-notes/blob/main/articles/ai-assisted-java-upgrade/java-17-to-21/instructions/java-17-to-21-upgrade-instructions.md)
+For detailed step-by-step execution instructions, see [java-17-to-21-upgrade-instructions.md](https://github.com/sri-chalam/ai-tech-notes/blob/main/articles/ai-assisted-java-upgrade/java-17-to-21/instructions/java-17-to-21-upgrade-instructions.md)
 
 1. **Identify and Set Project Root Directory**: Establish the working directory for all subsequent commands.
 
@@ -312,7 +312,7 @@ The upgrade instructions use the following OpenRewrite recipes:
 1. **`org.openrewrite.java.migrate.UpgradeToJava21`** - Migrates Java code from earlier versions to Java 21 compatibility
 2. **`org.openrewrite.java.migrate.SwitchPatternMatching`** - Applies pattern matching in switch statements (Java 21 feature)
 
-**Purpose of Additional Recipe:** UpgradeToJava21 handles most modernization, the SwitchPatternMatching recipe adds switch pattern matching support for more readable code.
+**Purpose of Additional Recipe:** UpgradeToJava21 migrates code to Java 21 compatibility; the SwitchPatternMatching recipe adds switch pattern matching support for more readable code.
 
 ## Organization Trusted Certificates
 
