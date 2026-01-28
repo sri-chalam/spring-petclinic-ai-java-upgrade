@@ -8,11 +8,9 @@ To effectively leverage AI coding agents, detailed instructions are needed to co
 
 What might seem like a straightforward task—such as upgrading a Java version—often involves numerous organization-specific decisions that AI agents need guidance to navigate effectively.
 
-This article demonstrates this guidance approach in practice, presenting a method for automating Java version upgrades—illustrated through a concrete example—using custom AI instruction files. **While the Java 17 to 21 upgrade serves as the primary example, AI instruction files are available for both Java 17 to 21 and Java 21 to 25 upgrades**.
+This article demonstrates this guidance approach in practice, presenting a method for automating Java version upgrades using custom AI instruction files. **While the Java 17 to 21 upgrade serves as the primary example, AI instruction files are available for both Java 17 to 21 and Java 21 to 25 upgrades**.
 
-**The Approach:** While AI agents like GitHub Copilot App Modernization and Amazon Q Developer can perform Java upgrades, they lack awareness of organization-specific conventions out of the box. This article presents a hybrid approach that combines: (1) custom AI instruction files that encode organization-specific requirements, (2) OpenRewrite—a popular, community-driven tool that not only upgrades dependencies and fixes deprecated APIs but also modernizes code with safe new Java language features through predefined recipes, (3) AI-assisted problem-solving for issues that OpenRewrite can't handle automatically, and (4) pre-emptive guidance for known patterns—explicitly providing instructions for common scenarios (like library upgrades) that would otherwise require the AI to discover through trial-and-error. This approach is LLM-agnostic (works with Claude, ChatGPT, Gemini, or any AI coding agent) and requires no additional subscriptions beyond your chosen LLM.
-
-**Recommended Editor:** Visual Studio Code. This guide was tested using VS Code with GitHub Copilot and Claude Code plugins.
+**The Approach:** While AI agents like GitHub Copilot App Modernization and Amazon Q Developer can perform Java upgrades, they lack awareness of organization-specific conventions out of the box. The hybrid approach presented here combines: (1) custom AI instruction files that encode organization-specific requirements, (2) OpenRewrite—a popular, community-driven tool that not only upgrades dependencies and fixes deprecated APIs but also modernizes code with safe new Java language features through predefined recipes, (3) AI-assisted problem-solving for issues that OpenRewrite can't handle automatically, and (4) pre-emptive guidance for known patterns—explicitly providing instructions for common scenarios (like library upgrades) that would otherwise require the AI to discover through trial-and-error. This approach is LLM-agnostic (works with Claude, ChatGPT, Gemini, or any AI coding agent) and requires no additional subscriptions beyond your chosen LLM.
 
 ## Understanding AI Instructions vs. AI Agents
 
@@ -174,10 +172,11 @@ Before using the Java 17 to Java 21 upgrade instruction file, ensure your enviro
 
 ### Environment Requirements
 
-1. **Operating System**: macOS 
-2. **Current Java Version**: Must be Java 17 
+1. **Operating System**: macOS
+2. **Current Java Version**: Must be Java 17
 3. **Build Tool**: Gradle with Groovy DSL (`build.gradle`) or Kotlin DSL (`build.gradle.kts`) - Maven requires adaptation
 4. **Required Tools**: `curl` and `git`
+5. **Recommended Editor**: Visual Studio Code with GitHub Copilot or Claude Code plugins (this guide was tested with these configurations)
 
 ### Scope Limitations
 
