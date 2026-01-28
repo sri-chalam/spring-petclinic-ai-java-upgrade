@@ -10,7 +10,14 @@ What might seem like a straightforward task—such as upgrading a Java version�
 
 This article demonstrates this guidance approach in practice, presenting a method for automating Java version upgrades using custom AI instruction files. **While the Java 17 to 21 upgrade serves as the primary example, AI instruction files are available for both Java 17 to 21 and Java 21 to 25 upgrades**.
 
-**The Approach:** While AI agents like GitHub Copilot App Modernization and Amazon Q Developer can perform Java upgrades, they lack awareness of organization-specific conventions out of the box. The hybrid approach presented here combines: (1) custom AI instruction files that encode organization-specific requirements, (2) OpenRewrite—a popular, community-driven tool that not only upgrades dependencies and fixes deprecated APIs but also modernizes code with safe new Java language features through predefined recipes, (3) AI-assisted problem-solving for issues that OpenRewrite can't handle automatically, and (4) pre-emptive guidance for known patterns—explicitly providing instructions for common scenarios (like library upgrades) that would otherwise require the AI to discover through trial-and-error. This approach is LLM-agnostic (works with Claude, ChatGPT, Gemini, or any AI coding agent) and requires no additional subscriptions beyond your chosen LLM.
+**The Approach:** While AI agents like GitHub Copilot App Modernization and Amazon Q Developer can perform Java upgrades, they lack awareness of organization-specific conventions out of the box. The hybrid approach presented here uses **custom AI instruction files** that combine:
+
+1. **Organization-specific requirements**—encoding team conventions such as Java distribution, installation method, and trusted certificate import
+2. **OpenRewrite**—a popular, community-driven tool that upgrades dependencies, fixes deprecated APIs, and modernizes code with safe new Java language features through predefined recipes
+3. **AI-assisted problem-solving** for issues that OpenRewrite can't handle automatically
+4. **Pre-emptive guidance for known patterns**—explicitly providing instructions for common scenarios (like library upgrades) that would otherwise require the AI to discover through trial-and-error
+
+This approach is LLM-agnostic (works with Claude, ChatGPT, Gemini, or any AI coding agent) and requires no additional subscriptions beyond your chosen LLM.
 
 ## Understanding AI Instructions vs. AI Agents
 
