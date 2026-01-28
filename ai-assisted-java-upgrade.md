@@ -91,11 +91,11 @@ A comprehensive Java upgrade involves addressing numerous organizational, techni
 
 To properly address all these variations and provide concrete examples for each scenario, a complete upgrade guide would easily span hundreds or even thousands of lines. Each combination of choices (distribution × installation method × build tool × upgrade approach) represents a unique path that requires specific instructions and examples.
 
-## Why Custom Instructions Instead of Automated Tools?
+## Why AI Custom Instructions Instead of AI Agents?
 
 AI agents, such as GitHub Copilot App Modernization and Amazon Q Developer, offer features to upgrade Java and Spring Boot versions. However, having a custom instruction file for upgrades has multiple advantages.
 
-### Benefits of Custom Instructions File
+### Benefits of AI Custom Instructions File
 
 **LLM-Agnostic Flexibility**
 - Works with any LLM (Claude, ChatGPT, Gemini, etc.), not locked to a specific vendor
@@ -130,7 +130,7 @@ Both OpenRewrite and GitHub Copilot App Modernization have **limitations** for t
 - For standard Java API upgrades: Recipe-based transformations work well and produce deterministic results
 - For third-party libraries without recipes: Build/fix loops (whether in Copilot or custom instruction files) can address many cases through research and iteration, though this requires human oversight and may not handle all edge cases
 
-## OpenRewrite vs. Pure AI Agents for Code Transformations
+## OpenRewrite vs. AI Agents for Code Transformations
 
 **OpenRewrite's Strengths:**
 - **Deterministic Transformations:** Provides predictable results—you know exactly what changes will be made, and the same recipe produces identical results on every run
@@ -162,6 +162,17 @@ Rather than choosing one tool exclusively, a hybrid approach uses OpenRewrite fo
 
 2. **Skill Atrophy Risk**: Over-reliance on automation may reduce familiarity with migration details. Reviewing upgrade logs helps mitigate this.
 
+## AI Instruction Files - Limitations and Expectations
+
+When using AI instruction files (the approach demonstrated in this repository) for Java upgrades, it's important to understand the nature and limitations:
+
+### Instruction Coverage Limitations
+
+The Git repository in which the instructions are executed may have unique scenarios that the instructions do not provide guidance for. Every codebase is different, and the instruction set cannot anticipate every possible edge case or custom configuration. Users should be prepared to:
+- Review the AI's changes carefully
+- Handle scenarios not covered by the instructions
+- Adapt or supplement the instructions for their specific use case
+
 ## OpenRewrite and Recipes Used
 
 **OpenRewrite** is an automated refactoring tool that applies code transformations through reusable security fixes, migrations, and code quality improvement recipes.
@@ -176,17 +187,6 @@ The upgrade instructions use the following OpenRewrite recipes:
 2. **`org.openrewrite.java.migrate.SwitchPatternMatching`** - Applies pattern matching in switch statements (Java 21 feature)
 
 **Purpose of Additional Recipe:** UpgradeToJava21 migrates code to Java 21 compatibility; the SwitchPatternMatching recipe adds switch pattern matching support for more readable code.
-
-## AI Instruction Files - Limitations and Expectations
-
-When using AI instruction files (the approach demonstrated in this repository) for Java upgrades, it's important to understand the nature and limitations:
-
-### Instruction Coverage Limitations
-
-The Git repository in which the instructions are executed may have unique scenarios that the instructions do not provide guidance for. Every codebase is different, and the instruction set cannot anticipate every possible edge case or custom configuration. Users should be prepared to:
-- Review the AI's changes carefully
-- Handle scenarios not covered by the instructions
-- Adapt or supplement the instructions for their specific use case
 
 ## Prerequisites and Constraints for Using the Upgrade Instructions
 
@@ -486,7 +486,7 @@ While the build/fix loop can identify and upgrade necessary libraries, relying o
 
 For this upgrade, the instructions were modified to explicitly handle (only if already used in the project—skipped otherwise):
 - **Lombok**: Upgrade to the latest version, which is backwards compatible, has fewer vulnerabilities, and includes more features
-- **Spotless**: Replace the deprecated/unmaintained Google Java Format plugin. Spotless is the community-preferred tool for enforcing Google’s style guide across major tech organizations.
+- **Spotless**: If already present, upgrade to the latest version. If the deprecated Google Java Format plugin is present instead, replace it with Spotless—the community-preferred tool for enforcing style guide.
 
 **Takeaway:** Identify libraries and plugins that commonly require upgrades during Java version migrations and add explicit upgrade instructions for them. Reserve the build/fix loop for unexpected issues rather than predictable compatibility updates.
 
