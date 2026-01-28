@@ -1,7 +1,9 @@
 # Lessons Learned
 
 
-## The generated instructions have to be reviewed thoroughly
+### Click "Keep" and "Allow" Buttons Promptly
+
+As the AI assistant executes instructions and logs information to the log markdown file, it periodically asks for confirmation to keep changes. Click the "Keep" button when prompted. Similarly, the AI chat may wait for permission before making certain changes—click "Allow" to let it proceed. If you don't respond, the upgrade will pause indefinitely.
 
 ### Open Rewrite activeRecipes in build.gradle - Not a best practice 
 
@@ -211,3 +213,9 @@ The script to get the latest version of a library dependency has bug.
 LLM got confused on how to handle Spotless plugin. When Java version is upgraded, the existing Spotless version did not work. The model chose to use a different formating style to fix the problem rather than upgrading the version of Spotless.
 
 Explicit instructions were added to upgrade the Splotless version rather than changing the formating style, which changes the format of multipe files.
+
+
+## Removed sections from the main article for brevity
+### The Scale of Comprehensive Instructions
+
+To properly address all these variations and provide concrete examples for each scenario, a complete upgrade guide would easily span hundreds or even thousands of lines. Each combination of choices (distribution × installation method × build tool × upgrade approach) represents a unique path that requires specific instructions and examples.

@@ -8,14 +8,14 @@ To effectively leverage AI coding agents, detailed instructions are needed to co
 
 What might seem like a straightforward task—such as upgrading a Java version—often involves numerous organization-specific decisions that AI agents need guidance to navigate effectively.
 
-This article demonstrates this guidance approach in practice, presenting a method for automating Java version upgrades using custom AI instruction files. **While the Java 17 to 21 upgrade serves as the primary example, AI instruction files are available for both Java 17 to 21 and Java 21 to 25 upgrades**.
+This article demonstrates this guidance approach in practice, presenting a method for automating Java version upgrades using custom AI instruction files. **While the Java 17 to 21 upgrade serves as the primary example, this article provides AI instruction files for both Java 17 to 21 and Java 21 to 25 upgrades**.
 
 **The Approach:** While AI agents like GitHub Copilot App Modernization and Amazon Q Developer can perform Java upgrades, they lack awareness of organization-specific conventions out of the box. The hybrid approach presented here uses **custom AI instruction files** that combine:
 
 1. **Organization-specific requirements**—encoding team conventions such as Java distribution, installation method, and trusted certificate import
 2. **OpenRewrite**—a popular, community-driven tool that upgrades dependencies, fixes deprecated APIs, and modernizes code with safe new Java language features through predefined recipes
 3. **AI-assisted problem-solving** for issues that OpenRewrite can't handle automatically
-4. **Pre-emptive guidance for known patterns**—explicitly providing instructions for common scenarios (like library upgrades) that would otherwise require the AI to discover through trial-and-error
+4. **Pre-emptive guidance for known patterns**—explicitly providing instructions for the library and plugin upgrades commonly needed across most Java version upgrades that would otherwise require the AI to discover through time-consuming trial-and-error
 
 This approach is LLM-agnostic (works with Claude, ChatGPT, Gemini, or any AI coding agent) and requires no additional subscriptions beyond your chosen LLM.
 
@@ -40,18 +40,6 @@ An AI agent is a more complex system that can:
 - Maintain state across interactions
 - Plan multi-step sequences of actions
 
-### How They Work Together
-
-An AI instruction file is not an AI agent, though it can be a component of one.
-
-An instruction file is static configuration—it's like a rulebook that tells the AI how to behave, but it doesn't execute actions on its own.
-
-An AI agent is a dynamic system—it combines instructions with reasoning capabilities, tool access, and decision-making logic to autonomously work toward goals.
-
-For specialized tasks like Java upgrades with organization-specific requirements, instruction files often provide better cost-effectiveness than full agent systems, as they deliver targeted guidance without the computational overhead of autonomous decision-making.
-
-However, if using AI agent platforms (such as Copilot App Modernization), organization-specific instruction files should still be provided to customize the agent's behavior for the specific context.
-
 ## Why Are Java Upgrades Not Simple?
 
 At first glance, upgrading a Java project from version 17 to 21 might seem straightforward. One could simply prompt an LLM: "upgrade this project from Java 17 to Java 21" and expect it to handle everything. While such a prompt might accomplish a few basic changes, the reality is far more nuanced.
@@ -62,8 +50,6 @@ A comprehensive Java upgrade involves addressing numerous organizational, techni
 
 **Java Distribution and Provider Selection**
 - Which Java distribution should be used? (Oracle JDK, OpenJDK, Amazon Corretto, Azul Zulu, Eclipse Temurin, GraalVM, etc.)
-- What are the organization's standards and compliance requirements?
-- Are there licensing considerations or vendor support requirements?
 
 **Installation and Environment Management**
 - What installation method should be employed? (SDKMAN, jenv, manual installation, package managers)
@@ -75,21 +61,9 @@ A comprehensive Java upgrade involves addressing numerous organizational, techni
 - Should upgrade instructions cover Maven, Gradle, or both?
 - For Gradle projects, are build files written in Groovy or Kotlin DSL?
 
-**Upgrade Approach Selection**
-- Manual dependency updates vs. automated migration tools (OpenRewrite, etc.)
-- In-place upgrade vs. incremental migration strategy
-- How to handle breaking changes and deprecated APIs?
-- Testing strategy to ensure compatibility
-
 **Additional Considerations**
 - CI/CD pipeline updates (GitHub Actions, Jenkins, GitLab CI, AWS CodeBuild, etc.)
 - Docker and container base image updates
-- IDE and tooling configuration updates
-- Documentation and team training requirements
-
-### The Scale of Comprehensive Instructions
-
-To properly address all these variations and provide concrete examples for each scenario, a complete upgrade guide would easily span hundreds or even thousands of lines. Each combination of choices (distribution × installation method × build tool × upgrade approach) represents a unique path that requires specific instructions and examples.
 
 ## Why AI Custom Instructions Instead of AI Agents?
 
@@ -110,17 +84,11 @@ AI agents, such as GitHub Copilot App Modernization and Amazon Q Developer, offe
 
 **Includes the Same Build/Fix Loop as Copilot App Modernization**
 - Custom instructions can direct the LLM to perform iterative build/fix cycles
-- Same capability as GitHub Copilot's automated loop, but transparent and customizable
-- Addresses what OpenRewrite can't automate (OpenRewrite isn't exhaustive and has missing recipes for third-party libraries)
-
-**Additional Benefits**
-- Serves as documentation
-- Can embed organization-specific requirements and coding standards
-- Regardless of the tool used, some manual intervention is required for edge cases and unsupported libraries.
+- Addresses what OpenRewrite doesn't handle
 
 ### What About Third-Party Library Migrations?
 
-Both OpenRewrite and GitHub Copilot App Modernization have **limitations** for third-party library migrations:
+For third-party library migrations, custom instruction files and AI agents face identical constraints—neither approach has an inherent advantage:
 
 **The Core Issue:**
 - OpenRewrite can only migrate libraries that have **predefined recipes**
@@ -551,10 +519,6 @@ When asked to generate an instruction for adding an OpenRewrite dependency with 
 **Respond to Terminal Prompts During Execution**
 
 Some commands executed by the AI may prompt for user input in the terminal—for example, "Do you want to make this Java the default? (y/n)". If these prompts are not answered, the upgrade will stall. Keep an eye on the terminal for any interactive prompts that require a response.
-
-**Click "Keep" and "Allow" Buttons Promptly**
-
-As the AI assistant executes instructions and logs information to the log markdown file, it periodically asks for confirmation to keep changes. Click the "Keep" button when prompted. Similarly, the AI chat may wait for permission before making certain changes—click "Allow" to let it proceed. If you don't respond, the upgrade will pause indefinitely.
 
 **Scroll the Chat Window to Check for Waiting Prompts**
 
