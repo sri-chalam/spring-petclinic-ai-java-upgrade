@@ -40,6 +40,8 @@ An AI agent is a more complex system that can:
 - Maintain state across interactions
 - Plan multi-step sequences of actions
 
+This article uses instruction files to guide AI coding agents through the hybrid upgrade approach described below.
+
 ## Why Are Java Upgrades Not Simple?
 
 At first glance, upgrading a Java project from version 17 to 21 might seem straightforward. One could simply prompt an LLM: "upgrade this project from Java 17 to Java 21" and expect it to handle everything. While such a prompt might accomplish a few basic changes, the reality is far more nuanced.
@@ -73,7 +75,7 @@ AI agents, such as GitHub Copilot App Modernization and Amazon Q Developer, offe
 
 **LLM-Agnostic Flexibility**
 - Works with any LLM (Claude, ChatGPT, Gemini, etc.), not locked to a specific vendor
-- Lower cost - no additional subscriptions beyond the chosen LLM
+- Lower cost—no additional subscriptions beyond the chosen LLM
 
 **Addresses What AI Upgrade Agents Don't Handle**
 - AI upgrade agents don't address environment-specific requirements:
@@ -91,7 +93,8 @@ For third-party library migrations, custom instruction files and AI agents face 
 
 **The Core Issue:**
 - OpenRewrite can only migrate libraries that have **predefined recipes**
-- For libraries without recipes (e.g., Ehcache2→Ehcache3, proprietary frameworks), OpenRewrite cannot perform automated transformations
+- For libraries without recipes (e.g., Ehcache2->Ehcache3, proprietary frameworks), OpenRewrite cannot perform automated transformations
+- For libraries without recipes (e.g., Ehcache2->Ehcache3, proprietary frameworks), OpenRewrite cannot perform automated transformations
 
 **Bottom Line:**
 - For standard Java API upgrades: Recipe-based transformations work well and produce deterministic results
@@ -104,7 +107,7 @@ For third-party library migrations, custom instruction files and AI agents face 
 - **Enterprise-Scale Migrations:** Well-suited for processing hundreds of repositories with consistent, auditable transformations
 
 **AI Upgrade Agent's Strengths (e.g., Copilot App Modernization):**
-- **Contextual Problem-Solving:** Analyzes specific error messages and suggests fixes tailored to application's architecture
+- **Contextual Problem-Solving:** Analyzes specific error messages and suggests fixes tailored to the application's architecture
 - **Web-Enhanced Knowledge:** Can access recent changes to languages and libraries beyond training cut-off dates
 - **Interactive Iteration:** Allows conversation and feedback to refine solutions
 - **Multi-Step Reasoning:** Investigates errors, proposes multiple solution options, and adapts based on build results
@@ -189,7 +192,7 @@ If the environment does not match these prerequisites, the following actions are
 
 If custom trusted certificates are used by the organization (e.g., for internal Certificate Authorities, or for TLS-inspecting proxies—also known as TLS interception, SSL forward proxy), these certificates need to be imported into the newly installed Java 21 keystore. To enable this, organization's trusted certificates should be copied to a specific directory before executing the Java upgrade instructions. The AI-assisted upgrade process will then import these certificates into the newly installed Java 21 trust store.
 
-> **Note:** This step is important for OpenRewrite recipes to work correctly. The recipes download Gradle artifacts during execution, and missing organization certificates cause PKIX SSL errors that prevent the upgrade from completing.
+**Note:** This step is important for OpenRewrite recipes to work correctly. The recipes download Gradle artifacts during execution, and missing organization certificates cause PKIX SSL errors that prevent the upgrade from completing.
 
 ### Certificate Preparation Requirements
 
@@ -247,7 +250,7 @@ For detailed step-by-step execution instructions, see [java-17-to-21-upgrade-ins
 
 11. **CI/CD Pipeline Updates**: Updates CI/CD configuration files (see "Updated CI/CD and Build Files" section for details)
 
-12. **Verify Upgrade**: Execute a Gradle Build to verify that the upgrade was successful.
+12. **Verify the Upgrade**: Execute a Gradle Build to verify that the upgrade was successful.
 
 ### Updated CI/CD and Build Files
 
@@ -384,7 +387,7 @@ If there is a need to upgrade an application from Java 17 to Java 25, use a two-
 
 **Why Separate Instruction Files?**
 
-Using individual instruction files for each upgrade path (17→21, 21→25) is more modular and reduces complexity. If a single instruction file attempted to handle multiple upgrade paths (17→21 or 21→25 or 17→25), the instructions would become complex and could confuse or cause hallucination in LLMs. Separate, focused instruction files ensure clearer execution and more predictable results.
+Using individual instruction files for each upgrade path (17→21, 21→25) is more modular and reduces complexity. If a single instruction file attempted to handle multiple upgrade paths (17→21 or 21→25 or 17→25), the instructions would become complex and could confuse LLMs or cause hallucinations. Separate, focused instruction files ensure clearer execution and more predictable results.
 
 ## Lessons Learned
 
